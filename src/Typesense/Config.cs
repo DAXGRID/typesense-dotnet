@@ -6,6 +6,5 @@ namespace Typesense
     {
         public List<Node> Nodes { get; set; }
         public string ApiKey { get; set; }
-        public int ConnectionTimeoutSeconds { get; set; }
     }
 }

@@ -17,5 +17,11 @@ namespace Typesense
             var httpClient = new HttpClient();
             await httpClient.Post($"{Config.Nodes[0].Host}:{Config.Nodes[0].Port}/collections", schema, Config.ApiKey);
         }
+
+        public async Task CreateDocument(string schema, object document)
+        {
+            var httpClient = new HttpClient();
+            await httpClient.Post($"{Config.Nodes[0].Host}:{Config.Nodes[0].Port}/collections/{schema}/documents", document, Config.ApiKey);
+        }
     }
 }
