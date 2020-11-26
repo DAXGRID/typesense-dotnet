@@ -1,27 +1,54 @@
+using System;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Typesense.Http;
+using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace Typesense
 {
     public class Client : ITypesenseClient
     {
-        public Config Config { get; }
+        private Config _config;
+        private HttpClient _httpClient;
 
-        public Client(Config config)
+        public Client(IOptions<Config> config, HttpClient httpClient)
         {
-            Config = config;
+            _config = config.Value;
+            _httpClient = httpClient;
+            ConfigureHttpClient();
         }
 
         public async Task CreateCollection(Schema schema)
         {
             var httpClient = new HttpClient();
-            await httpClient.Post($"{Config.Nodes[0].Host}:{Config.Nodes[0].Port}/collections", schema, Config.ApiKey);
+            await Post($"/collections", schema);
         }
 
         public async Task CreateDocument(string schema, object document)
         {
             var httpClient = new HttpClient();
-            await httpClient.Post($"{Config.Nodes[0].Host}:{Config.Nodes[0].Port}/collections/{schema}/documents", document, Config.ApiKey);
+            await Post($"/collections/{schema}/documents", document);
+        }
+
+        private void ConfigureHttpClient()
+        {
+            _httpClient.BaseAddress = new Uri($"{_config.Nodes[0].Host}:{_config.Nodes[0].Port}");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("X-TYPESENSE-API-KEY", _config.ApiKey);
+        }
+
+        private async Task<string> Post(string path, object obj)
+        {
+            var jsonString = JsonSerializer.Serialize(obj);
+            var result = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+            return await result.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> Get(string path)
+        {
+            var result = await _httpClient.GetAsync(path);
+            return await result.Content.ReadAsStringAsync();
         }
     }
 }
