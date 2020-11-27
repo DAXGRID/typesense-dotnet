@@ -72,7 +72,6 @@ namespace Typesense
         private async Task<string> Post(string path, object obj)
         {
             var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            Console.WriteLine(jsonString);
             var response = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
