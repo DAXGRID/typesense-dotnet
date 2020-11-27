@@ -32,11 +32,11 @@ var schema = new Schema
     Name = "Addresses",
     Fields = new List<Field>
     {
-        new Field("id", "string", false),
+        new Field("id", "int32", false),
         new Field("houseNumber", "int32", false),
         new Field("accessAddress", "string", false),
     },
-    DefaultSortingField = "houseNumber"
+    DefaultSortingField = "id"
 };
 
 await typesenseClient.CreateCollection(schema);
@@ -46,14 +46,14 @@ await typesenseClient.CreateCollection(schema);
 
 ``` c#
 
-var house = new House
+var address = new Address
 {
-    Id = "1",
+    Id = 1,
     HouseNumber = 2,
     AccessAddress = "Smedgade 25B"
 };
 
-await typesenseClient.CreateDocument("Addresses", house);
+await typesenseClient.CreateDocument("Addresses", address);
 ```
 
 ## Query document
