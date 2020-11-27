@@ -1,0 +1,55 @@
+version: 2.1
+
+executors:
+  dotnet-core-sdk:
+    docker:
+    - image: mcr.microsoft.com/dotnet/sdk:5.0
+jobs:
+  build-app:
+    executor: dotnet-core-sdk
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: dotnet build
+
+  test-app:
+    executor: dotnet-core-sdk
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: dotnet test
+
+  publish-nuget:
+    executor: dotnet-core-sdk
+    steps:
+      - checkout
+      - run:
+          name: Push to NuGet
+          command: |
+            dotnet pack --output ./publish --configuration Release -p:PackageVersion=${CIRCLE_TAG}
+            dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" "./publish/*.nupkg"
+
+workflows:
+  build-test-publish_nuget:
+    jobs:
+      - build-app:
+          filters:
+            tags:
+              only: /.*/
+      - test-app:
+          requires:
+            - build-app
+          filters:
+            tags:
+              only: /.*/
+      - publish-nuget:
+          context: nuget
+          requires:
+            - test-app
+          filters:
+            tags:
+              only: /^[0-9].*/
+            branches:
+              ignore: /.*/
