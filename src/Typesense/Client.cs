@@ -50,6 +50,12 @@ namespace Typesense
             
         }
 
+        public async Task RetrieveCollection(string schema)
+        {
+            var httpClient = new HttpClient();
+            await Get($"/collections/{schema}");
+        }
+
         public async Task RetrieveCollections()
         {
             var httpClient = new HttpClient();

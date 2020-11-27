@@ -12,5 +12,6 @@ namespace Typesense
 
         Task ImportDocuments(string schema, List<object> items, string action );
         Task RetrieveCollections();
+        Task RetrieveCollection(string schema);
     }
 }
