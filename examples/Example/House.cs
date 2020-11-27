@@ -4,6 +4,6 @@ namespace Example
     {
         public string Id { get; set; }
         public int HouseNumber { get; set; }
-        public string AccesAddress { get; set; }
+        public string AccessAddress { get; set; }
     }
 }

@@ -37,42 +37,42 @@ namespace Example
             {
                 Id = "1",
                 HouseNumber = 2,
-                AccesAddress = "Smedgade 25B"
+                AccessAddress = "Smedgade 25B"
             };
 
             var houseTwo = new House
             {
                 Id = "2",
                 HouseNumber = 66,
-                AccesAddress = "Smedgade 67B"
+                AccessAddress = "Smedgade 67B"
             };
 
             var houseThree = new House
             {
                 Id = "3",
                 HouseNumber = 33,
-                AccesAddress = "Medad 55A"
+                AccessAddress = "Medad 55A"
             };
 
             var houseFour = new House
             {
                 Id = "4",
                 HouseNumber = 3,
-                AccesAddress = "Daramed"
+                AccessAddress = "Daramed"
             };
 
-            await typesenseClient.CreateDocument("Adresses", houseOne);
-            await typesenseClient.CreateDocument("Adresses", houseTwo);
-            await typesenseClient.CreateDocument("Adresses", houseThree);
-            await typesenseClient.CreateDocument("Adresses", houseFour);
+            await typesenseClient.CreateDocument("Addresses", houseOne);
+            await typesenseClient.CreateDocument("Addresses", houseTwo);
+            await typesenseClient.CreateDocument("Addresses", houseThree);
+            await typesenseClient.CreateDocument("Addresses", houseFour);
 
             var query = new SearchParameters
             {
-                Text = "da",
+                Text = "Smed",
                 QueryBy = "accessAddress"
             };
 
-            await typesenseClient.Search("Adresses", query);
+            await typesenseClient.Search("Addresses", query);
         }
     }
 }
