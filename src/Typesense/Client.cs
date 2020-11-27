@@ -29,27 +29,20 @@ namespace Typesense
             await Post($"/collections/{schema}/documents", document);
         }
 
-        public async Task Search(string schema, SearchParameters obj)
+        public async Task<SearchResult> Search(string schema, SearchParameters obj)
         {
             var builder = new StringBuilder();
             if (obj.FilterBy != null)
-            {
                 builder.Append($"&filter_by={obj.FilterBy}");
-            }
             else if (obj.GroupBy != null)
-            {
                 builder.Append($"&group_by={obj.GroupBy}");
-            }
             else if (obj.SortBy != null)
-            {
                 builder.Append($"&sort_by={obj.SortBy}");
-            }
             else if (obj.GroupLimit != null)
-            {
                 builder.Append($"&group_limit={obj.GroupLimit}");
-            }
 
-            await Get($"/collections/{schema}/documents/search?q={obj.Text}&query_by={obj.QueryBy}{builder}");
+            var response = await Get($"/collections/{schema}/documents/search?q={obj.Text}&query_by={obj.QueryBy}{builder}");
+            return JsonSerializer.Deserialize<SearchResult>(response);
         }
 
         public async Task<Collection> RetrieveCollection(string schema)
