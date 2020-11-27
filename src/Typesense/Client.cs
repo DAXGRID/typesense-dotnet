@@ -32,6 +32,17 @@ namespace Typesense
             await Post($"/collections/{schema}/documents", document);
         }
 
+        public async Task Search(string schema, SearchParameters obj)
+        {
+           var httpClient = new HttpClient();
+           await Get(@$"/collections/{schema}/documents/search?q={obj.Text}
+           &query_by{obj.QueryBy}
+           &filter_by={obj.FilterBy}
+           &sort_by={obj.SortBy}
+           &group_by{obj.GroupBy}
+           &group_limit{obj.GroupLimit}"); 
+        }
+
         private void ConfigureHttpClient()
         {
             _httpClient.BaseAddress = new Uri($"{_config.Nodes[0].Host}:{_config.Nodes[0].Port}");
@@ -45,7 +56,7 @@ namespace Typesense
             return await result.Content.ReadAsStringAsync();
         }
 
-        public async Task<string> Get(string path)
+        private async Task<string> Get(string path)
         {
             var result = await _httpClient.GetAsync(path);
             return await result.Content.ReadAsStringAsync();
