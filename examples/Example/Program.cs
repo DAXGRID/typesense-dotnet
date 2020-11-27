@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Typesense;
 using Typesense.Setup;
+using System;
 
 namespace Example
 {
@@ -13,12 +14,22 @@ namespace Example
             var provider = new ServiceCollection()
                 .AddTypesenseClient(config =>
                 {
-                    config.ApiKey = "dsfsfs";
-                    config.Nodes = new List<Node> { new Node { Host = "", Port = "2222", Protocol = "http" } };
+                    config.ApiKey = "Hu52dwsas2AdxdE";
+                    config.Nodes = new List<Node> { new Node { Host = "localhost", Port = "8108", Protocol = "http" } };
                 }).BuildServiceProvider();
 
             var typesenseClient = provider.GetService<ITypesenseClient>();
-            await typesenseClient.CreateCollection(new Schema());
+            var schema = new Schema();
+            schema.Name = "Adresses";
+            schema.Fields =  new List<Field>();
+            schema.Fields.Add(new Field("id","string",false));
+            schema.Fields.Add(new Field("houseNumber","int32",false));
+            schema.Fields.Add(new Field("accesAdress","string",false));
+            schema.DefaultSortingField = "houseNumber";
+           
+
+            await typesenseClient.CreateCollection(schema);
+
         }
     }
 }
