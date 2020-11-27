@@ -28,7 +28,8 @@ jobs:
       - run:
           name: Push to NuGet
           command: |
-            dotnet pack --output ./publish --configuration Release -p:PackageVersion=${CIRCLE_TAG}
+            cd src/Typesense
+            dotnet pack -o ./publish --no-dependencies -c Release -p:PackageVersion=${CIRCLE_TAG}
             dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" "./publish/*.nupkg"
 
 workflows:
