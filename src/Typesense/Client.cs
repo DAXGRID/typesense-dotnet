@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Typesense
 {
@@ -34,13 +35,25 @@ namespace Typesense
 
         public async Task Search(string schema, SearchParameters obj)
         {
-           var httpClient = new HttpClient();
-           await Get(@$"/collections/{schema}/documents/search?q={obj.Text}
+            var httpClient = new HttpClient();
+            await Get(@$"/collections/{schema}/documents/search?q={obj.Text}
            &query_by{obj.QueryBy}
            &filter_by={obj.FilterBy}
            &sort_by={obj.SortBy}
            &group_by{obj.GroupBy}
-           &group_limit{obj.GroupLimit}"); 
+           &group_limit{obj.GroupLimit}");
+        }
+
+        public async Task ImportDocuments(string schema, List<object> items, string action)
+        {
+            var httpClient = new HttpClient();
+            
+        }
+
+        public async Task RetrieveCollections()
+        {
+            var httpClient = new HttpClient();
+            await Get($"/collections");
         }
 
         private void ConfigureHttpClient()
