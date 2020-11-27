@@ -19,6 +19,20 @@ namespace Example
 
             var typesenseClient = provider.GetService<ITypesenseClient>();
 
+            var schema = new Schema
+            {
+                Name = "Addresses",
+                Fields = new List<Field>
+                {
+                    new Field("id", "string", false),
+                    new Field("houseNumber", "int32", false),
+                    new Field("accessAddress", "string", false),
+                },
+                DefaultSortingField = "houseNumber"
+            };
+
+            await typesenseClient.CreateCollection(schema);
+
             var houseOne = new House
             {
                 Id = "1",
@@ -47,27 +61,18 @@ namespace Example
                 AccesAddress = "Daramed"
             };
 
-            var query = new SearchParameters();
-            query.Text = "da";
-            query.QueryBy = "accesAdress";
-
-            var schema = new Schema();
-            schema.Name = "Adresses";
-            schema.Fields = new List<Field>();
-            schema.Fields.Add(new Field("id", "string", false));
-            schema.Fields.Add(new Field("houseNumber", "int32", false));
-            schema.Fields.Add(new Field("accesAdress", "string", false));
-            schema.DefaultSortingField = "houseNumber";
-
-            await typesenseClient.CreateCollection(schema);
-            await typesenseClient.RetrieveCollections();
             await typesenseClient.CreateDocument("Adresses", houseOne);
             await typesenseClient.CreateDocument("Adresses", houseTwo);
             await typesenseClient.CreateDocument("Adresses", houseThree);
             await typesenseClient.CreateDocument("Adresses", houseFour);
-            await typesenseClient.RetrieveCollection("Adresses");
-            await typesenseClient.Search("Adresses", query);
 
+            var query = new SearchParameters
+            {
+                Text = "da",
+                QueryBy = "accessAddress"
+            };
+
+            await typesenseClient.Search("Adresses", query);
         }
     }
 }
