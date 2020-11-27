@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.Text.Json;
 
 namespace Typesense
 {
@@ -51,9 +52,10 @@ namespace Typesense
             await Get($"/collections/{schema}/documents/search?q={obj.Text}&query_by={obj.QueryBy}{builder}");
         }
 
-        public async Task RetrieveCollection(string schema)
+        public async Task<Collection> RetrieveCollection(string schema)
         {
-            await Get($"/collections/{schema}");
+            var response = await Get($"/collections/{schema}");
+            return JsonSerializer.Deserialize<Collection>(response);
         }
 
         public async Task RetrieveCollections()
@@ -69,16 +71,24 @@ namespace Typesense
 
         private async Task<string> Post(string path, object obj)
         {
-            var jsonString = obj.ToString();
-            var result = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
-            return await result.Content.ReadAsStringAsync();
+            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            Console.WriteLine(jsonString);
+            var response = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(await response.Content.ReadAsStringAsync());
+
+            return await response.Content.ReadAsStringAsync();
         }
 
         private async Task<string> Get(string path)
         {
-            var result = await _httpClient.GetAsync(path);
-            string responseData = await result.Content.ReadAsStringAsync();
-            return await result.Content.ReadAsStringAsync();
+            var response = await _httpClient.GetAsync(path);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(await response.Content.ReadAsStringAsync());
+
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

@@ -8,6 +8,6 @@ namespace Typesense
         Task CreateDocument(string schema, object document);
         Task Search(string schema, SearchParameters obj);
         Task RetrieveCollections();
-        Task RetrieveCollection(string schema);
+        Task<Collection> RetrieveCollection(string schema);
     }
 }
