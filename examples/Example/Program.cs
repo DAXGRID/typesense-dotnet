@@ -77,6 +77,9 @@ namespace Example
             var searchResult = await typesenseClient.Search<Address>("Addresses", query);
             Console.WriteLine(JsonSerializer.Serialize(searchResult));
 
+            var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
+            Console.WriteLine($"Retrieved document: {JsonSerializer.Serialize(retrievedDocument)}");
+
             var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
             Console.WriteLine(JsonSerializer.Serialize(deleteResult));
 

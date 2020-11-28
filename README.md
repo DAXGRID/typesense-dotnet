@@ -12,6 +12,7 @@
 - [ ] Update document
 - [ ] Bulk documents
 - [x] Search collection
+- [x] Retrieve document
 - [x] Delete document
 - [x] Filter Delete document
 - [x] Retrieve collection
@@ -72,7 +73,7 @@ var address = new Address
 await typesenseClient.CreateDocument("Addresses", address);
 ```
 
-## Query document
+## Search document in collection
 
 ``` c#
 var query = new SearchParameters
@@ -84,7 +85,13 @@ var query = new SearchParameters
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
 
-## Delete document
+## Retrieve a document on id
+
+``` c#
+var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
+```
+
+## Delete document on id
 
 ``` c#
 var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");

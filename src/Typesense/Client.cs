@@ -36,6 +36,12 @@ namespace Typesense
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
+        public async Task<T> RetrieveDocument<T>(string collection, string id)
+        {
+            var response = await Get($"/collections/{collection}/documents/{id}");
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
         public async Task<Collection> RetrieveCollection(string schema)
         {
             var response = await Get($"/collections/{schema}");
