@@ -85,6 +85,9 @@ namespace Example
 
             var deleteFilterResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
             Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
+
+            var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
+            Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
         }
     }
 }

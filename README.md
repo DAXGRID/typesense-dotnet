@@ -102,3 +102,9 @@ var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
 ``` c#
 var deleteResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
 ```
+
+## Delete collection
+
+``` c#
+var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
+```

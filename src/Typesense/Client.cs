@@ -61,8 +61,15 @@ namespace Typesense
 
         public async Task<FilterDeleteResponse> Delete(string collection, string filter, int batchSize)
         {
-            var response = await Delete(path: $"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
+            var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
             return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+
+        public async Task<DeleteCollectionResponse> DeleteCollection(string name)
+        {
+            var response = await Delete($"/collections/{name}");
+            return JsonSerializer.Deserialize<DeleteCollectionResponse>(response);
         }
 
         private void ConfigureHttpClient()
