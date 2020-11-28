@@ -53,13 +53,13 @@ namespace Typesense
             await Get($"/collections");
         }
 
-        public async Task<T> Delete<T>(string collection, string documentId)
+        public async Task<T> DeleteDocument<T>(string collection, string documentId)
         {
             var response = await Delete($"/collections/{collection}/documents/{documentId}");
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<FilterDeleteResponse> Delete(string collection, string filter, int batchSize)
+        public async Task<FilterDeleteResponse> DeleteDocument(string collection, string filter, int batchSize)
         {
             var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
             return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });

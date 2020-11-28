@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Typesense.Setup

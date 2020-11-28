@@ -80,10 +80,10 @@ namespace Example
             var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
             Console.WriteLine($"Retrieved document: {JsonSerializer.Serialize(retrievedDocument)}");
 
-            var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
+            var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
             Console.WriteLine(JsonSerializer.Serialize(deleteResult));
 
-            var deleteFilterResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
+            var deleteFilterResult = await typesenseClient.DeleteDocument("Addresses", "houseNumber:>=3", 100);
             Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
 
             var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
