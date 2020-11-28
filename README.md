@@ -19,7 +19,7 @@
 - [ ] Export documents
 - [ ] Import documents
 - [ ] List all collections
-- [ ] Drop a collection
+- [x] Drop a collection
 
 ## Setup
 
@@ -103,7 +103,7 @@ var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
 var deleteResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
 ```
 
-## Delete collection
+## Drop a collection on name
 
 ``` c#
 var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
