@@ -13,15 +13,15 @@ namespace Typesense
         public IReadOnlyList<string> MatchedTokens { get; set; }
     }
 
-    public class Hit
+    public class Hit<T>
     {
         [JsonPropertyName("highlights")]
         public IReadOnlyList<Highlight> Highlights { get; set; }
         [JsonPropertyName("document")]
-        public dynamic Document { get; set; }
+        public T Document { get; set; }
     }
 
-    public class SearchResult
+    public class SearchResult<T>
     {
         [JsonPropertyName("facet_counts")]
         public IReadOnlyList<object> FacetCounts { get; set; }
@@ -30,6 +30,6 @@ namespace Typesense
         [JsonPropertyName("took_ms")]
         public int TookMs { get; set; }
         [JsonPropertyName("hits")]
-        public IReadOnlyList<Hit> Hits { get; set; }
+        public IReadOnlyList<Hit<T>> Hits { get; set; }
     }
 }

@@ -11,7 +11,7 @@
 - [ ] Upsert document
 - [ ] Update document
 - [ ] Bulk documents
-- [ ] Search collection
+- [x] Search collection
 - [ ] Delete document
 - [x] Retrieve collection
 - [ ] Export documents
@@ -80,5 +80,5 @@ var query = new SearchParameters
     QueryBy = "accessAddress"
 };
 
-var searchResult = await typesenseClient.Search("Addresses", query);
+var searchResult = await typesenseClient.Search<House>("Addresses", query);
 ```

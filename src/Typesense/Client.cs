@@ -29,7 +29,7 @@ namespace Typesense
             await Post($"/collections/{schema}/documents", document);
         }
 
-        public async Task<SearchResult> Search(string schema, SearchParameters obj)
+        public async Task<SearchResult<T>> Search<T>(string schema, SearchParameters obj)
         {
             var builder = new StringBuilder();
             if (obj.FilterBy != null)
@@ -42,7 +42,7 @@ namespace Typesense
                 builder.Append($"&group_limit={obj.GroupLimit}");
 
             var response = await Get($"/collections/{schema}/documents/search?q={obj.Text}&query_by={obj.QueryBy}{builder}");
-            return JsonSerializer.Deserialize<SearchResult>(response);
+            return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Collection> RetrieveCollection(string schema)

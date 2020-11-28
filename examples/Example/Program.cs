@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Typesense;
@@ -72,7 +74,9 @@ namespace Example
                 QueryBy = "accessAddress"
             };
 
-            var searchResult = await typesenseClient.Search("Addresses", query);
+            var searchResult = await typesenseClient.Search<House>("Addresses", query);
+            var result = JsonSerializer.Serialize(searchResult);
+            Console.WriteLine(result);
         }
     }
 }
