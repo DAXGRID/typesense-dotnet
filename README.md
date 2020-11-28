@@ -80,5 +80,5 @@ var query = new SearchParameters
     QueryBy = "accessAddress"
 };
 
-var searchResult = await typesenseClient.Search<House>("Addresses", query);
+var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
