@@ -83,3 +83,15 @@ var query = new SearchParameters
 
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
+
+## Delete document
+
+``` c#
+var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
+```
+
+## Delete documents using filter
+
+``` c#
+var deleteResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
+```
