@@ -1,10 +1,25 @@
 # Typesense-dotnet
 
-Unofficial .net client for Typesense HTTP API.
+[Unofficial .net client for Typesense HTTP API.](https://www.nuget.org/packages/Typesense/)
 
 ## NOTE Currently under development
 
-## Create setup
+### Progress
+
+- [x] Create collection
+- [x] Create document
+- [ ] Upsert document
+- [ ] Update document
+- [ ] Bulk documents
+- [ ] Search collection
+- [ ] Delete document
+- [x] Retrieve collection
+- [ ] Export documents
+- [ ] Import documents
+- [ ] List all collections
+- [ ] Drop a collection
+
+## Setup
 
 Setup in service collection. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace.
 
@@ -42,7 +57,7 @@ var schema = new Schema
 await typesenseClient.CreateCollection(schema);
 ```
 
-## Create document
+## Index document
 
 ``` c#
 
