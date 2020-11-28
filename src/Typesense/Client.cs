@@ -29,19 +29,10 @@ namespace Typesense
             await Post($"/collections/{schema}/documents", document);
         }
 
-        public async Task<SearchResult<T>> Search<T>(string schema, SearchParameters obj)
+        public async Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters)
         {
-            var builder = new StringBuilder();
-            if (obj.FilterBy != null)
-                builder.Append($"&filter_by={obj.FilterBy}");
-            else if (obj.GroupBy != null)
-                builder.Append($"&group_by={obj.GroupBy}");
-            else if (obj.SortBy != null)
-                builder.Append($"&sort_by={obj.SortBy}");
-            else if (obj.GroupLimit != null)
-                builder.Append($"&group_limit={obj.GroupLimit}");
-
-            var response = await Get($"/collections/{schema}/documents/search?q={obj.Text}&query_by={obj.QueryBy}{builder}");
+            var parameters = CreateUrlSearchParameters(searchParameters);
+            var response = await Get($"/collections/{schema}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -56,10 +47,37 @@ namespace Typesense
             await Get($"/collections");
         }
 
+        public async Task<T> Delete<T>(string collection, string documentId)
+        {
+            var response = await Delete($"/collections/{collection}/documents/{documentId}");
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<FilterDeleteResponse> Delete(string collection, string filter, int batchSize)
+        {
+            var response = await Delete(path: $"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
+            return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
         private void ConfigureHttpClient()
         {
             _httpClient.BaseAddress = new Uri($"{_config.Nodes[0].Protocol}://{_config.Nodes[0].Host}:{_config.Nodes[0].Port}");
             _httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", _config.ApiKey);
+        }
+
+        private string CreateUrlSearchParameters(SearchParameters searchParameters)
+        {
+            var builder = new StringBuilder();
+            if (searchParameters.FilterBy != null)
+                builder.Append($"&filter_by={searchParameters.FilterBy}");
+            else if (searchParameters.GroupBy != null)
+                builder.Append($"&group_by={searchParameters.GroupBy}");
+            else if (searchParameters.SortBy != null)
+                builder.Append($"&sort_by={searchParameters.SortBy}");
+            else if (searchParameters.GroupLimit != null)
+                builder.Append($"&group_limit={searchParameters.GroupLimit}");
+
+            return builder.ToString();
         }
 
         private async Task<string> Post(string path, object obj)
@@ -76,6 +94,16 @@ namespace Typesense
         private async Task<string> Get(string path)
         {
             var response = await _httpClient.GetAsync(path);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(await response.Content.ReadAsStringAsync());
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        private async Task<string> Delete(string path)
+        {
+            var response = await _httpClient.DeleteAsync(path);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(await response.Content.ReadAsStringAsync());

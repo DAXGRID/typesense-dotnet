@@ -6,7 +6,9 @@ namespace Typesense
     {
         Task CreateCollection(Schema schema);
         Task CreateDocument(string schema, object document);
-        Task<SearchResult<T>> Search<T>(string schema, SearchParameters obj);
+        Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters);
         Task<Collection> RetrieveCollection(string schema);
+        Task<T> Delete<T>(string collection, string documentId);
+        Task<FilterDeleteResponse> Delete(string collection, string filter, int batchSize);
     }
 }

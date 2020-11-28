@@ -1,6 +1,6 @@
 namespace Example
 {
-    public class Address
+    public class House
     {
         public string Id { get; set; }
         public int HouseNumber { get; set; }

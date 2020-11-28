@@ -35,28 +35,28 @@ namespace Example
 
             await typesenseClient.CreateCollection(schema);
 
-            var houseOne = new House
+            var houseOne = new Address
             {
                 Id = "1",
                 HouseNumber = 2,
                 AccessAddress = "Smedgade 25B"
             };
 
-            var houseTwo = new House
+            var houseTwo = new Address
             {
                 Id = "2",
                 HouseNumber = 66,
                 AccessAddress = "Smedgade 67B"
             };
 
-            var houseThree = new House
+            var houseThree = new Address
             {
                 Id = "3",
                 HouseNumber = 33,
                 AccessAddress = "Medad 55A"
             };
 
-            var houseFour = new House
+            var houseFour = new Address
             {
                 Id = "4",
                 HouseNumber = 3,
@@ -74,9 +74,14 @@ namespace Example
                 QueryBy = "accessAddress"
             };
 
-            var searchResult = await typesenseClient.Search<House>("Addresses", query);
-            var result = JsonSerializer.Serialize(searchResult);
-            Console.WriteLine(result);
+            var searchResult = await typesenseClient.Search<Address>("Addresses", query);
+            Console.WriteLine(JsonSerializer.Serialize(searchResult));
+
+            var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
+            Console.WriteLine(JsonSerializer.Serialize(deleteResult));
+
+            var deleteFilterResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
+            Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
         }
     }
 }

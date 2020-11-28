@@ -12,7 +12,8 @@
 - [ ] Update document
 - [ ] Bulk documents
 - [x] Search collection
-- [ ] Delete document
+- [x] Delete document
+- [x] Filter Delete document
 - [x] Retrieve collection
 - [ ] Export documents
 - [ ] Import documents
