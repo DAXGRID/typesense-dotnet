@@ -104,6 +104,13 @@ var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Address
 ## Update document on id
 
 ``` c#
+var address = new Address
+{
+    Id = 1,
+    HouseNumber = 2,
+    AccessAddress = "Smedgade 25B"
+};
+
 var updateDocumentResult = await typesenseClient.UpdateDocument("Addresses", "1", address);
 ```
 
