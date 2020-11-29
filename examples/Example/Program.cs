@@ -68,8 +68,8 @@ namespace Example
             await typesenseClient.CreateDocument("Addresses", houseThree);
             await typesenseClient.CreateDocument("Addresses", houseFour);
 
-            await typesenseClient.UpsertDocument("Addresses", houseOne);
-            await typesenseClient.UpsertDocument("Addresses", houseTwo);
+            var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", houseOne);
+            Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");
 
             houseFour.HouseNumber = 1;
             var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", houseFour);

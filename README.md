@@ -80,7 +80,7 @@ var address = new Address
     AccessAddress = "Smedgade 25B"
 };
 
-await typesenseClient.UpsertDocument("Addresses", address);
+var upsertResult = await typesenseClient.UpsertDocument<T>("Addresses", address);
 ```
 
 ## Search document in collection
