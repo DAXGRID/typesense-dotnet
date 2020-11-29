@@ -140,14 +140,51 @@ namespace Typesense
         private string CreateUrlSearchParameters(SearchParameters searchParameters)
         {
             var builder = new StringBuilder();
-            if (searchParameters.FilterBy != null)
+            if (searchParameters.MaxHits != null)
+                builder.Append($"&max_hits={searchParameters.MaxHits}");
+
+            else if (searchParameters.Prefix != null)
+                builder.Append($"&prefix={searchParameters.Prefix}");
+            else if (searchParameters.FilterBy != null)
                 builder.Append($"&filter_by={searchParameters.FilterBy}");
-            else if (searchParameters.GroupBy != null)
-                builder.Append($"&group_by={searchParameters.GroupBy}");
             else if (searchParameters.SortBy != null)
                 builder.Append($"&sort_by={searchParameters.SortBy}");
+            else if (searchParameters.FacetBy != null)
+                builder.Append($"&facet_by={searchParameters.FacetBy}");
+            else if (searchParameters.MaxFacetValues != null)
+                builder.Append($"&max_facet_values={searchParameters.MaxFacetValues}");
+            else if (searchParameters.FacetQuery != null)
+                builder.Append($"&facet_query={searchParameters.FacetQuery}");
+            else if (searchParameters.NumberOfTypos != null)
+                builder.Append($"&num_typos={searchParameters.NumberOfTypos}");
+            else if (searchParameters.Page != null)
+                builder.Append($"&page={searchParameters.Page}");
+            else if (searchParameters.PerPage != null)
+                builder.Append($"&per_page={searchParameters.PerPage}");
+            else if (searchParameters.GroupBy != null)
+                builder.Append($"&group_by={searchParameters.GroupBy}");
             else if (searchParameters.GroupLimit != null)
                 builder.Append($"&group_limit={searchParameters.GroupLimit}");
+            else if (searchParameters.IncludeFields != null)
+                builder.Append($"&include_fields={searchParameters.IncludeFields}");
+            else if (searchParameters.HighlightFullFields != null)
+                builder.Append($"&highlight_full_fields={searchParameters.HighlightFullFields}");
+            else if (searchParameters.HighlightAffixNumberOfTokens != null)
+                builder.Append($"&highlight_affix_num_tokens={searchParameters.HighlightAffixNumberOfTokens}");
+            else if (searchParameters.HighlightStartTag != null)
+                builder.Append($"&highlight_start_tag={searchParameters.HighlightStartTag}");
+            else if (searchParameters.HighlightEndTag != null)
+                builder.Append($"&highlight_end_tag={searchParameters.HighlightEndTag}");
+            else if (searchParameters.SnippetThreshold != null)
+                builder.Append($"&snippet_threshold={searchParameters.SnippetThreshold}");
+            else if (searchParameters.DropTokensThreshold != null)
+                builder.Append($"&drop_tokens_threshold={searchParameters.DropTokensThreshold}");
+            else if (searchParameters.TypoTokensThreshold != null)
+                builder.Append($"&typo_tokens_threshold={searchParameters.TypoTokensThreshold}");
+            else if (searchParameters.PinnedHits != null)
+                builder.Append($"&pinned_hits={searchParameters.PinnedHits}");
+            else if (searchParameters.HiddenHits != null)
+                builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
 
             return builder.ToString();
         }
