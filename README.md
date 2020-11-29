@@ -2,7 +2,7 @@
 
 [Unofficial .net client for Typesense HTTP API.](https://www.nuget.org/packages/Typesense/)
 
-## NOTE Currently under development
+## NOTE newly created so if you experience any bugs please report them
 
 ### Progress
 
