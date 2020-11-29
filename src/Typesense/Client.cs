@@ -24,9 +24,10 @@ namespace Typesense
             await Post($"/collections", schema);
         }
 
-        public async Task CreateDocument(string schema, object document)
+        public async Task<T> CreateDocument<T>(string schema, object document)
         {
-            await Post($"/collections/{schema}/documents", document);
+            var response = await Post($"/collections/{schema}/documents", document);
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<T> UpsertDocument<T>(string collection, object document)

@@ -67,7 +67,7 @@ var address = new Address
     AccessAddress = "Smedgade 25B"
 };
 
-await typesenseClient.CreateDocument("Addresses", address);
+var createDocumentResult = await typesenseClient.CreateDocument<Address>("Addresses", address);
 ```
 
 ## Upsert document
@@ -80,7 +80,7 @@ var address = new Address
     AccessAddress = "Smedgade 25B"
 };
 
-var upsertResult = await typesenseClient.UpsertDocument<T>("Addresses", address);
+var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", address);
 ```
 
 ## Search document in collection

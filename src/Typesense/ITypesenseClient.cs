@@ -5,7 +5,7 @@ namespace Typesense
     public interface ITypesenseClient
     {
         Task CreateCollection(Schema schema);
-        Task CreateDocument(string schema, object document);
+        Task<T> CreateDocument<T>(string schema, object document);
         Task<T> UpsertDocument<T>(string collection, object document);
         Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters);
         Task<T> RetrieveDocument<T>(string collection, string id);

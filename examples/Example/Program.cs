@@ -63,10 +63,14 @@ namespace Example
                 AccessAddress = "Daramed"
             };
 
-            await typesenseClient.CreateDocument("Addresses", houseOne);
-            await typesenseClient.CreateDocument("Addresses", houseTwo);
-            await typesenseClient.CreateDocument("Addresses", houseThree);
-            await typesenseClient.CreateDocument("Addresses", houseFour);
+            var houseOneResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseOne);
+            Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseOneResponse)}");
+            var houseTwoResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseTwo);
+            Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseTwo)}");
+            var houseThreeResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseThree);
+            Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseThreeResponse)}");
+            var houseFourResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseFour);
+            Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseFourResponse)}");
 
             var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", houseOne);
             Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");
