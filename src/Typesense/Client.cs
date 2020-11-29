@@ -29,6 +29,11 @@ namespace Typesense
             await Post($"/collections/{schema}/documents", document);
         }
 
+        public async Task UpsertDocument(string collection, object document)
+        {
+            await Post($"/collections/{collection}/documents?action=upsert", document);
+        }
+
         public async Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters)
         {
             var parameters = CreateUrlSearchParameters(searchParameters);

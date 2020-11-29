@@ -6,6 +6,7 @@ namespace Typesense
     {
         Task CreateCollection(Schema schema);
         Task CreateDocument(string schema, object document);
+        Task UpsertDocument(string collection, object document);
         Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters);
         Task<T> RetrieveDocument<T>(string collection, string id);
         Task<Collection> RetrieveCollection(string schema);

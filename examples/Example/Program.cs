@@ -68,6 +68,9 @@ namespace Example
             await typesenseClient.CreateDocument("Addresses", houseThree);
             await typesenseClient.CreateDocument("Addresses", houseFour);
 
+            await typesenseClient.UpsertDocument("Addresses", houseOne);
+            await typesenseClient.UpsertDocument("Addresses", houseTwo);
+
             var query = new SearchParameters
             {
                 Text = "Smed",

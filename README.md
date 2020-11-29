@@ -8,7 +8,7 @@
 
 - [x] Create collection
 - [x] Create document
-- [ ] Upsert document
+- [x] Upsert document
 - [ ] Update document
 - [ ] Bulk documents
 - [x] Search collection
@@ -62,7 +62,6 @@ await typesenseClient.CreateCollection(schema);
 ## Index document
 
 ``` c#
-
 var address = new Address
 {
     Id = 1,
@@ -71,6 +70,19 @@ var address = new Address
 };
 
 await typesenseClient.CreateDocument("Addresses", address);
+```
+
+## Upsert document
+
+``` c#
+var address = new Address
+{
+    Id = 1,
+    HouseNumber = 2,
+    AccessAddress = "Smedgade 25B"
+};
+
+await typesenseClient.UpsertDocument("Addresses", address);
 ```
 
 ## Search document in collection
