@@ -54,7 +54,7 @@ var schema = new Schema
     DefaultSortingField = "id"
 };
 
-await typesenseClient.CreateCollection(schema);
+var createCollectionResult = await typesenseClient.CreateCollection(schema);
 ```
 
 ## Index document

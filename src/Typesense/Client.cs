@@ -19,9 +19,10 @@ namespace Typesense
             ConfigureHttpClient();
         }
 
-        public async Task CreateCollection(Schema schema)
+        public async Task<CollectionResponse> CreateCollection(Schema schema)
         {
-            await Post($"/collections", schema);
+            var response = await Post($"/collections", schema);
+            return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
         public async Task<T> CreateDocument<T>(string schema, object document)
@@ -79,10 +80,10 @@ namespace Typesense
         }
 
 
-        public async Task<DeleteCollectionResponse> DeleteCollection(string name)
+        public async Task<CollectionResponse> DeleteCollection(string name)
         {
             var response = await Delete($"/collections/{name}");
-            return JsonSerializer.Deserialize<DeleteCollectionResponse>(response);
+            return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
         private void ConfigureHttpClient()

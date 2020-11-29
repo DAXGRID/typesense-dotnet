@@ -4,7 +4,7 @@ namespace Typesense
 {
     public interface ITypesenseClient
     {
-        Task CreateCollection(Schema schema);
+        Task<CollectionResponse> CreateCollection(Schema schema);
         Task<T> CreateDocument<T>(string schema, object document);
         Task<T> UpsertDocument<T>(string collection, object document);
         Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters);
@@ -13,6 +13,6 @@ namespace Typesense
         Task<Collection> RetrieveCollection(string schema);
         Task<T> DeleteDocument<T>(string collection, string documentId);
         Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
-        Task<DeleteCollectionResponse> DeleteCollection(string name);
+        Task<CollectionResponse> DeleteCollection(string name);
     }
 }

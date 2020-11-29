@@ -33,7 +33,8 @@ namespace Example
                 DefaultSortingField = "houseNumber"
             };
 
-            await typesenseClient.CreateCollection(schema);
+            var createCollectionResponse = await typesenseClient.CreateCollection(schema);
+            Console.WriteLine($"Created collection: {JsonSerializer.Serialize(createCollectionResponse)}");
 
             var houseOne = new Address
             {
