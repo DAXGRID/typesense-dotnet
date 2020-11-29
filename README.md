@@ -94,13 +94,13 @@ var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Address
 ## Delete document on id
 
 ``` c#
-var deleteResult = await typesenseClient.Delete<Address>("Addresses", "2");
+var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
 ```
 
 ## Delete documents using filter
 
 ``` c#
-var deleteResult = await typesenseClient.Delete("Addresses", "houseNumber:>=3", 100);
+var deleteResult = await typesenseClient.DeleteDocument("Addresses", "houseNumber:>=3", 100);
 ```
 
 ## Drop a collection on name
