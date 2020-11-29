@@ -115,6 +115,10 @@ namespace Typesense
             }
 
             var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain"));
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(await response.Content.ReadAsStringAsync());
+
             var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync());
 
             return responseString.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
