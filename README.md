@@ -111,7 +111,7 @@ var address = new Address
     AccessAddress = "Smedgade 25B"
 };
 
-var updateDocumentResult = await typesenseClient.UpdateDocument("Addresses", "1", address);
+var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "1", address);
 ```
 
 ## Delete document on id
