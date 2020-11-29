@@ -14,7 +14,7 @@
 - [x] Update document
 - [x] Delete document
 - [x] Retrieve collection
-- [ ] Export documents
+- [x] Export documents
 - [x] Import documents
 - [x] List all collections
 - [x] Drop a collection
@@ -141,4 +141,10 @@ The returned values are a list of `ImportResponse` that contains a `success code
 
 ``` c#
 var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
+```
+
+## Export documents
+
+``` c#
+var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```

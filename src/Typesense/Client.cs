@@ -107,7 +107,6 @@ namespace Typesense
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var jsonString = new StringBuilder();
-
             foreach (var document in documents)
             {
                 var json = JsonSerializer.Serialize(document, jsonOptions);
@@ -122,6 +121,14 @@ namespace Typesense
             var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync());
 
             return responseString.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
+        }
+
+        public async Task<List<T>> ExportDocuments<T>(string collection)
+        {
+            var response = await Get($"/collections/{collection}/documents/export");
+
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            return response.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
         }
 
         private void ConfigureHttpClient()

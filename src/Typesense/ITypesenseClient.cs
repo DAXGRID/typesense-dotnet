@@ -17,5 +17,6 @@ namespace Typesense
         Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
         Task<CollectionResponse> DeleteCollection(string name);
         Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+        Task<List<T>> ExportDocuments<T>(string collection);
     }
 }

@@ -79,6 +79,9 @@ namespace Example
             var houseFourResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseFour);
             Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseFourResponse)}");
 
+            var exportResult = await typesenseClient.ExportDocuments<Address>("Addresses");
+            Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");
+
             var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", houseOne);
             Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");
 
