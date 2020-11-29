@@ -25,9 +25,9 @@ namespace Typesense
             return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
-        public async Task<T> CreateDocument<T>(string schema, object document)
+        public async Task<T> CreateDocument<T>(string collection, object document)
         {
-            var response = await Post($"/collections/{schema}/documents", document);
+            var response = await Post($"/collections/{collection}/documents", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -37,10 +37,10 @@ namespace Typesense
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<SearchResult<T>> Search<T>(string schema, SearchParameters searchParameters)
+        public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
         {
             var parameters = CreateUrlSearchParameters(searchParameters);
-            var response = await Get($"/collections/{schema}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
+            var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -56,9 +56,9 @@ namespace Typesense
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<Collection> RetrieveCollection(string schema)
+        public async Task<Collection> RetrieveCollection(string name)
         {
-            var response = await Get($"/collections/{schema}");
+            var response = await Get($"/collections/{name}");
             return JsonSerializer.Deserialize<Collection>(response);
         }
 
