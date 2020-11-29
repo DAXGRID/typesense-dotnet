@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Typesense
 {
@@ -79,11 +81,42 @@ namespace Typesense
             return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-
         public async Task<CollectionResponse> DeleteCollection(string name)
         {
             var response = await Delete($"/collections/{name}");
             return JsonSerializer.Deserialize<CollectionResponse>(response);
+        }
+
+        public async Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
+        {
+            var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
+
+            switch (importType)
+            {
+                case ImportType.Create:
+                    path += "&action=create";
+                    break;
+                case ImportType.Update:
+                    path += "&action=update";
+                    break;
+                case ImportType.Upsert:
+                    path += "&action=upsert";
+                    break;
+            }
+
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var jsonString = new StringBuilder();
+
+            foreach (var document in documents)
+            {
+                var json = JsonSerializer.Serialize(document, jsonOptions);
+                jsonString.Append(json + Environment.NewLine);
+            }
+
+            var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain"));
+            var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync());
+
+            return responseString.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
         }
 
         private void ConfigureHttpClient()
@@ -148,5 +181,7 @@ namespace Typesense
 
             return await response.Content.ReadAsStringAsync();
         }
+
+
     }
 }

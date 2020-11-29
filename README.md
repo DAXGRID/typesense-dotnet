@@ -15,7 +15,7 @@
 - [x] Delete document
 - [x] Retrieve collection
 - [ ] Export documents
-- [ ] Import documents
+- [x] Import documents
 - [ ] List all collections
 - [x] Drop a collection
 
@@ -130,4 +130,15 @@ var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumb
 
 ``` c#
 var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
+```
+
+## Import documents 
+
+The default batch size is `40`.
+The default ImportType is `Create`.
+You can pick between three different import types `Create`, `Upsert`, `Update`.
+The returned values are a list of `ImportResponse` that contains a `success code`, `error` and the failed `document`.
+
+``` c#
+var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
 ```

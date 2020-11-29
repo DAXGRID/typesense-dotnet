@@ -76,13 +76,22 @@ namespace Example
             var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", houseOne);
             Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");
 
+            var addresses = new List<Address>
+            {
+                new Address { AccessAddress = "Sulstreet 4", Id = "5", HouseNumber = 223 },
+                new Address { AccessAddress = "Sulstreet 24", Id = "6", HouseNumber = 321 }
+            };
+
+            var importDocuments = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
+            Console.WriteLine($"Import documents: {JsonSerializer.Serialize(importDocuments)}");
+
             houseFour.HouseNumber = 1;
             var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", houseFour);
             Console.WriteLine($"Updated document: {JsonSerializer.Serialize(updateDocumentResult)}");
 
             var query = new SearchParameters
             {
-                Text = "Smed",
+                Text = "Sul",
                 QueryBy = "accessAddress"
             };
 
