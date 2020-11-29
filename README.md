@@ -1,6 +1,8 @@
 # Typesense-dotnet
 
-[Unofficial .net client for Typesense HTTP API.](https://www.nuget.org/packages/Typesense/)
+[Unofficial .net client for Typesense HTTP API.](https://github.com/typesense/typesense)
+
+[You can get the NuGet package here](https://www.nuget.org/packages/Typesense/)
 
 ## NOTE newly created so if you experience any bugs please report them
 
