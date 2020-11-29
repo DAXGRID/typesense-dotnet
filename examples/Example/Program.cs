@@ -71,6 +71,10 @@ namespace Example
             await typesenseClient.UpsertDocument("Addresses", houseOne);
             await typesenseClient.UpsertDocument("Addresses", houseTwo);
 
+            houseFour.HouseNumber = 1;
+            var updateDocumentResult = await typesenseClient.UpdateDocument("Addresses", "4", houseFour);
+            Console.WriteLine($"Updated document: {JsonSerializer.Serialize(updateDocumentResult)}");
+
             var query = new SearchParameters
             {
                 Text = "Smed",

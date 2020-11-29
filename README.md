@@ -9,12 +9,10 @@
 - [x] Create collection
 - [x] Create document
 - [x] Upsert document
-- [ ] Update document
-- [ ] Bulk documents
 - [x] Search collection
 - [x] Retrieve document
+- [x] Update document
 - [x] Delete document
-- [x] Filter Delete document
 - [x] Retrieve collection
 - [ ] Export documents
 - [ ] Import documents
@@ -103,10 +101,16 @@ var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
 ```
 
+## Update document on id
+
+``` c#
+var updateDocumentResult = await typesenseClient.UpdateDocument("Addresses", "1", address);
+```
+
 ## Delete document on id
 
 ``` c#
-var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
+var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1");
 ```
 
 ## Delete documents using filter

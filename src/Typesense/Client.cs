@@ -47,6 +47,12 @@ namespace Typesense
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
+        public async Task<T> UpdateDocument<T>(string collection, string id, T document)
+        {
+            var response = await Patch($"collections/{collection}/documents/{id}", document);
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
         public async Task<Collection> RetrieveCollection(string schema)
         {
             var response = await Get($"/collections/{schema}");
@@ -122,6 +128,17 @@ namespace Typesense
         private async Task<string> Delete(string path)
         {
             var response = await _httpClient.DeleteAsync(path);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception(await response.Content.ReadAsStringAsync());
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        private async Task<string> Patch(string path, object obj)
+        {
+            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(await response.Content.ReadAsStringAsync());
