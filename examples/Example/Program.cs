@@ -90,7 +90,7 @@ namespace Example
             var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
             Console.WriteLine(JsonSerializer.Serialize(deleteResult));
 
-            var deleteFilterResult = await typesenseClient.DeleteDocument("Addresses", "houseNumber:>=3", 100);
+            var deleteFilterResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
             Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
 
             var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");

@@ -12,7 +12,7 @@ namespace Typesense
         Task<T> UpdateDocument<T>(string collection, string id, T document);
         Task<Collection> RetrieveCollection(string schema);
         Task<T> DeleteDocument<T>(string collection, string documentId);
-        Task<FilterDeleteResponse> DeleteDocument(string collection, string filter, int batchSize);
+        Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
         Task<DeleteCollectionResponse> DeleteCollection(string name);
     }
 }

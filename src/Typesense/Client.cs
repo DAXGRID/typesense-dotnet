@@ -70,7 +70,7 @@ namespace Typesense
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<FilterDeleteResponse> DeleteDocument(string collection, string filter, int batchSize)
+        public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
         {
             var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
             return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
