@@ -137,7 +137,7 @@ var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses")
 The default batch size is `40`.
 The default ImportType is `Create`.
 You can pick between three different import types `Create`, `Upsert`, `Update`.
-The returned values are a list of `ImportResponse` that contains a `success code`, `error` and the failed `document`.
+The returned values are a list of `ImportResponse` that contains a `success code`, `error` and the failed `document` as a string representation.
 
 ``` c#
 var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
