@@ -12,6 +12,7 @@ namespace Typesense
         Task<T> RetrieveDocument<T>(string collection, string id);
         Task<T> UpdateDocument<T>(string collection, string id, T document);
         Task<Collection> RetrieveCollection(string name);
+        Task<IReadOnlyCollection<Collection>> RetrieveCollections();
         Task<T> DeleteDocument<T>(string collection, string documentId);
         Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
         Task<CollectionResponse> DeleteCollection(string name);

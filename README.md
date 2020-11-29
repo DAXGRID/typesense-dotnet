@@ -16,7 +16,7 @@
 - [x] Retrieve collection
 - [ ] Export documents
 - [x] Import documents
-- [ ] List all collections
+- [x] List all collections
 - [x] Drop a collection
 
 ## Setup
@@ -132,7 +132,7 @@ var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumb
 var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
 ```
 
-## Import documents 
+## Import documents
 
 The default batch size is `40`.
 The default ImportType is `Create`.

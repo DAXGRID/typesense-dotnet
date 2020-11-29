@@ -64,9 +64,10 @@ namespace Typesense
             return JsonSerializer.Deserialize<Collection>(response);
         }
 
-        public async Task RetrieveCollections()
+        public async Task<IReadOnlyCollection<Collection>> RetrieveCollections()
         {
-            await Get($"/collections");
+            var response = await Get($"/collections");
+            return JsonSerializer.Deserialize<IReadOnlyCollection<Collection>>(response);
         }
 
         public async Task<T> DeleteDocument<T>(string collection, string documentId)

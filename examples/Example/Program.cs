@@ -36,6 +36,12 @@ namespace Example
             var createCollectionResponse = await typesenseClient.CreateCollection(schema);
             Console.WriteLine($"Created collection: {JsonSerializer.Serialize(createCollectionResponse)}");
 
+            var retrieveCollection = await typesenseClient.RetrieveCollection("Addresses");
+            Console.WriteLine($"Retrieve collection: {JsonSerializer.Serialize(retrieveCollection)}");
+
+            var retrieveCollections = await typesenseClient.RetrieveCollections();
+            Console.WriteLine($"Retrieve collections: {JsonSerializer.Serialize(retrieveCollections)}");
+
             var houseOne = new Address
             {
                 Id = "1",
