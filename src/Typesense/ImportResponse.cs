@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public class ImportResponse
+    public record ImportResponse
     {
         [JsonPropertyName("success")]
         public bool Success { get; init; }

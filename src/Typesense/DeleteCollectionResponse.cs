@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public class CollectionResponse
+    public record CollectionResponse
     {
         [JsonPropertyName("name")]
         public string Name { get; init; }
