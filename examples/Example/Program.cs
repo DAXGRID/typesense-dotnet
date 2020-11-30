@@ -42,47 +42,47 @@ namespace Example
             var retrieveCollections = await typesenseClient.RetrieveCollections();
             Console.WriteLine($"Retrieve collections: {JsonSerializer.Serialize(retrieveCollections)}");
 
-            var houseOne = new Address
+            var addressOne = new Address
             {
                 Id = "1",
                 HouseNumber = 2,
                 AccessAddress = "Smedgade 25B"
             };
 
-            var houseTwo = new Address
+            var addressTwo = new Address
             {
                 Id = "2",
                 HouseNumber = 66,
                 AccessAddress = "Smedgade 67B"
             };
 
-            var houseThree = new Address
+            var addressThree = new Address
             {
                 Id = "3",
                 HouseNumber = 33,
                 AccessAddress = "Medad 55A"
             };
 
-            var houseFour = new Address
+            var addressFour = new Address
             {
                 Id = "4",
                 HouseNumber = 3,
                 AccessAddress = "Daramed"
             };
 
-            var houseOneResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseOne);
+            var houseOneResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressOne);
             Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseOneResponse)}");
-            var houseTwoResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseTwo);
-            Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseTwo)}");
-            var houseThreeResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseThree);
+            var houseTwoResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressTwo);
+            Console.WriteLine($"Created document: {JsonSerializer.Serialize(addressTwo)}");
+            var houseThreeResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressThree);
             Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseThreeResponse)}");
-            var houseFourResponse = await typesenseClient.CreateDocument<Address>("Addresses", houseFour);
+            var houseFourResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressFour);
             Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseFourResponse)}");
 
             var exportResult = await typesenseClient.ExportDocuments<Address>("Addresses");
             Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");
 
-            var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", houseOne);
+            var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", addressOne);
             Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");
 
             var addresses = new List<Address>
@@ -94,8 +94,8 @@ namespace Example
             var importDocuments = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
             Console.WriteLine($"Import documents: {JsonSerializer.Serialize(importDocuments)}");
 
-            houseFour.HouseNumber = 1;
-            var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", houseFour);
+            addressFour.HouseNumber = 1;
+            var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", addressFour);
             Console.WriteLine($"Updated document: {JsonSerializer.Serialize(updateDocumentResult)}");
 
             var query = new SearchParameters

@@ -230,7 +230,5 @@ namespace Typesense
 
             return await response.Content.ReadAsStringAsync();
         }
-
-
     }
 }
