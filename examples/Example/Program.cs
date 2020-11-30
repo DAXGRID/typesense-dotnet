@@ -105,13 +105,13 @@ namespace Example
             };
 
             var searchResult = await typesenseClient.Search<Address>("Addresses", query);
-            Console.WriteLine(JsonSerializer.Serialize(searchResult));
+            Console.WriteLine("Search result: {JsonSerializer.Serialize(searchResult)}");
 
             var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
             Console.WriteLine($"Retrieved document: {JsonSerializer.Serialize(retrievedDocument)}");
 
             var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
-            Console.WriteLine(JsonSerializer.Serialize(deleteResult));
+            Console.WriteLine($"Deleted document {JsonSerializer.Serialize(deleteResult)}");
 
             var deleteFilterResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
             Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
