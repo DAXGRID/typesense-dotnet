@@ -4,9 +4,7 @@
 
 [You can get the NuGet package here](https://www.nuget.org/packages/Typesense/)
 
-## NOTE newly created so if you experience any bugs please report them
-
-### Progress
+## Progress
 
 - [x] Create collection
 - [x] Create document
