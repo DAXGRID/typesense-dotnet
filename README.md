@@ -33,7 +33,8 @@ var provider = new ServiceCollection()
             new Node
             {
                 Host = "localhost",
-                Port = "8108", Protocol = "http"
+                Port = "8108",
+                Protocol = "http"
             }
         };
     }).BuildServiceProvider();
