@@ -18,6 +18,7 @@
 - [x] Import documents
 - [x] List all collections
 - [x] Drop a collection
+- [ ] Multiple node support
 
 ## Setup
 
