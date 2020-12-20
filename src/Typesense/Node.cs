@@ -1,3 +1,5 @@
+using System;
+
 namespace Typesense
 {
     /// <summary>
@@ -17,5 +19,17 @@ namespace Typesense
         /// Protocol for the Typesense service - defaults to http.
         /// </summary>
         public string Protocol { get; set; } = "http";
+
+        public Node() { }
+
+        public Node(string host, string port, string protocol = "http")
+        {
+            if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(protocol) || string.IsNullOrEmpty(port))
+                throw new ArgumentException($"{nameof(host)}, {nameof(protocol)} or {nameof(port)} cannot be null or empty");
+
+            Host = host;
+            Port = port;
+            Protocol = protocol;
+        }
     }
 }
