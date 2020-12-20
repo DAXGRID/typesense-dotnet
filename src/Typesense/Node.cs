@@ -25,7 +25,7 @@ namespace Typesense
         /// <param name="host">Hostname for the Typesense service.</param>
         /// <param name="port">Port for the typesense service.</param>
         /// <param name="document">Protocol for the Typesense service - defaults to http.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public Node(string host, string port, string protocol = "http")
         {
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(protocol) || string.IsNullOrEmpty(port))
