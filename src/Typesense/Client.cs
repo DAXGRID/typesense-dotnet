@@ -32,18 +32,36 @@ namespace Typesense
 
         public async Task<T> CreateDocument<T>(string collection, object document)
         {
+            if (collection is null || document is null)
+                throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");
+
+            if (collection == string.Empty)
+                throw new ArgumentException($"{nameof(collection)} cannot be empty");
+
             var response = await Post($"/collections/{collection}/documents", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<T> UpsertDocument<T>(string collection, object document)
         {
+            if (collection is null || document is null)
+                throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");
+
+            if (collection == string.Empty)
+                throw new ArgumentException($"{nameof(collection)} cannot be empty");
+
             var response = await Post($"/collections/{collection}/documents?action=upsert", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
         {
+            if (collection is null || searchParameters is null)
+                throw new ArgumentNullException($"{nameof(collection)} or {nameof(searchParameters)} cannot be null.");
+
+            if (collection == string.Empty)
+                throw new ArgumentException($"{nameof(collection)} cannot be empty");
+
             var parameters = CreateUrlSearchParameters(searchParameters);
             var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -51,18 +69,30 @@ namespace Typesense
 
         public async Task<T> RetrieveDocument<T>(string collection, string id)
         {
+            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(id))
+                throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
+
             var response = await Get($"/collections/{collection}/documents/{id}");
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<T> UpdateDocument<T>(string collection, string id, T document)
         {
+            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(id))
+                throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
+
+            if (document is null)
+                throw new ArgumentNullException($"{nameof(document)} cannot be null");
+
             var response = await Patch($"collections/{collection}/documents/{id}", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<Collection> RetrieveCollection(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
+
             var response = await Get($"/collections/{name}");
             return JsonSerializer.Deserialize<Collection>(response);
         }
@@ -75,24 +105,39 @@ namespace Typesense
 
         public async Task<T> DeleteDocument<T>(string collection, string documentId)
         {
+            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(documentId))
+                throw new ArgumentException($"{nameof(collection)} or {nameof(documentId)} cannot be null or empty.");
+
             var response = await Delete($"/collections/{collection}/documents/{documentId}");
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
         {
+            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(filter))
+                throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
+
             var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
             return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<CollectionResponse> DeleteCollection(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException($"{nameof(name)} cannot be null or empty");
+
             var response = await Delete($"/collections/{name}");
             return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
         public async Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
         {
+            if (string.IsNullOrEmpty(collection))
+                throw new ArgumentException($"{nameof(collection)} cannot be null or empty");
+
+            if (documents is null)
+                throw new ArgumentNullException($"{nameof(documents)} cannot be null.");
+
             var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
 
             switch (importType)
@@ -128,6 +173,9 @@ namespace Typesense
 
         public async Task<List<T>> ExportDocuments<T>(string collection)
         {
+            if (string.IsNullOrEmpty(collection))
+                throw new ArgumentException($"{nameof(collection)} cannot be null or empty.");
+
             var response = await Get($"/collections/{collection}/documents/export");
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
