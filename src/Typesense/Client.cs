@@ -23,6 +23,9 @@ namespace Typesense
 
         public async Task<CollectionResponse> CreateCollection(Schema schema)
         {
+            if (schema is null)
+                throw new ArgumentNullException($"The supplied argument {nameof(Schema)} cannot be null");
+
             var response = await Post($"/collections", schema);
             return JsonSerializer.Deserialize<CollectionResponse>(response);
         }

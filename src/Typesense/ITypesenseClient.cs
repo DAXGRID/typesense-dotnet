@@ -5,6 +5,12 @@ namespace Typesense
 {
     public interface ITypesenseClient
     {
+        /// <summary>
+        /// Creates the collection with the supplied schema
+        /// </summary>
+        /// <param name="schema">The schema for the collection be created.</param>
+        /// <returns>The created collection.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         Task<CollectionResponse> CreateCollection(Schema schema);
         Task<T> CreateDocument<T>(string collection, object document);
         Task<T> UpsertDocument<T>(string collection, object document);
