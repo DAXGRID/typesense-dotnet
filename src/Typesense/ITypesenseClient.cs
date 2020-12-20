@@ -11,6 +11,7 @@ namespace Typesense
         /// <param name="schema">The schema for the collection be created.</param>
         /// <returns>The created collection.</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<CollectionResponse> CreateCollection(Schema schema);
 
         /// <summary>
@@ -21,6 +22,7 @@ namespace Typesense
         /// <returns>The created document.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<T> CreateDocument<T>(string collection, object document);
 
         /// <summary>
@@ -31,6 +33,7 @@ namespace Typesense
         /// <returns>The created or updated document.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<T> UpsertDocument<T>(string collection, object document);
 
         /// <summary>
@@ -41,6 +44,7 @@ namespace Typesense
         /// <returns>The search result.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters);
 
         /// <summary>
@@ -50,6 +54,7 @@ namespace Typesense
         /// <param name="searchParameters">The search parameters.</param>
         /// <returns>The document.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<T> RetrieveDocument<T>(string collection, string id);
 
         /// <summary>
@@ -61,6 +66,7 @@ namespace Typesense
         /// <returns>The updated document.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<T> UpdateDocument<T>(string collection, string id, T document);
 
         /// <summary>
@@ -69,12 +75,14 @@ namespace Typesense
         /// <param name="collection">The collection name.</param>
         /// <returns>The collection.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<Collection> RetrieveCollection(string name);
 
         /// <summary>
         /// Retrieve all the collections.
         /// </summary>
         /// <returns>A list of collections.</returns>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<IReadOnlyCollection<Collection>> RetrieveCollections();
 
         /// <summary>
@@ -84,6 +92,7 @@ namespace Typesense
         /// <param name="documentId">The id of the document to be deleted.</param>
         /// <returns>The deleted document.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<T> DeleteDocument<T>(string collection, string documentId);
 
         /// <summary>
@@ -94,6 +103,7 @@ namespace Typesense
         /// <param name="batchSize">The number of documents that should deleted at a time.</param>
         /// <returns>A response containing a count of the deleted documents.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
 
         /// <summary>
@@ -102,6 +112,7 @@ namespace Typesense
         /// <param name="name">The collection name.</param>
         /// <returns>A response with the collection deleted.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<CollectionResponse> DeleteCollection(string name);
 
         /// <summary>
@@ -114,6 +125,7 @@ namespace Typesense
         /// <returns>A collection of import responses.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
         /// <summary>
@@ -122,6 +134,7 @@ namespace Typesense
         /// <param name="collection">The collection name.</param>
         /// <returns>A collection of documents.</returns>
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
         Task<List<T>> ExportDocuments<T>(string collection);
     }
 }

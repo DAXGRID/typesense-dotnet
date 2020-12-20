@@ -246,7 +246,7 @@ namespace Typesense
             var response = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -256,7 +256,7 @@ namespace Typesense
             var response = await _httpClient.GetAsync(path);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -266,7 +266,7 @@ namespace Typesense
             var response = await _httpClient.DeleteAsync(path);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
 
             return await response.Content.ReadAsStringAsync();
         }
@@ -277,7 +277,7 @@ namespace Typesense
             var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception(await response.Content.ReadAsStringAsync());
+                throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
 
             return await response.Content.ReadAsStringAsync();
         }
