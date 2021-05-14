@@ -1,27 +1,10 @@
 # Typesense-dotnet
 
-[Unofficial .net client for Typesense HTTP API.](https://github.com/typesense/typesense)
+[.net client for Typesense HTTP API.](https://github.com/typesense/typesense)
 
 [You can get the NuGet package here](https://www.nuget.org/packages/Typesense/)
 
-## Progress
-
-- [x] Create collection
-- [x] Create document
-- [x] Upsert document
-- [x] Search collection
-- [x] Retrieve document
-- [x] Update document
-- [x] Delete document
-- [x] Retrieve collection
-- [x] Export documents
-- [x] Import documents
-- [x] List all collections
-- [x] Drop a collection
-- [ ] Multiple node support
-
 ## Setup
-
 Setup in service collection. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace.
 
 ``` c#
