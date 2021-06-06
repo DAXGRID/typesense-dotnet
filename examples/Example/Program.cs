@@ -96,7 +96,7 @@ namespace Example
 
             addressFour.HouseNumber = 1;
             var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", addressFour);
-            Console.WriteLine($"Updated document: {JsonSerializer.Serialize(updateDocumentResult)}");
+            Console.WriteLine($"Updated document: ${JsonSerializer.Serialize(updateDocumentResult)}");
 
             var query = new SearchParameters
             {
@@ -105,7 +105,7 @@ namespace Example
             };
 
             var searchResult = await typesenseClient.Search<Address>("Addresses", query);
-            Console.WriteLine("Search result: {JsonSerializer.Serialize(searchResult)}");
+            Console.WriteLine($"Search result: {JsonSerializer.Serialize(searchResult)}");
 
             var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
             Console.WriteLine($"Retrieved document: {JsonSerializer.Serialize(retrievedDocument)}");
