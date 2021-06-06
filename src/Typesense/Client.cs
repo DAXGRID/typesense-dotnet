@@ -69,7 +69,7 @@ namespace Typesense
 
         public async Task<T> RetrieveDocument<T>(string collection, string id)
         {
-            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
                 throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
 
             var response = await Get($"/collections/{collection}/documents/{id}");
@@ -78,7 +78,7 @@ namespace Typesense
 
         public async Task<T> UpdateDocument<T>(string collection, string id, T document)
         {
-            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
                 throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
 
             if (document is null)
@@ -105,7 +105,7 @@ namespace Typesense
 
         public async Task<T> DeleteDocument<T>(string collection, string documentId)
         {
-            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(documentId))
+            if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(documentId))
                 throw new ArgumentException($"{nameof(collection)} or {nameof(documentId)} cannot be null or empty.");
 
             var response = await Delete($"/collections/{collection}/documents/{documentId}");
@@ -114,7 +114,7 @@ namespace Typesense
 
         public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
         {
-            if (string.IsNullOrEmpty(collection)|| string.IsNullOrEmpty(filter))
+            if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(filter))
                 throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
 
             var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
@@ -191,9 +191,9 @@ namespace Typesense
         private string CreateUrlSearchParameters(SearchParameters searchParameters)
         {
             var builder = new StringBuilder();
+
             if (searchParameters.MaxHits != null)
                 builder.Append($"&max_hits={searchParameters.MaxHits}");
-
             else if (searchParameters.Prefix != null)
                 builder.Append($"&prefix={searchParameters.Prefix}");
             else if (searchParameters.FilterBy != null)
