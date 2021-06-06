@@ -158,7 +158,7 @@ namespace Typesense
             foreach (var document in documents)
             {
                 var json = JsonSerializer.Serialize(document, jsonOptions);
-                jsonString.Append(json + Environment.NewLine);
+                jsonString.Append(json + '\n');
             }
 
             var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain"));
@@ -168,7 +168,7 @@ namespace Typesense
 
             var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync());
 
-            return responseString.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
+            return responseString.Split('\n').Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
         }
 
         public async Task<List<T>> ExportDocuments<T>(string collection)
@@ -179,7 +179,7 @@ namespace Typesense
             var response = await Get($"/collections/{collection}/documents/export");
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            return response.Split(Environment.NewLine).Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
+            return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
         }
 
         private void ConfigureHttpClient()
