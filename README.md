@@ -1,17 +1,17 @@
 # Typesense-dotnet
 
-[.net client for Typesense HTTP API.](https://github.com/typesense/typesense)
+.net client for [Typesense.](https://github.com/typesense/typesense)
 
-[You can get the NuGet package here](https://www.nuget.org/packages/Typesense/)
+You can get the NuGet package [here.](https://www.nuget.org/packages/Typesense/)
 
 ## Setup
-Setup in service collection. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace.
+Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to your settings to match your Typesense service.
 
 ``` c#
 var provider = new ServiceCollection()
     .AddTypesenseClient(config =>
     {
-        config.ApiKey = "Hu52dwsas2AdxdE";
+        config.ApiKey = "mysecretapikey";
         config.Nodes = new List<Node>
         {
             new Node
@@ -25,7 +25,6 @@ var provider = new ServiceCollection()
 ```
 
 ## Create collection
-
 ``` c#
 var schema = new Schema
 {
@@ -43,7 +42,6 @@ var createCollectionResult = await typesenseClient.CreateCollection(schema);
 ```
 
 ## Index document
-
 ``` c#
 var address = new Address
 {
@@ -56,7 +54,6 @@ var createDocumentResult = await typesenseClient.CreateDocument<Address>("Addres
 ```
 
 ## Upsert document
-
 ``` c#
 var address = new Address
 {
@@ -69,7 +66,6 @@ var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", ad
 ```
 
 ## Search document in collection
-
 ``` c#
 var query = new SearchParameters
 {
@@ -81,13 +77,11 @@ var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
 
 ## Retrieve a document on id
-
 ``` c#
 var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
 ```
 
 ## Update document on id
-
 ``` c#
 var address = new Address
 {
@@ -100,25 +94,21 @@ var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addres
 ```
 
 ## Delete document on id
-
 ``` c#
 var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1");
 ```
 
 ## Delete documents using filter
-
 ``` c#
 var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
 ```
 
 ## Drop a collection on name
-
 ``` c#
 var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
 ```
 
 ## Import documents
-
 The default batch size is `40`.
 The default ImportType is `Create`.
 You can pick between three different import types `Create`, `Upsert`, `Update`.
@@ -129,7 +119,6 @@ var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addr
 ```
 
 ## Export documents
-
 ``` c#
 var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```
