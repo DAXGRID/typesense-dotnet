@@ -24,6 +24,11 @@ var provider = new ServiceCollection()
     }).BuildServiceProvider();
 ```
 
+After that you can get it from the `provider` intance or dependency inject it into your constructors.
+``` c#
+var typesenseClient = provider.GetService<ITypesenseClient>();
+```
+
 ## Create collection
 ``` c#
 var schema = new Schema
