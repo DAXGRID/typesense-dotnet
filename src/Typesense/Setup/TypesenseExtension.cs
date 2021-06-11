@@ -8,8 +8,8 @@ namespace Typesense.Setup
         /// <exception cref="ArgumentNullException"></exception>
         public static IServiceCollection AddTypesenseClient(this IServiceCollection serviceCollection, Action<Config> config)
         {
-            serviceCollection.AddScoped<ITypesenseClient, Client>();
-            serviceCollection.AddHttpClient<ITypesenseClient, Client>();
+            serviceCollection.AddScoped<ITypesenseClient, TypesenseClient>();
+            serviceCollection.AddHttpClient<ITypesenseClient, TypesenseClient>();
 
             if (config == null)
                 throw new ArgumentNullException(nameof(config), $"Please provide options for TypesenseClient.");

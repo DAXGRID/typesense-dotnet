@@ -9,12 +9,12 @@ using System.Linq;
 
 namespace Typesense
 {
-    public class Client : ITypesenseClient
+    public class TypesenseClient : ITypesenseClient
     {
         private Config _config;
         private HttpClient _httpClient;
 
-        public Client(IOptions<Config> config, HttpClient httpClient)
+        public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
         {
             _config = config.Value;
             _httpClient = httpClient;
@@ -153,7 +153,7 @@ namespace Typesense
                     break;
             }
 
-            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, IgnoreNullValues = true };
             var jsonString = new StringBuilder();
             foreach (var document in documents)
             {
@@ -242,7 +242,7 @@ namespace Typesense
 
         private async Task<string> Post(string path, object obj)
         {
-            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, IgnoreNullValues = true });
             var response = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
@@ -273,7 +273,7 @@ namespace Typesense
 
         private async Task<string> Patch(string path, object obj)
         {
-            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, IgnoreNullValues = true });
             var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
             if (!response.IsSuccessStatusCode)
