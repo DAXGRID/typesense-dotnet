@@ -44,28 +44,24 @@ namespace Example
 
             var addressOne = new Address
             {
-                Id = "1",
                 HouseNumber = 2,
                 AccessAddress = "Smedgade 25B"
             };
 
             var addressTwo = new Address
             {
-                Id = "2",
                 HouseNumber = 66,
                 AccessAddress = "Smedgade 67B"
             };
 
             var addressThree = new Address
             {
-                Id = "3",
                 HouseNumber = 33,
                 AccessAddress = "Medad 55A"
             };
 
             var addressFour = new Address
             {
-                Id = "4",
                 HouseNumber = 3,
                 AccessAddress = "Daramed"
             };
