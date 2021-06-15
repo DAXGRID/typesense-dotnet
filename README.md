@@ -5,7 +5,7 @@
 You can get the NuGet package [here.](https://www.nuget.org/packages/Typesense/)
 
 ## Setup
-Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to your settings to match your Typesense service.
+Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to match your Typesense service.
 
 ``` c#
 var provider = new ServiceCollection()
@@ -24,7 +24,7 @@ var provider = new ServiceCollection()
     }).BuildServiceProvider();
 ```
 
-After that you can get it from the `provider` intance or dependency inject it into your constructors.
+After that you can get it from the `provider` intance or dependency inject it.
 ``` c#
 var typesenseClient = provider.GetService<ITypesenseClient>();
 ```
