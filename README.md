@@ -6,7 +6,7 @@ You can get the NuGet package [here.](https://www.nuget.org/packages/Typesense/)
 
 ## Setup
 
-Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to match your Typesense service.
+Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to match your Typesense service. Right now you can specify multiple nodes, but the implementation has not been completed yet, so if you want to use this for multiple nodes, then put a load balancer in front of your services and point the settings to your load balancer.
 
 ``` c#
 var provider = new ServiceCollection()
