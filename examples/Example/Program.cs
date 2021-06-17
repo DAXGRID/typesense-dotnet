@@ -28,7 +28,7 @@ namespace Example
                 {
                     new Field("id", "string", false),
                     new Field("houseNumber", "int32", false),
-                    new Field("accessAddress", "string", false),
+                    new Field("accessAddress", "string", false, true),
                 },
                 DefaultSortingField = "houseNumber"
             };
@@ -60,10 +60,10 @@ namespace Example
                 AccessAddress = "Medad 55A"
             };
 
+            // Example to show optional AccessAddress
             var addressFour = new Address
             {
                 HouseNumber = 3,
-                AccessAddress = "Daramed"
             };
 
             var houseOneResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressOne);
