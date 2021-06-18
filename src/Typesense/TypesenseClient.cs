@@ -63,7 +63,7 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
             var parameters = CreateUrlSearchParameters(searchParameters);
-            var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
+            var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}&{parameters}");
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -239,7 +239,7 @@ namespace Typesense
             else if (searchParameters.HiddenHits != null)
                 builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
             else if (searchParameters.LimitHits != null)
-                builder.Append($"&hidden_hits={searchParameters.LimitHits}");
+                builder.Append($"&limit_hits={searchParameters.LimitHits}");
 
             return builder.ToString();
         }
