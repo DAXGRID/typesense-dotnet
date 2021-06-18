@@ -8,6 +8,8 @@ namespace Typesense
         public string Text { get; set; }
         [JsonPropertyName("query_by")]
         public string QueryBy { get; set; }
+        [JsonPropertyName("query_by_weights")]
+        public string QueryByWeights { get; set; }
         [JsonPropertyName("max_hits")]
         public string MaxHits { get; set; }
         [JsonPropertyName("prefix")]
