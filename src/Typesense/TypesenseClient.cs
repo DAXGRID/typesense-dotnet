@@ -238,6 +238,8 @@ namespace Typesense
                 builder.Append($"&pinned_hits={searchParameters.PinnedHits}");
             else if (searchParameters.HiddenHits != null)
                 builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
+            else if (searchParameters.LimitHits != null)
+                builder.Append($"&hidden_hits={searchParameters.LimitHits}");
 
             return builder.ToString();
         }
