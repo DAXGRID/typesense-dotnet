@@ -195,7 +195,7 @@ namespace Typesense
             if (searchParameters.MaxHits != null)
                 builder.Append($"&max_hits={searchParameters.MaxHits}");
             if (searchParameters.QueryByWeights != null)
-                builder.Append($"query_by_weights={searchParameters.QueryByWeights}");
+                builder.Append($"&query_by_weights={searchParameters.QueryByWeights}");
             if (searchParameters.Prefix != null)
                 builder.Append($"&prefix={searchParameters.Prefix}");
             if (searchParameters.FilterBy != null)
