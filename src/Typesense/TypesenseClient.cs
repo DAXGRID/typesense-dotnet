@@ -63,7 +63,7 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
             var parameters = CreateUrlSearchParameters(searchParameters);
-            var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}&{parameters}");
+            var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
             return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -194,51 +194,51 @@ namespace Typesense
 
             if (searchParameters.MaxHits != null)
                 builder.Append($"&max_hits={searchParameters.MaxHits}");
-            else if (searchParameters.QueryByWeights != null)
+            if (searchParameters.QueryByWeights != null)
                 builder.Append($"query_by_weights={searchParameters.QueryByWeights}");
-            else if (searchParameters.Prefix != null)
+            if (searchParameters.Prefix != null)
                 builder.Append($"&prefix={searchParameters.Prefix}");
-            else if (searchParameters.FilterBy != null)
+            if (searchParameters.FilterBy != null)
                 builder.Append($"&filter_by={searchParameters.FilterBy}");
-            else if (searchParameters.SortBy != null)
+            if (searchParameters.SortBy != null)
                 builder.Append($"&sort_by={searchParameters.SortBy}");
-            else if (searchParameters.FacetBy != null)
+            if (searchParameters.FacetBy != null)
                 builder.Append($"&facet_by={searchParameters.FacetBy}");
-            else if (searchParameters.MaxFacetValues != null)
+            if (searchParameters.MaxFacetValues != null)
                 builder.Append($"&max_facet_values={searchParameters.MaxFacetValues}");
-            else if (searchParameters.FacetQuery != null)
+            if (searchParameters.FacetQuery != null)
                 builder.Append($"&facet_query={searchParameters.FacetQuery}");
-            else if (searchParameters.NumberOfTypos != null)
+            if (searchParameters.NumberOfTypos != null)
                 builder.Append($"&num_typos={searchParameters.NumberOfTypos}");
-            else if (searchParameters.Page != null)
+            if (searchParameters.Page != null)
                 builder.Append($"&page={searchParameters.Page}");
-            else if (searchParameters.PerPage != null)
+            if (searchParameters.PerPage != null)
                 builder.Append($"&per_page={searchParameters.PerPage}");
-            else if (searchParameters.GroupBy != null)
+            if (searchParameters.GroupBy != null)
                 builder.Append($"&group_by={searchParameters.GroupBy}");
-            else if (searchParameters.GroupLimit != null)
+            if (searchParameters.GroupLimit != null)
                 builder.Append($"&group_limit={searchParameters.GroupLimit}");
-            else if (searchParameters.IncludeFields != null)
+            if (searchParameters.IncludeFields != null)
                 builder.Append($"&include_fields={searchParameters.IncludeFields}");
-            else if (searchParameters.HighlightFullFields != null)
+            if (searchParameters.HighlightFullFields != null)
                 builder.Append($"&highlight_full_fields={searchParameters.HighlightFullFields}");
-            else if (searchParameters.HighlightAffixNumberOfTokens != null)
+            if (searchParameters.HighlightAffixNumberOfTokens != null)
                 builder.Append($"&highlight_affix_num_tokens={searchParameters.HighlightAffixNumberOfTokens}");
-            else if (searchParameters.HighlightStartTag != null)
+            if (searchParameters.HighlightStartTag != null)
                 builder.Append($"&highlight_start_tag={searchParameters.HighlightStartTag}");
-            else if (searchParameters.HighlightEndTag != null)
+            if (searchParameters.HighlightEndTag != null)
                 builder.Append($"&highlight_end_tag={searchParameters.HighlightEndTag}");
-            else if (searchParameters.SnippetThreshold != null)
+            if (searchParameters.SnippetThreshold != null)
                 builder.Append($"&snippet_threshold={searchParameters.SnippetThreshold}");
-            else if (searchParameters.DropTokensThreshold != null)
+            if (searchParameters.DropTokensThreshold != null)
                 builder.Append($"&drop_tokens_threshold={searchParameters.DropTokensThreshold}");
-            else if (searchParameters.TypoTokensThreshold != null)
+            if (searchParameters.TypoTokensThreshold != null)
                 builder.Append($"&typo_tokens_threshold={searchParameters.TypoTokensThreshold}");
-            else if (searchParameters.PinnedHits != null)
+            if (searchParameters.PinnedHits != null)
                 builder.Append($"&pinned_hits={searchParameters.PinnedHits}");
-            else if (searchParameters.HiddenHits != null)
+            if (searchParameters.HiddenHits != null)
                 builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
-            else if (searchParameters.LimitHits != null)
+            if (searchParameters.LimitHits != null)
                 builder.Append($"&limit_hits={searchParameters.LimitHits}");
 
             return builder.ToString();
