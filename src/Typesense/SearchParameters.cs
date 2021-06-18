@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 
 namespace Typesense
@@ -10,6 +11,7 @@ namespace Typesense
         public string QueryBy { get; set; }
         [JsonPropertyName("query_by_weights")]
         public string QueryByWeights { get; set; }
+        [Obsolete("max_hits has been deprecated since Typesense version 0.19.0")]
         [JsonPropertyName("max_hits")]
         public string MaxHits { get; set; }
         [JsonPropertyName("prefix")]
@@ -56,5 +58,7 @@ namespace Typesense
         public string PinnedHits { get; set; }
         [JsonPropertyName("hidden_hits")]
         public string HiddenHits { get; set; }
+        [JsonPropertyName("limit_hits")]
+        public string LimitHits { get; set; }
     }
 }
