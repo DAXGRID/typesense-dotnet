@@ -106,6 +106,9 @@ namespace Example
             var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
             Console.WriteLine($"Retrieved document: {JsonSerializer.Serialize(retrievedDocument)}");
 
+            var documentNotExist = await typesenseClient.RetrieveDocument<Address>("Addresses", "1120");
+            Console.WriteLine($"Retrieved document that does not exist: {JsonSerializer.Serialize(documentNotExist)}");
+
             var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
             Console.WriteLine($"Deleted document {JsonSerializer.Serialize(deleteResult)}");
 

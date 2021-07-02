@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Typesense
 {
@@ -51,6 +52,10 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
             var response = await Post($"/collections/{collection}/documents?action=upsert", document);
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -73,6 +78,10 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
 
             var response = await Get($"/collections/{collection}/documents/{id}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -85,6 +94,10 @@ namespace Typesense
                 throw new ArgumentNullException($"{nameof(document)} cannot be null");
 
             var response = await Patch($"collections/{collection}/documents/{id}", document);
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -94,6 +107,10 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
 
             var response = await Get($"/collections/{name}");
+
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JsonSerializer.Deserialize<Collection>(response);
         }
 
@@ -109,6 +126,10 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(collection)} or {nameof(documentId)} cannot be null or empty.");
 
             var response = await Delete($"/collections/{collection}/documents/{documentId}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
@@ -127,6 +148,10 @@ namespace Typesense
                 throw new ArgumentException($"{nameof(name)} cannot be null or empty");
 
             var response = await Delete($"/collections/{name}");
+
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
@@ -259,6 +284,9 @@ namespace Typesense
         {
             var response = await _httpClient.GetAsync(path);
 
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return string.Empty;
+
             if (!response.IsSuccessStatusCode)
                 throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
 
@@ -268,6 +296,9 @@ namespace Typesense
         private async Task<string> Delete(string path)
         {
             var response = await _httpClient.DeleteAsync(path);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return string.Empty;
 
             if (!response.IsSuccessStatusCode)
                 throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
@@ -279,6 +310,9 @@ namespace Typesense
         {
             var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, IgnoreNullValues = true });
             var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return string.Empty;
 
             if (!response.IsSuccessStatusCode)
                 throw new TypesenseApiException(await response.Content.ReadAsStringAsync());

@@ -52,7 +52,7 @@ namespace Typesense
         /// </summary>
         /// <param name="collection">The collection name.</param>
         /// <param name="searchParameters">The search parameters.</param>
-        /// <returns>The document.</returns>
+        /// <returns>The document or default(T) if the document could not be found.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<T> RetrieveDocument<T>(string collection, string id);
@@ -63,7 +63,7 @@ namespace Typesense
         /// <param name="collection">The collection name.</param>
         /// <param name="id">The document id.</param>
         /// <param name="document">The document to be updated.</param>
-        /// <returns>The updated document.</returns>
+        /// <returns>The updated document or null if the document could not be found.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
@@ -73,7 +73,7 @@ namespace Typesense
         /// Retrieve the collection on collection name.
         /// </summary>
         /// <param name="collection">The collection name.</param>
-        /// <returns>The collection.</returns>
+        /// <returns>The collection or null if it could not be found.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<Collection> RetrieveCollection(string name);
@@ -90,7 +90,7 @@ namespace Typesense
         /// </summary>
         /// <param name="collection">The collection name.</param>
         /// <param name="documentId">The id of the document to be deleted.</param>
-        /// <returns>The deleted document.</returns>
+        /// <returns>The deleted document or default(T) if it could not be found.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<T> DeleteDocument<T>(string collection, string documentId);
@@ -110,7 +110,7 @@ namespace Typesense
         /// Deletes documents in a collection using the supplied filter.
         /// </summary>
         /// <param name="name">The collection name.</param>
-        /// <returns>A response with the collection deleted.</returns>
+        /// <returns>A response with the collection deleted or null if it could not be found.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<CollectionResponse> DeleteCollection(string name);
