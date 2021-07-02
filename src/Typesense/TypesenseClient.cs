@@ -31,7 +31,7 @@ namespace Typesense
             return JsonSerializer.Deserialize<CollectionResponse>(response);
         }
 
-        public async Task<T> CreateDocument<T>(string collection, object document)
+        public async Task<T> CreateDocument<T>(string collection, T document)
         {
             if (collection is null || document is null)
                 throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");
@@ -43,7 +43,7 @@ namespace Typesense
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        public async Task<T> UpsertDocument<T>(string collection, object document)
+        public async Task<T> UpsertDocument<T>(string collection, T document)
         {
             if (collection is null || document is null)
                 throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");

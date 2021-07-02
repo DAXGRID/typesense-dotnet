@@ -23,7 +23,7 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> CreateDocument<T>(string collection, object document);
+        Task<T> CreateDocument<T>(string collection, T document);
 
         /// <summary>
         /// Inserts the document if it does not exist or update if the document exist.
@@ -34,7 +34,7 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> UpsertDocument<T>(string collection, object document);
+        Task<T> UpsertDocument<T>(string collection, T document);
 
         /// <summary>
         /// Search for a document in the specified collection using the supplied search parameters.
