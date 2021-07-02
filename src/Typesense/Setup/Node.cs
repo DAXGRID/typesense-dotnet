@@ -1,6 +1,6 @@
 using System;
 
-namespace Typesense
+namespace Typesense.Setup
 {
     /// <summary>
     /// The node contains the configuration for a remote Typesense service.
