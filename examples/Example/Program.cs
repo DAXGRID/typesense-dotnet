@@ -26,9 +26,9 @@ namespace Example
                 Name = "Addresses",
                 Fields = new List<Field>
                 {
-                    new Field("id", "string", false),
-                    new Field("houseNumber", "int32", false),
-                    new Field("accessAddress", "string", false, true),
+                    new Field("id", FieldType.String, false),
+                    new Field("houseNumber", FieldType.Int32, false),
+                    new Field("accessAddress", FieldType.String, false, true),
                 },
                 DefaultSortingField = "houseNumber"
             };
