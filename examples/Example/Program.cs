@@ -15,7 +15,7 @@ namespace Example
             var provider = new ServiceCollection()
                 .AddTypesenseClient(config =>
                 {
-                    config.ApiKey = "Hu52dwsas2AdxdE";
+                    config.ApiKey = "key";
                     config.Nodes = new List<Node> { new Node { Host = "localhost", Port = "8108", Protocol = "http" } };
                 }).BuildServiceProvider();
 
@@ -77,6 +77,14 @@ namespace Example
 
             var exportResult = await typesenseClient.ExportDocuments<Address>("Addresses");
             Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");
+
+            var exportResultParameters =
+                await typesenseClient.ExportDocuments<Address>("Addresses", new ExportParameters
+                {
+                    ExcludeFields = "houseNumber",
+                });
+            Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResultParameters)}");
+
 
             var upsertHouseOne = await typesenseClient.UpsertDocument<Address>("Addresses", addressOne);
             Console.WriteLine($"Upserted document: {JsonSerializer.Serialize(upsertHouseOne)}");

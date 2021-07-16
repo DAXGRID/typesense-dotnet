@@ -60,5 +60,9 @@ namespace Typesense
         public string HiddenHits { get; set; }
         [JsonPropertyName("limit_hits")]
         public string LimitHits { get; set; }
+        [JsonPropertyName("pre_segmented_query")]
+        public bool? PreSegmentedQuery { get; set; }
+        [JsonPropertyName("enable_overrides")]
+        public bool? EnableOverrides { get; set; }
     }
 }
