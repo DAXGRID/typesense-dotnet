@@ -42,9 +42,9 @@ var schema = new Schema
     Name = "Addresses",
     Fields = new List<Field>
     {
-        new Field("id", "int32", false),
-        new Field("houseNumber", "int32", false),
-        new Field("accessAddress", "string", false, true),
+        new Field("id", FieldType.Int32, false),
+        new Field("houseNumber", FieldType.Int32, false),
+        new Field("accessAddress", FieldType.String, false, true),
     },
     DefaultSortingField = "id"
 };
