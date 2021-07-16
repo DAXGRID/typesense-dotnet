@@ -136,5 +136,16 @@ namespace Typesense
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<List<T>> ExportDocuments<T>(string collection);
+
+        /// <summary>
+        /// Export all documents in a given collection.
+        /// </summary>
+        /// <param name="collection">The collection name.</param>
+        /// <param name="exportParameters">Extra query parameters for exporting documents.</param>
+        /// <returns>A collection of documents.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
+        Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters);
     }
 }

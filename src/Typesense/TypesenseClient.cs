@@ -199,10 +199,28 @@ namespace Typesense
 
         public async Task<List<T>> ExportDocuments<T>(string collection)
         {
+            return await ExportDocuments<T>(collection, new ExportParameters());
+        }
+
+        public async Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters)
+        {
             if (string.IsNullOrEmpty(collection))
                 throw new ArgumentException($"{nameof(collection)} cannot be null or empty.");
 
-            var response = await Get($"/collections/{collection}/documents/export");
+            if (exportParameters is null)
+                throw new ArgumentNullException($"{nameof(exportParameters)} cannot be null.");
+
+            var extraParameters = new List<string>();
+            if (exportParameters.IncludeFields is not null)
+                extraParameters.Add($"include_fields={exportParameters.ExcludeFields}");
+            if (exportParameters.FilterBy is not null)
+                extraParameters.Add($"filter_by={exportParameters.FilterBy}");
+            if (exportParameters.ExcludeFields is not null)
+                extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
+
+            var searchParameters = string.Join("&", extraParameters);
+
+            var response = await Get($"/collections/{collection}/documents/export?{searchParameters}");
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
@@ -266,6 +284,10 @@ namespace Typesense
                 builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
             if (searchParameters.LimitHits is not null)
                 builder.Append($"&limit_hits={searchParameters.LimitHits}");
+            if (searchParameters.PreSegmentedQuery is not null)
+                builder.Append($"&pre_segmented_query={searchParameters.PreSegmentedQuery.ToString().ToLower()}");
+            if (searchParameters.EnableOverrides is not null)
+                builder.Append($"&enable_overrides={searchParameters.EnableOverrides.ToString().ToLower()}");
 
             return builder.ToString();
         }
