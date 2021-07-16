@@ -1,9 +1,7 @@
 using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum FieldType
     {
         [EnumMember(Value = "string")]
