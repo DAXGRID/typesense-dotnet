@@ -43,7 +43,7 @@ namespace Typesense
             var response = await Post($"/collections/{collection}/documents", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-
+        
         public async Task<T> UpsertDocument<T>(string collection, T document)
         {
             if (collection is null || document is null)
@@ -224,6 +224,45 @@ namespace Typesense
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
+        }
+        
+        public async Task<T> CreateKey<T>(T key)
+        {
+            if (key is null)
+                throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
+            
+            var response = await Post($"/keys", key);
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        
+        public async Task<T> RetrieveKey<T>(int id)
+        {
+            var response = await Get($"/keys/{id}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        
+        public async Task<T> DeleteKey<T>(int id)
+        {
+            var response = await Get($"/keys/{id}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        
+        public async Task<T> ListKeys<T>()
+        {
+            var response = await Get($"/keys");
+
+            if (string.IsNullOrEmpty(response))
+                return default(T);
+
+            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private void ConfigureHttpClient()
