@@ -226,6 +226,49 @@ namespace Typesense
             return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
         }
 
+        public async Task<KeyResponse> CreateKey(Key key)
+        {
+            if (key is null)
+                throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
+
+            var response = await Post($"/keys", key);
+            return JsonSerializer.Deserialize<KeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<KeyResponse> RetrieveKey(int id)
+        {
+            var response = await Get($"/keys/{id}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(KeyResponse);
+
+            return JsonSerializer.Deserialize<KeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<DeleteKeyResponse> DeleteKey(int id)
+        {
+            var response = await Get($"/keys/{id}");
+
+            if (string.IsNullOrEmpty(response))
+                return default(DeleteKeyResponse);
+
+            return JsonSerializer.Deserialize<DeleteKeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<ListKeysResponse> ListKeys()
+        {
+            var response = await Get($"/keys");
+
+            if (string.IsNullOrEmpty(response))
+                return default(ListKeysResponse);
+
+            return JsonSerializer.Deserialize<ListKeysResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
         private void ConfigureHttpClient()
         {
             _httpClient.BaseAddress = new Uri($"{_config.Nodes[0].Protocol}://{_config.Nodes[0].Host}:{_config.Nodes[0].Port}");

@@ -147,5 +147,44 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters);
+
+        /// <summary>
+        /// Creates an api key.
+        /// </summary>
+        /// <param name="key">Key to be inserted.</param>
+        /// <returns>The created key.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
+        Task<KeyResponse> CreateKey(Key key);
+
+        /// <summary>
+        /// Retrieve a key
+        /// </summary>
+        /// <param name="id">Id of key to be retrived</param>
+        /// <returns>A single key.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
+        Task<KeyResponse> RetrieveKey(int id);
+
+        /// <summary>
+        /// Delete an api key.
+        /// </summary>
+        /// <param name="id">Id of key to be deleted.</param>
+        /// <returns>A DeletedKeyResponse with an id of the deleted Key or default(DeleteKeyResponse) if it could not be found.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
+        Task<DeleteKeyResponse> DeleteKey(int id);
+
+        /// <summary>
+        /// List all api keys.
+        /// </summary>
+        /// <returns>List of all keys</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TypesenseApiException"></exception>
+        Task<ListKeysResponse> ListKeys();
     }
 }
