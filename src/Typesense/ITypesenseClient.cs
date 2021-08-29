@@ -147,7 +147,7 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
         Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters);
-        
+
         /// <summary>
         /// Creates an api key.
         /// </summary>
@@ -156,8 +156,8 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> CreateKey<T>(T key);
-        
+        Task<KeyResponse> CreateKey(Key key);
+
         /// <summary>
         /// Retrieve a key
         /// </summary>
@@ -166,18 +166,18 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> RetrieveKey<T>(int id);
-        
+        Task<KeyResponse> RetrieveKey(int id);
+
         /// <summary>
         /// Delete an api key.
         /// </summary>
         /// <param name="id">Id of key to be deleted.</param>
-        /// <returns>The deleted key or default(T) if it could not be found.</returns>
+        /// <returns>A DeletedKeyResponse with an id of the deleted Key or default(DeleteKeyResponse) if it could not be found.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> DeleteKey<T>(int id);
-        
+        Task<DeleteKeyResponse> DeleteKey(int id);
+
         /// <summary>
         /// List all api keys.
         /// </summary>
@@ -185,7 +185,6 @@ namespace Typesense
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="TypesenseApiException"></exception>
-        Task<T> ListKeys<T>();
-
+        Task<ListKeysResponse> ListKeys();
     }
 }

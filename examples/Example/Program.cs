@@ -134,31 +134,32 @@ namespace Example
                 Value = "Example-api-1-key-value",
                 ExpiresAt = 1661344547
             };
-            
+
             var keyTwo = new Key()
             {
                 Description = "Example key two",
                 Actions = new[] { "*" },
                 Collections = new[] { "*" },
                 Value = "Example-api-2-key-value",
-                ExpiresAt = 1661344547
             };
 
             var createKeyResultOne = await typesenseClient.CreateKey(keyOne);
             Console.WriteLine($"Created key: {JsonSerializer.Serialize(createKeyResultOne)}");
-            
+
             var createKeyResultTwo = await typesenseClient.CreateKey(keyTwo);
             Console.WriteLine($"Created key: {JsonSerializer.Serialize(createKeyResultTwo)}");
 
-            var retrievedKey = await typesenseClient.RetrieveKey<KeyResponse>(1);
+            var retrievedKey = await typesenseClient.RetrieveKey(1);
             Console.WriteLine($"Retrieved key: {JsonSerializer.Serialize(retrievedKey)}");
 
-            var listKeys = await typesenseClient.ListKeys<KeyResponse>();
-            Console.WriteLine($"All keys: {JsonSerializer.Serialize(listKeys)}");
-            
-            var deletedKey = await typesenseClient.DeleteKey<Key>(1);
-            Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKey)}");
-            
+            var listKeys = await typesenseClient.ListKeys();
+            Console.WriteLine($"List keys: {JsonSerializer.Serialize(listKeys)}");
+
+            var deletedKeyOne = await typesenseClient.DeleteKey(0);
+            Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyOne)}");
+
+            var deletedKeyTwo = await typesenseClient.DeleteKey(1);
+            Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyTwo)}");
         }
     }
 }

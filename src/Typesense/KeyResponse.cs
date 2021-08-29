@@ -17,5 +17,7 @@ namespace Typesense
         public IEnumerable<string> Actions { get; init; }
         [JsonPropertyName("collections")]
         public IEnumerable<string> Collections { get; init; }
+        [JsonPropertyName("expires_at")]
+        public long ExpiresAt { get; init; }
     }
 }

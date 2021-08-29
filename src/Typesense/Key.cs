@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -15,6 +14,6 @@ namespace Typesense
         [JsonPropertyName("value")]
         public string Value { get; init; }
         [JsonPropertyName("expires_at")]
-        public long ExpiresAt { get; init; }
+        public long? ExpiresAt { get; init; }
     }
 }

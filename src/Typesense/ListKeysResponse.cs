@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public class KeyListResponse
+    public class ListKeysResponse
     {
         [JsonPropertyName("keys")]
-        public IEnumerable<Key> Keys { get; init; }
+        public IEnumerable<KeyResponse> Keys { get; init; }
     }
 }

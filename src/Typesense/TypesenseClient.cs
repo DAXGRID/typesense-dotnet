@@ -43,7 +43,7 @@ namespace Typesense
             var response = await Post($"/collections/{collection}/documents", document);
             return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-        
+
         public async Task<T> UpsertDocument<T>(string collection, T document)
         {
             if (collection is null || document is null)
@@ -225,44 +225,48 @@ namespace Typesense
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
         }
-        
-        public async Task<T> CreateKey<T>(T key)
+
+        public async Task<KeyResponse> CreateKey(Key key)
         {
             if (key is null)
                 throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
-            
+
             var response = await Post($"/keys", key);
-            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<KeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-        
-        public async Task<T> RetrieveKey<T>(int id)
+
+        public async Task<KeyResponse> RetrieveKey(int id)
         {
             var response = await Get($"/keys/{id}");
 
             if (string.IsNullOrEmpty(response))
-                return default(T);
+                return default(KeyResponse);
 
-            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<KeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-        
-        public async Task<T> DeleteKey<T>(int id)
+
+        public async Task<DeleteKeyResponse> DeleteKey(int id)
         {
             var response = await Get($"/keys/{id}");
 
             if (string.IsNullOrEmpty(response))
-                return default(T);
+                return default(DeleteKeyResponse);
 
-            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<DeleteKeyResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-        
-        public async Task<T> ListKeys<T>()
+
+        public async Task<ListKeysResponse> ListKeys()
         {
             var response = await Get($"/keys");
 
             if (string.IsNullOrEmpty(response))
-                return default(T);
+                return default(ListKeysResponse);
 
-            return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<ListKeysResponse>(
+                response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private void ConfigureHttpClient()
