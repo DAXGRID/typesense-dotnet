@@ -145,18 +145,40 @@ var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addr
 var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```
 
-## Manage api keys
+## Api keys
+
+
+### Create key
+
+`ExpiresAt` is optional.
 
 ``` c#
-// Create key
-var createdKey = await typesenseClient.CreateKey(keyOne);
+var apiKey = new Key()
+{
+    Description = "Example key one",
+    Actions = new[] { "*" },
+    Collections = new[] { "*" },
+    Value = "Example-api-1-key-value",
+    ExpiresAt = 1661344547
+};
 
-// Retrieve key
-var retrievedKey = await typesenseClient.RetrieveKey(1);
+var createdKey = await typesenseClient.CreateKey(apiKey);
+```
 
-// List keys
+### Retrieve key
+
+``` c#
+var retrievedKey = await typesenseClient.RetrieveKey(0);
+```
+
+### List keys
+
+``` c#
 var keys = await typesenseClient.ListKeys();
+```
 
-// Delete key
+### Delete key
+
+``` c#
 var deletedKey = await typesenseClient.DeleteKey(0);
 ```
