@@ -144,3 +144,19 @@ var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addr
 ``` c#
 var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```
+
+## Manage api keys
+
+``` c#
+// Create key
+var createdKey = await typesenseClient.CreateKey(keyOne);
+
+// Retrieve key
+var retrievedKey = await typesenseClient.RetrieveKey(1);
+
+// List keys
+var keys = await typesenseClient.ListKeys();
+
+// Delete key
+var deletedKey = await typesenseClient.DeleteKey(0);
+```
