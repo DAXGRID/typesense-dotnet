@@ -3,15 +3,15 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record CollectionResponse
+    public class CollectionResponse
     {
         [JsonPropertyName("name")]
-        public string Name { get; init; }
+        public string Name { get; set; }
         [JsonPropertyName("num_documents")]
-        public int NumberOfDocuments { get; init; }
+        public int NumberOfDocuments { get; set; }
         [JsonPropertyName("fields")]
-        public IReadOnlyCollection<Field> Fields { get; init; }
+        public IReadOnlyCollection<Field> Fields { get; set; }
         [JsonPropertyName("default_sorting_field")]
-        public string DefaultSortingField { get; init; }
+        public string DefaultSortingField { get; set; }
     }
 }

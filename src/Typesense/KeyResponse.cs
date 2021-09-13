@@ -3,21 +3,21 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record KeyResponse
+    public class KeyResponse
     {
         [JsonPropertyName("id")]
-        public int Id { get; init; }
+        public int Id { get; set; }
         [JsonPropertyName("value")]
-        public string Value { get; init; }
+        public string Value { get; set; }
         [JsonPropertyName("value_prefix")]
-        public string ValuePrefix { get; init; }
+        public string ValuePrefix { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; init; }
+        public string Description { get; set; }
         [JsonPropertyName("actions")]
-        public IEnumerable<string> Actions { get; init; }
+        public IEnumerable<string> Actions { get; set; }
         [JsonPropertyName("collections")]
-        public IEnumerable<string> Collections { get; init; }
+        public IEnumerable<string> Collections { get; set; }
         [JsonPropertyName("expires_at")]
-        public long ExpiresAt { get; init; }
+        public long ExpiresAt { get; set; }
     }
 }

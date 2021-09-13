@@ -2,9 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record FilterDeleteResponse
+    public class FilterDeleteResponse
     {
         [JsonPropertyName("num_deleted")]
-        public int NumberOfDeleted { get; init; }
+        public int NumberOfDeleted { get; set; }
     }
 }

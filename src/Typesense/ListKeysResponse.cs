@@ -6,6 +6,6 @@ namespace Typesense
     public class ListKeysResponse
     {
         [JsonPropertyName("keys")]
-        public IEnumerable<KeyResponse> Keys { get; init; }
+        public IEnumerable<KeyResponse> Keys { get; set; }
     }
 }

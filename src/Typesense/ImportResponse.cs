@@ -2,13 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record ImportResponse
+    public class ImportResponse
     {
         [JsonPropertyName("success")]
-        public bool Success { get; init; }
+        public bool Success { get; set; }
         [JsonPropertyName("error")]
-        public string Error { get; init; }
+        public string Error { get; set; }
         [JsonPropertyName("document")]
-        public string Document { get; init; }
+        public string Document { get; set; }
     }
 }

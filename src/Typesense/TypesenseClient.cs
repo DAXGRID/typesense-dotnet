@@ -211,11 +211,11 @@ namespace Typesense
                 throw new ArgumentNullException($"{nameof(exportParameters)} cannot be null.");
 
             var extraParameters = new List<string>();
-            if (exportParameters.IncludeFields is not null)
+            if (exportParameters.IncludeFields != null)
                 extraParameters.Add($"include_fields={exportParameters.ExcludeFields}");
-            if (exportParameters.FilterBy is not null)
+            if (exportParameters.FilterBy != null)
                 extraParameters.Add($"filter_by={exportParameters.FilterBy}");
-            if (exportParameters.ExcludeFields is not null)
+            if (exportParameters.ExcludeFields != null)
                 extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
 
             var searchParameters = string.Join("&", extraParameters);
@@ -279,57 +279,57 @@ namespace Typesense
         {
             var builder = new StringBuilder();
 
-            if (searchParameters.MaxHits is not null)
+            if (searchParameters.MaxHits != null)
                 builder.Append($"&max_hits={searchParameters.MaxHits}");
-            if (searchParameters.QueryByWeights is not null)
+            if (searchParameters.QueryByWeights != null)
                 builder.Append($"&query_by_weights={searchParameters.QueryByWeights}");
-            if (searchParameters.Prefix is not null)
+            if (searchParameters.Prefix != null)
                 builder.Append($"&prefix={searchParameters.Prefix}");
-            if (searchParameters.FilterBy is not null)
+            if (searchParameters.FilterBy != null)
                 builder.Append($"&filter_by={searchParameters.FilterBy}");
-            if (searchParameters.SortBy is not null)
+            if (searchParameters.SortBy != null)
                 builder.Append($"&sort_by={searchParameters.SortBy}");
-            if (searchParameters.FacetBy is not null)
+            if (searchParameters.FacetBy != null)
                 builder.Append($"&facet_by={searchParameters.FacetBy}");
-            if (searchParameters.MaxFacetValues is not null)
+            if (searchParameters.MaxFacetValues != null)
                 builder.Append($"&max_facet_values={searchParameters.MaxFacetValues}");
-            if (searchParameters.FacetQuery is not null)
+            if (searchParameters.FacetQuery != null)
                 builder.Append($"&facet_query={searchParameters.FacetQuery}");
-            if (searchParameters.NumberOfTypos is not null)
+            if (searchParameters.NumberOfTypos != null)
                 builder.Append($"&num_typos={searchParameters.NumberOfTypos}");
-            if (searchParameters.Page is not null)
+            if (searchParameters.Page != null)
                 builder.Append($"&page={searchParameters.Page}");
-            if (searchParameters.PerPage is not null)
+            if (searchParameters.PerPage != null)
                 builder.Append($"&per_page={searchParameters.PerPage}");
-            if (searchParameters.GroupBy is not null)
+            if (searchParameters.GroupBy != null)
                 builder.Append($"&group_by={searchParameters.GroupBy}");
-            if (searchParameters.GroupLimit is not null)
+            if (searchParameters.GroupLimit != null)
                 builder.Append($"&group_limit={searchParameters.GroupLimit}");
-            if (searchParameters.IncludeFields is not null)
+            if (searchParameters.IncludeFields != null)
                 builder.Append($"&include_fields={searchParameters.IncludeFields}");
-            if (searchParameters.HighlightFullFields is not null)
+            if (searchParameters.HighlightFullFields != null)
                 builder.Append($"&highlight_full_fields={searchParameters.HighlightFullFields}");
-            if (searchParameters.HighlightAffixNumberOfTokens is not null)
+            if (searchParameters.HighlightAffixNumberOfTokens != null)
                 builder.Append($"&highlight_affix_num_tokens={searchParameters.HighlightAffixNumberOfTokens}");
-            if (searchParameters.HighlightStartTag is not null)
+            if (searchParameters.HighlightStartTag != null)
                 builder.Append($"&highlight_start_tag={searchParameters.HighlightStartTag}");
-            if (searchParameters.HighlightEndTag is not null)
+            if (searchParameters.HighlightEndTag != null)
                 builder.Append($"&highlight_end_tag={searchParameters.HighlightEndTag}");
-            if (searchParameters.SnippetThreshold is not null)
+            if (searchParameters.SnippetThreshold != null)
                 builder.Append($"&snippet_threshold={searchParameters.SnippetThreshold}");
-            if (searchParameters.DropTokensThreshold is not null)
+            if (searchParameters.DropTokensThreshold != null)
                 builder.Append($"&drop_tokens_threshold={searchParameters.DropTokensThreshold}");
-            if (searchParameters.TypoTokensThreshold is not null)
+            if (searchParameters.TypoTokensThreshold != null)
                 builder.Append($"&typo_tokens_threshold={searchParameters.TypoTokensThreshold}");
-            if (searchParameters.PinnedHits is not null)
+            if (searchParameters.PinnedHits != null)
                 builder.Append($"&pinned_hits={searchParameters.PinnedHits}");
-            if (searchParameters.HiddenHits is not null)
+            if (searchParameters.HiddenHits != null)
                 builder.Append($"&hidden_hits={searchParameters.HiddenHits}");
-            if (searchParameters.LimitHits is not null)
+            if (searchParameters.LimitHits != null)
                 builder.Append($"&limit_hits={searchParameters.LimitHits}");
-            if (searchParameters.PreSegmentedQuery is not null)
+            if (searchParameters.PreSegmentedQuery != null)
                 builder.Append($"&pre_segmented_query={searchParameters.PreSegmentedQuery.ToString().ToLower()}");
-            if (searchParameters.EnableOverrides is not null)
+            if (searchParameters.EnableOverrides != null)
                 builder.Append($"&enable_overrides={searchParameters.EnableOverrides.ToString().ToLower()}");
 
             return builder.ToString();

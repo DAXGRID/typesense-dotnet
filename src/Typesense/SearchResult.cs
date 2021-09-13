@@ -3,33 +3,33 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record Highlight
+    public class Highlight
     {
         [JsonPropertyName("field")]
-        public string Field { get; init; }
+        public string Field { get; set; }
         [JsonPropertyName("snippet")]
-        public string Snippet { get; init; }
+        public string Snippet { get; set; }
         [JsonPropertyName("matched_tokens")]
-        public IReadOnlyList<string> MatchedTokens { get; init; }
+        public IReadOnlyList<string> MatchedTokens { get; set; }
     }
 
-    public record Hit<T>
+    public class Hit<T>
     {
         [JsonPropertyName("highlights")]
-        public IReadOnlyList<Highlight> Highlights { get; init; }
+        public IReadOnlyList<Highlight> Highlights { get; set; }
         [JsonPropertyName("document")]
-        public T Document { get; init; }
+        public T Document { get; set; }
     }
 
-    public record SearchResult<T>
+    public class SearchResult<T>
     {
         [JsonPropertyName("facet_counts")]
-        public IReadOnlyList<object> FacetCounts { get; init; }
+        public IReadOnlyList<object> FacetCounts { get; set; }
         [JsonPropertyName("found")]
-        public int Found { get; init; }
+        public int Found { get; set; }
         [JsonPropertyName("took_ms")]
-        public int TookMs { get; init; }
+        public int TookMs { get; set; }
         [JsonPropertyName("hits")]
-        public IReadOnlyList<Hit<T>> Hits { get; init; }
+        public IReadOnlyList<Hit<T>> Hits { get; set; }
     }
 }

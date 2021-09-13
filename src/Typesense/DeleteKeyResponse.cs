@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Typesense
 {
-    public record DeleteKeyResponse
+    public class DeleteKeyResponse
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }

@@ -13,7 +13,7 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
     public JsonStringEnumConverter()
     {
         var type = typeof(TEnum);
-        var values = System.Enum.GetValues<TEnum>();
+        var values = System.Enum.GetValues(typeof(TEnum)).Cast<TEnum>();
 
         foreach (var value in values)
         {
