@@ -249,7 +249,7 @@ namespace Typesense
 
         public async Task<DeleteKeyResponse> DeleteKey(int id)
         {
-            var response = await Get($"/keys/{id}");
+            var response = await Delete($"/keys/{id}");
 
             if (string.IsNullOrEmpty(response))
                 return default(DeleteKeyResponse);
