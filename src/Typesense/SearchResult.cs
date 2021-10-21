@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Typesense.Converter;
+using System.Linq;
 
 namespace Typesense
 {
@@ -10,7 +12,10 @@ namespace Typesense
         [JsonPropertyName("snippet")]
         public string Snippet { get; init; }
         [JsonPropertyName("matched_tokens")]
-        public IReadOnlyList<string> MatchedTokens { get; init; }
+        [JsonConverter(typeof(MatchedTokenConverter))]
+        [JsonInclude]
+        public IReadOnlyList<object> MatchedTokens { private get; init; }
+        public IReadOnlyList<T> GetMatchedTokens<T>() => MatchedTokens.Cast<T>().ToList();
     }
 
     public record Hit<T>
