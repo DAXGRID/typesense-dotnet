@@ -13,8 +13,7 @@ namespace Typesense
         public string Snippet { get; init; }
         [JsonPropertyName("matched_tokens")]
         [JsonConverter(typeof(MatchedTokenConverter))]
-        [JsonInclude]
-        public IReadOnlyList<object> MatchedTokens { private get; init; }
+        public IReadOnlyList<object> MatchedTokens { get; init; }
         public IReadOnlyList<T> GetMatchedTokens<T>() => MatchedTokens.Cast<T>().ToList();
     }
 
