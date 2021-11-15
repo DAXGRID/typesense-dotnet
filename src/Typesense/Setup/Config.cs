@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 
-namespace Typesense.Setup
+namespace Typesense.Setup;
+public class Config
 {
-    public class Config
-    {
-        public List<Node> Nodes { get; set; }
-        public string ApiKey { get; set; }
-    }
+    public List<Node> Nodes { get; set; }
+    public string ApiKey { get; set; }
 }

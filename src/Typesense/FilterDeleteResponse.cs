@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Typesense
+namespace Typesense;
+public record FilterDeleteResponse
 {
-    public record FilterDeleteResponse
-    {
-        [JsonPropertyName("num_deleted")]
-        public int NumberOfDeleted { get; init; }
-    }
+    [JsonPropertyName("num_deleted")]
+    public int NumberOfDeleted { get; init; }
 }
