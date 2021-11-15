@@ -1,10 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Typesense
+namespace Typesense;
+public record DeleteKeyResponse
 {
-    public record DeleteKeyResponse
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-    }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
 }
