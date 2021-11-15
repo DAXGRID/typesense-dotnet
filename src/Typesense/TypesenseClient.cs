@@ -13,14 +13,14 @@ using Typesense.Setup;
 namespace Typesense;
 public class TypesenseClient : ITypesenseClient
 {
-    private Config _config;
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonNameCaseInsentiveTrue = new() { PropertyNameCaseInsensitive = true };
 
     public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
     {
-        _config = config.Value;
+        httpClient.BaseAddress = new Uri($"{config.Value.Nodes[0].Protocol}://{config.Value.Nodes[0].Host}:{config.Value.Nodes[0].Port}");
+        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
         _httpClient = httpClient;
-        ConfigureHttpClient();
     }
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)
@@ -41,7 +41,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
         var response = await Post($"/collections/{collection}/documents", document);
-        return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<T> UpsertDocument<T>(string collection, T document)
@@ -57,7 +57,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(T);
 
-        return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
@@ -70,7 +70,7 @@ public class TypesenseClient : ITypesenseClient
 
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
-        return JsonSerializer.Deserialize<SearchResult<T>>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<T> RetrieveDocument<T>(string collection, string id)
@@ -83,7 +83,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(T);
 
-        return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<T> UpdateDocument<T>(string collection, string id, T document)
@@ -99,7 +99,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(T);
 
-        return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<Collection> RetrieveCollection(string name)
@@ -131,7 +131,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(T);
 
-        return JsonSerializer.Deserialize<T>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
@@ -140,7 +140,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
 
         var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
-        return JsonSerializer.Deserialize<FilterDeleteResponse>(response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionResponse> DeleteCollection(string name)
@@ -224,7 +224,6 @@ public class TypesenseClient : ITypesenseClient
             extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
 
         var searchParameters = string.Join("&", extraParameters);
-
         var response = await Get($"/collections/{collection}/documents/export?{searchParameters}");
 
         var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -237,8 +236,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
 
         var response = await Post($"/keys", key);
-        return JsonSerializer.Deserialize<KeyResponse>(
-            response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<KeyResponse> RetrieveKey(int id)
@@ -248,8 +246,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(KeyResponse);
 
-        return JsonSerializer.Deserialize<KeyResponse>(
-            response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<DeleteKeyResponse> DeleteKey(int id)
@@ -259,8 +256,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(DeleteKeyResponse);
 
-        return JsonSerializer.Deserialize<DeleteKeyResponse>(
-            response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<DeleteKeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListKeysResponse> ListKeys()
@@ -270,20 +266,12 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return default(ListKeysResponse);
 
-        return JsonSerializer.Deserialize<ListKeysResponse>(
-            response, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-    }
-
-    private void ConfigureHttpClient()
-    {
-        _httpClient.BaseAddress = new Uri($"{_config.Nodes[0].Protocol}://{_config.Nodes[0].Host}:{_config.Nodes[0].Port}");
-        _httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", _config.ApiKey);
+        return JsonSerializer.Deserialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     private string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var builder = new StringBuilder();
-
         if (searchParameters.MaxHits is not null)
             builder.Append($"&max_hits={searchParameters.MaxHits}");
         if (searchParameters.QueryByWeights is not null)
@@ -388,6 +376,7 @@ public class TypesenseClient : ITypesenseClient
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
+
         var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
         if (response.StatusCode == HttpStatusCode.NotFound)
