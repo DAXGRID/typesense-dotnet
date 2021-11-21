@@ -116,15 +116,7 @@ class Program
         var documentNotExist = await typesenseClient.RetrieveDocument<Address>("Addresses", "1120");
         Console.WriteLine($"Retrieved document that does not exist: {JsonSerializer.Serialize(documentNotExist)}");
 
-        var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
-        Console.WriteLine($"Deleted document {JsonSerializer.Serialize(deleteResult)}");
-
-        var deleteFilterResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
-        Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
-
-        var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
-        Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
-
+        // Keys
         var keyOne = new Key()
         {
             Description = "Example key one",
@@ -154,10 +146,37 @@ class Program
         var listKeys = await typesenseClient.ListKeys();
         Console.WriteLine($"List keys: {JsonSerializer.Serialize(listKeys)}");
 
+        // Curation
+        var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
+        var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride("Addresses",
+                                                                          "addresses-override",
+                                                                          searchOverride);
+        Console.WriteLine($"Upsert search override: {JsonSerializer.Serialize(upsertSearchOverrideResponse)}");
+
+        var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
+        Console.WriteLine($"List search overrides: {JsonSerializer.Serialize(listSearchOverrides)}");
+
+        var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride("Addresses", "addresses-override");
+        Console.WriteLine($"retrieve search override: {JsonSerializer.Serialize(retrieveSearchOverride)}");
+
+        // Cleanup
         var deletedKeyOne = await typesenseClient.DeleteKey(0);
         Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyOne)}");
 
         var deletedKeyTwo = await typesenseClient.DeleteKey(1);
         Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyTwo)}");
+
+        var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
+        Console.WriteLine($"Deleted document {JsonSerializer.Serialize(deleteResult)}");
+
+        var deleteFilterResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
+        Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
+
+        var deletedSearchOverrideResult = await typesenseClient.DeleteSearchOverride("Addresses", "addresses-override");
+        Console.WriteLine($"Deleted override: {JsonSerializer.Serialize(deletedSearchOverrideResult)}");
+
+        var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
+        Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
+
     }
 }
