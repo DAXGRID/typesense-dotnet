@@ -234,7 +234,7 @@ var listCollectionAliases = await typesenseClient.ListCollectionAliases();
 ### Retrieve collection alias
 
 ``` c#
-var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Addresses");
+var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Address_Alias");
 ```
 
 ### Delete collection alias
