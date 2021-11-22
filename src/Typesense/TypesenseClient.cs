@@ -330,6 +330,57 @@ public class TypesenseClient : ITypesenseClient
         return JsonSerializer.Deserialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<CollectionAlias> UpsertCollectionAlias(string alias, CollectionAlias collectionAlias)
+    {
+        if (string.IsNullOrWhiteSpace(alias))
+            throw new ArgumentException($"{nameof(alias)} cannot be null, empty or whitespace.");
+        if (collectionAlias is null)
+            throw new ArgumentNullException($"{nameof(collectionAlias)} cannot be null.");
+
+        var response = await Put($"/aliases/{alias}", collectionAlias);
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(CollectionAlias);
+
+        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<CollectionAlias> RetrieveCollectionAlias(string collection)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+
+        var response = await Get($"/aliases/{collection}");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(CollectionAlias);
+
+        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<ListCollectionAliasesResponse> ListCollectionAliases()
+    {
+        var response = await Get("/aliases");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(ListCollectionAliasesResponse);
+
+        return JsonSerializer.Deserialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<CollectionAlias> DeleteCollectionAlias(string collection)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+
+        var response = await Delete($"/aliases{collection}");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(CollectionAlias);
+
+        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+    }
+
     private string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var builder = new StringBuilder();

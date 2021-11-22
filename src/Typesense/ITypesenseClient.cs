@@ -204,9 +204,9 @@ public interface ITypesenseClient
     /// Fetch an individual override associated with a collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <param name="collection">The override name that should be retrieved.</param>
+    /// <param name="overrideName">The override name that should be retrieved.</param>
     /// <returns>The search override or null if not found.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName);
 
@@ -214,9 +214,45 @@ public interface ITypesenseClient
     /// Deleting an override associated with a collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <param name="collection">The override name that should be deleted.</param>
+    /// <param name="overrideName">The override name that should be deleted.</param>
     /// <returns>The deleted search override.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName);
+
+    /// <summary>
+    /// Upsert collection alias.
+    /// </summary>
+    /// <param name="aliasName">The alias name.</param>
+    /// <param name="collectionAlias">The collection alias to be upserted.</param>
+    /// <returns>The upserted collection alias.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<CollectionAlias> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias);
+
+    /// <summary>
+    /// Retrieve alias on collection name.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <returns>The given alias on collection name. If not found return null.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<CollectionAlias> RetrieveCollectionAlias(string collection);
+
+    /// <summary>
+    /// List all aliases and the corresponding collections that they map to.
+    /// </summary>
+    /// <returns>List of aliases.</returns>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<ListCollectionAliasesResponse> ListCollectionAliases();
+
+    /// <summary>
+    /// Delete alias on alias name.
+    /// </summary>
+    /// <param name="aliasName">The alias name.</param>
+    /// <returns>The deleted collection alias.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<CollectionAlias> DeleteCollectionAlias(string aliasName);
 }
