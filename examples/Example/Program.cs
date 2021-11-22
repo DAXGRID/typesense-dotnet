@@ -148,9 +148,10 @@ class Program
 
         // Curation
         var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
-        var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride("Addresses",
-                                                                          "addresses-override",
-                                                                          searchOverride);
+        var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride(
+            "Addresses",
+            "addresses-override",
+            searchOverride);
         Console.WriteLine($"Upsert search override: {JsonSerializer.Serialize(upsertSearchOverrideResponse)}");
 
         var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
@@ -159,7 +160,21 @@ class Program
         var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride("Addresses", "addresses-override");
         Console.WriteLine($"retrieve search override: {JsonSerializer.Serialize(retrieveSearchOverride)}");
 
+        // Collection alias
+        var upsertCollectionAlias = await typesenseClient.UpsertCollectionAlias(
+            "Address_Alias", new CollectionAlias("Addresses"));
+        Console.WriteLine($"Upsert alias: {JsonSerializer.Serialize(upsertCollectionAlias)}");
+
+        var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Addresses");
+        Console.WriteLine($"retrieve alias: {JsonSerializer.Serialize(retrieveCollectionAlias)}");
+
+        var listCollectionAliases = await typesenseClient.ListCollectionAliases();
+        Console.WriteLine($"retrieve alias: {JsonSerializer.Serialize(listCollectionAliases)}");
+
         // Cleanup
+        var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Addresses_Alias");
+        Console.WriteLine($"delete alias: {JsonSerializer.Serialize(deleteCollectionAlias)}");
+
         var deletedKeyOne = await typesenseClient.DeleteKey(0);
         Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyOne)}");
 
@@ -177,6 +192,5 @@ class Program
 
         var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
         Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
-
     }
 }
