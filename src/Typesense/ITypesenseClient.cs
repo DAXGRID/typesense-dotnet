@@ -153,7 +153,6 @@ public interface ITypesenseClient
     /// <param name="key">Key to be inserted.</param>
     /// <returns>The created key.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<KeyResponse> CreateKey(Key key);
 
@@ -162,8 +161,6 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="id">Id of key to be retrived</param>
     /// <returns>A single key.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<KeyResponse> RetrieveKey(int id);
 
@@ -172,17 +169,54 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="id">Id of key to be deleted.</param>
     /// <returns>A DeletedKeyResponse with an id of the deleted Key or default(DeleteKeyResponse) if it could not be found.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<DeleteKeyResponse> DeleteKey(int id);
 
     /// <summary>
     /// List all api keys.
     /// </summary>
-    /// <returns>List of all keys</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     Task<ListKeysResponse> ListKeys();
+
+    /// <summary>
+    /// Upsert search override.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="overrideName">The name of the search override.</param>
+    /// <param name="searchOverride">The specificiation for the search override.</param>
+    /// <returns>The upserted search override.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride);
+
+    /// <summary>
+    /// Listing all search overrides associated with a given collection.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <returns>List of search overrides.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<ListSearchOverridesResponse> ListSearchOverrides(string collection);
+
+    /// <summary>
+    /// Fetch an individual override associated with a collection.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="collection">The override name that should be retrieved.</param>
+    /// <returns>The search override or null if not found.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName);
+
+    /// <summary>
+    /// Deleting an override associated with a collection.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="collection">The override name that should be deleted.</param>
+    /// <returns>The deleted search override.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName);
 }

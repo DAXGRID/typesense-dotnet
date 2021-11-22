@@ -182,3 +182,35 @@ var keys = await typesenseClient.ListKeys();
 ``` c#
 var deletedKey = await typesenseClient.DeleteKey(0);
 ```
+
+## Curation
+
+While Typesense makes it really easy and intuitive to deliver great search results, sometimes you might want to promote certain documents over others. Or, you might want to exclude certain documents from a query's result set.
+
+Using overrides, you can include or exclude specific documents for a given query.
+
+
+### Upsert
+
+``` C#
+var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
+var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride("Addresses", "addresses-override", searchOverride);
+```
+
+### List all overrides
+
+``` c#
+var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
+```
+
+### Retrieve an overrides
+
+``` c#
+var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride("Addresses", "addresses-override");
+```
+
+### Delete an override
+
+``` c#
+var deletedSearchOverrideResult = await typesenseClient.DeleteSearchOverride("Addresses", "addresses-override");
+```

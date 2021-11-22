@@ -269,6 +269,67 @@ public class TypesenseClient : ITypesenseClient
         return JsonSerializer.Deserialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(overrideName))
+            throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
+        if (searchOverride is null)
+            throw new ArgumentNullException($"{nameof(searchOverride)} cannot be null.");
+
+        var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride);
+
+        if (string.IsNullOrEmpty(response))
+            return default(SearchOverride);
+
+        return JsonSerializer.Deserialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
+
+    }
+
+    public async Task<ListSearchOverridesResponse> ListSearchOverrides(string collection)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+
+        var response = await Get($"collections/{collection}/overrides");
+
+        if (string.IsNullOrEmpty(response))
+            return default(ListSearchOverridesResponse);
+
+        return JsonSerializer.Deserialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(overrideName))
+            throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
+
+        var response = await Get($"/collections/{collection}/overrides/{overrideName}");
+
+        if (string.IsNullOrEmpty(response))
+            return default(SearchOverride);
+
+        return JsonSerializer.Deserialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(overrideName))
+            throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
+
+        var response = await Delete($"/collections/{collection}/overrides/{overrideName}");
+
+        if (string.IsNullOrEmpty(response))
+            return default(DeleteSearchOverrideResponse);
+
+        return JsonSerializer.Deserialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
     private string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var builder = new StringBuilder();
@@ -381,6 +442,22 @@ public class TypesenseClient : ITypesenseClient
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
+
+        if (!response.IsSuccessStatusCode)
+            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<string> Put(string path, object obj)
+    {
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        });
+
+        var response = await _httpClient.PutAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
         if (!response.IsSuccessStatusCode)
             throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
