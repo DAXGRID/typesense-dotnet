@@ -203,14 +203,42 @@ var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride("A
 var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
 ```
 
-### Retrieve an overrides
+### Retrieve overrides
 
 ``` c#
 var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride("Addresses", "addresses-override");
 ```
 
-### Delete an override
+### Delete override
 
 ``` c#
 var deletedSearchOverrideResult = await typesenseClient.DeleteSearchOverride("Addresses", "addresses-override");
+```
+
+## Collection alias
+
+An alias is a virtual collection name that points to a real collection. Read more [here.](https://typesense.org/docs/0.21.0/api/collection-alias.html)
+
+### Upsert collection alias
+
+``` c#
+var upsertCollectionAlias = await typesenseClient.UpsertCollectionAlias("Address_Alias", new CollectionAlias("Addresses"));
+```
+
+### List all collection aliases
+
+``` c#
+var listCollectionAliases = await typesenseClient.ListCollectionAliases();
+```
+
+### Retrieve collection alias
+
+``` c#
+var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Addresses");
+```
+
+### Delete collection alias
+
+``` c#
+var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Addresses_Alias");
 ```
