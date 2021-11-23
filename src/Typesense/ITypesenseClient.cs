@@ -255,4 +255,45 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     Task<CollectionAlias> DeleteCollectionAlias(string aliasName);
+
+    /// <summary>
+    /// Upsert synonym.
+    /// </summary>
+    /// <param name="collection">Collection to insert the synonym into.</param>
+    /// <param name="synonym">The name of the synonym.</param>
+    /// <param name="schema">The synonym schema.</param>
+    /// <returns>The created synonym.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<SynonymSchemaResponse> UpsertSynonym(string collection, string synonym, SynonymSchema schema);
+
+    /// <summary>
+    /// Retrieve synonym in collection on synonym name.
+    /// </summary>
+    /// <param name="collection">The synonym collection name.</param>
+    /// <param name="synonym">The name of the synonym.</param>
+    /// <returns>Synonym in colection on name or null if not found.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym);
+
+    /// <summary>
+    /// List all synonyms associated with a given collection.
+    /// </summary>
+    /// <param name="collection">Collection name.</param>
+    /// <returns>All synonyms in collection or null if not found.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<ListSynonymsResponse> ListSynonyms(string collection);
+
+    /// <summary>
+    /// Delete a synonym associated with a collection.
+    /// </summary>
+    /// <param name="collection">Collection name.</param>
+    /// <param name="synonym">Synonym name.</param>
+    /// <returns>Id of the deleted synonym.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym);
 }

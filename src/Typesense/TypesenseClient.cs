@@ -373,12 +373,69 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Delete($"/aliases{collection}");
+        var response = await Delete($"/aliases/{collection}");
 
         if (string.IsNullOrWhiteSpace(response))
             return default(CollectionAlias);
 
         return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SynonymSchemaResponse> UpsertSynonym(string collection, string synonym, SynonymSchema schema)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(synonym))
+            throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
+        if (schema is null)
+            throw new ArgumentException($"{nameof(schema)} cannot be null.");
+
+        var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema);
+
+        return JsonSerializer.Deserialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(synonym))
+            throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
+
+        var response = await Get($"/collections/{collection}/synonyms/{synonym}");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(SynonymSchemaResponse);
+
+        return JsonSerializer.Deserialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<ListSynonymsResponse> ListSynonyms(string collection)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+
+        var response = await Get($"/collections/{collection}/synonyms");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(ListSynonymsResponse);
+
+        return JsonSerializer.Deserialize<ListSynonymsResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
+        if (string.IsNullOrWhiteSpace(synonym))
+            throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
+
+        var response = await Delete($"/collections/{collection}/synonyms/{synonym}");
+
+        if (string.IsNullOrWhiteSpace(response))
+            return default(DeleteSynonymResponse);
+
+        return JsonSerializer.Deserialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     private string CreateUrlSearchParameters(SearchParameters searchParameters)

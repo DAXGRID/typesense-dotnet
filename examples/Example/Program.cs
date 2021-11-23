@@ -165,21 +165,35 @@ class Program
             "Address_Alias", new CollectionAlias("Addresses"));
         Console.WriteLine($"Upsert alias: {JsonSerializer.Serialize(upsertCollectionAlias)}");
 
-        var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Addresses");
+        var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Address_Alias");
         Console.WriteLine($"retrieve alias: {JsonSerializer.Serialize(retrieveCollectionAlias)}");
 
         var listCollectionAliases = await typesenseClient.ListCollectionAliases();
-        Console.WriteLine($"retrieve alias: {JsonSerializer.Serialize(listCollectionAliases)}");
+        Console.WriteLine($"List alias: {JsonSerializer.Serialize(listCollectionAliases)}");
+
+        // Synonym
+        var upsertSynonym = await typesenseClient.UpsertSynonym(
+            "Addresses", "Address_Synonym", new SynonymSchema(new List<string> { "Sultan", "Soltan", "Softan" }));
+        Console.WriteLine($"Upsert synonym: {JsonSerializer.Serialize(upsertSynonym)}");
+
+        var retrieveSynonym = await typesenseClient.RetrieveSynonym("Addresses", "Address_Synonym");
+        Console.WriteLine($"Retrieve synonym: {JsonSerializer.Serialize(retrieveSynonym)}");
+
+        var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
+        Console.WriteLine($"List synonyms: {JsonSerializer.Serialize(listSynonyms)}");
 
         // Cleanup
-        var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Addresses_Alias");
-        Console.WriteLine($"delete alias: {JsonSerializer.Serialize(deleteCollectionAlias)}");
+        var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Address_Alias");
+        Console.WriteLine($"Delete alias: {JsonSerializer.Serialize(deleteCollectionAlias)}");
 
-        var deletedKeyOne = await typesenseClient.DeleteKey(0);
-        Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyOne)}");
+        var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
+        Console.WriteLine($"Delete synonym: {JsonSerializer.Serialize(deleteSynonym)}");
 
-        var deletedKeyTwo = await typesenseClient.DeleteKey(1);
-        Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKeyTwo)}");
+        foreach (var key in (await typesenseClient.ListKeys()).Keys)
+        {
+            var deletedKey = await typesenseClient.DeleteKey(key.Id);
+            Console.WriteLine($"Deleted key: {JsonSerializer.Serialize(deletedKey)}");
+        }
 
         var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "2");
         Console.WriteLine($"Deleted document {JsonSerializer.Serialize(deleteResult)}");

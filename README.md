@@ -242,3 +242,31 @@ var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Add
 ``` c#
 var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Addresses_Alias");
 ```
+
+## Synonyms
+
+The synonyms feature allows you to define search terms that should be considered equivalent. For eg: when you define a synonym for sneaker as shoe, searching for sneaker will now return all records with the word shoe in them, in addition to records with the word sneaker. Read more [here.](https://typesense.org/docs/0.21.0/api/synonyms.html#synonyms)
+
+### Upsert synonym
+
+``` c#
+var upsertSynonym = await typesenseClient.UpsertSynonym("Addresses", "Address_Synonym", new SynonymSchema(new List<string> { "Sultan", "Soltan", "Softan" }));
+```
+
+### Retrieve a synonym
+
+``` c#
+var retrieveSynonym = await typesenseClient.RetrieveSynonym("Addresses", "Address_Synonym");
+```
+
+### List all synonyms
+
+``` c#
+var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
+```
+
+### Delete synonym
+
+``` c#
+var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
+```
