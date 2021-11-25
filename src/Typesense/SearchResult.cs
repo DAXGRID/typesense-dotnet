@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Typesense.Converter;
@@ -22,16 +23,25 @@ public record Hit<T>
     public IReadOnlyList<Highlight> Highlights { get; init; }
     [JsonPropertyName("document")]
     public T Document { get; init; }
+    [JsonPropertyName("text_match")]
+    public int TextMatch { get; init; }
 }
 
 public record SearchResult<T>
 {
     [JsonPropertyName("facet_counts")]
-    public IReadOnlyList<object> FacetCounts { get; init; }
+    public IReadOnlyList<int> FacetCounts { get; init; }
     [JsonPropertyName("found")]
     public int Found { get; init; }
-    [JsonPropertyName("took_ms")]
-    public int TookMs { get; init; }
+    [JsonPropertyName("out_of")]
+    public int OutOf { get; init; }
+    [JsonPropertyName("page")]
+    public int Page { get; init; }
+    [JsonPropertyName("search_time_ms")]
+    public int SearchTimeMs { get; init; }
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>> Hits { get; init; }
+    [JsonPropertyName("took_ms")]
+    [Obsolete("Obsolete since version v0.18.0 use SearchTimeMs instead.")]
+    public int TookMs { get; init; }
 }
