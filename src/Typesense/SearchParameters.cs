@@ -46,7 +46,7 @@ public class SearchParameters
     /// autocomplete and instant search interfaces. Defaults to true.
     /// </summary>
     [JsonPropertyName("prefix")]
-    public string Prefix { get; set; }
+    public bool? Prefix { get; set; }
 
     /// <summary>
     /// Filter conditions for refining your search results. Separate
@@ -94,7 +94,6 @@ public class SearchParameters
     /// </summary>
     [JsonPropertyName("num_typos")]
     public string NumberOfTypos { get; set; }
-
 
     /// <summary>
     /// Results from this specific page number would be fetched.

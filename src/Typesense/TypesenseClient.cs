@@ -446,7 +446,7 @@ public class TypesenseClient : ITypesenseClient
         if (searchParameters.QueryByWeights is not null)
             builder.Append($"&query_by_weights={searchParameters.QueryByWeights}");
         if (searchParameters.Prefix is not null)
-            builder.Append($"&prefix={searchParameters.Prefix}");
+            builder.Append($"&prefix={searchParameters.Prefix.Value.ToString().ToLower()}");
         if (searchParameters.FilterBy is not null)
             builder.Append($"&filter_by={searchParameters.FilterBy}");
         if (searchParameters.SortBy is not null)
@@ -490,9 +490,9 @@ public class TypesenseClient : ITypesenseClient
         if (searchParameters.LimitHits is not null)
             builder.Append($"&limit_hits={searchParameters.LimitHits}");
         if (searchParameters.PreSegmentedQuery is not null)
-            builder.Append($"&pre_segmented_query={searchParameters.PreSegmentedQuery.ToString().ToLower()}");
+            builder.Append($"&pre_segmented_query={searchParameters.PreSegmentedQuery.Value.ToString().ToLower()}");
         if (searchParameters.EnableOverrides is not null)
-            builder.Append($"&enable_overrides={searchParameters.EnableOverrides.ToString().ToLower()}");
+            builder.Append($"&enable_overrides={searchParameters.EnableOverrides.Value.ToString().ToLower()}");
 
         return builder.ToString();
     }
