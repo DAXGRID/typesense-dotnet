@@ -16,12 +16,6 @@ public class SearchParameters
     /// A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
     /// </summary>
     [JsonPropertyName("query_by")]
-
-    /// <summary>
-    /// The relative weight to give each `query_by` field when ranking results.
-    /// This can be used to boost fields in priority, when looking for matches.
-    /// Multiple fields are separated with a comma.
-    /// </summary>
     public string QueryBy { get; set; }
 
     /// <summary>
