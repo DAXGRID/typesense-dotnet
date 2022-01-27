@@ -146,6 +146,11 @@ class Program
         var listKeys = await typesenseClient.ListKeys();
         Console.WriteLine($"List keys: {JsonSerializer.Serialize(listKeys)}");
 
+        var scopedSearchKey = typesenseClient.GenerateScopedSearchKey(
+            createKeyResultOne.Value, "{\"filter_by\":\"accessible_to_user_ids:2\"}");
+        
+        Console.WriteLine($"Scoped Search Key: {scopedSearchKey}");
+
         // Curation
         var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
         var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride(

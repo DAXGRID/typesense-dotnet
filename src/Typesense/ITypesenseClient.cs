@@ -178,6 +178,22 @@ public interface ITypesenseClient
     /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     Task<ListKeysResponse> ListKeys();
+    
+    /// <summary>
+    /// Generate scoped search API keys without having to make any calls to the Typesense server.
+    /// By using an API key with a search scope (only), create an HMAC digest of the parameters.
+    /// With this scoped-generated key, you can use it as an API key.
+    ///
+    /// Remember to never expose your main/parent search key client-side.
+    /// </summary>
+    /// <param name="securityKey">Main/Parent API Key as the security</param>
+    /// <param name="parameters">
+    /// Embed search parameters as json. Example: "{"filter_by": "company_id:124", "expires_at": 1906054106}".
+    /// You can also set a custom expires_at for a scoped API key. The expiration for a scoped API key should be less
+    /// than the expiration of the parent API key with which it is generated. expires_at is optional.
+    /// </param>
+    /// <returns>Scope API key</returns>
+    string GenerateScopedSearchKey(string securityKey, string parameters);
 
     /// <summary>
     /// Upsert search override.
