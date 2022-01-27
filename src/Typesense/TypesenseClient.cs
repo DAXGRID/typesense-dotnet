@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using Typesense.Setup;
 
 namespace Typesense;
@@ -267,6 +268,21 @@ public class TypesenseClient : ITypesenseClient
             return default(ListKeysResponse);
 
         return JsonSerializer.Deserialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public string GenerateScopedSearchKey(string securityKey, string parameters)
+    {
+        var securityKeyAsBuffer = Encoding.UTF8.GetBytes(securityKey);
+        var parametersAsBuffer = Encoding.UTF8.GetBytes(parameters);
+            
+        using var hmac = new HMACSHA256(securityKeyAsBuffer);
+
+        var hash = hmac.ComputeHash(parametersAsBuffer);
+        var digest = Convert.ToBase64String(hash);
+        var keyPrefix = securityKey[..4];
+        var rawScopedKey = $"{digest}{keyPrefix}{parameters}";
+
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
     }
 
     public async Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride)
