@@ -183,6 +183,12 @@ var keys = await typesenseClient.ListKeys();
 var deletedKey = await typesenseClient.DeleteKey(0);
 ```
 
+### Generate Scoped Search key
+
+``` c#
+var scopedSearchKey = typesenseClient.GenerateScopedSearchKey("MainOrParentAPIKey", "{\"filter_by\":\"accessible_to_user_ids:2\"}");
+```
+
 ## Curation
 
 While Typesense makes it really easy and intuitive to deliver great search results, sometimes you might want to promote certain documents over others. Or, you might want to exclude certain documents from a query's result set.
