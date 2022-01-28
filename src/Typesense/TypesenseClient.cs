@@ -1,14 +1,14 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Typesense.Setup;
 
 namespace Typesense;
@@ -103,7 +103,7 @@ public class TypesenseClient : ITypesenseClient
         return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<Collection> RetrieveCollection(string name)
+    public async Task<CollectionResponse> RetrieveCollection(string name)
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
@@ -113,13 +113,13 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(response))
             return null;
 
-        return JsonSerializer.Deserialize<Collection>(response);
+        return JsonSerializer.Deserialize<CollectionResponse>(response);
     }
 
-    public async Task<IReadOnlyCollection<Collection>> RetrieveCollections()
+    public async Task<List<CollectionResponse>> RetrieveCollections()
     {
         var response = await Get($"/collections");
-        return JsonSerializer.Deserialize<IReadOnlyCollection<Collection>>(response);
+        return JsonSerializer.Deserialize<List<CollectionResponse>>(response);
     }
 
     public async Task<T> DeleteDocument<T>(string collection, string documentId)
@@ -157,7 +157,7 @@ public class TypesenseClient : ITypesenseClient
         return JsonSerializer.Deserialize<CollectionResponse>(response);
     }
 
-    public async Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
+    public async Task<List<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
     {
         if (string.IsNullOrEmpty(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null or empty");
@@ -274,7 +274,7 @@ public class TypesenseClient : ITypesenseClient
     {
         var securityKeyAsBuffer = Encoding.UTF8.GetBytes(securityKey);
         var parametersAsBuffer = Encoding.UTF8.GetBytes(parameters);
-            
+
         using var hmac = new HMACSHA256(securityKeyAsBuffer);
 
         var hash = hmac.ComputeHash(parametersAsBuffer);

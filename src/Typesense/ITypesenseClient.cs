@@ -76,14 +76,14 @@ public interface ITypesenseClient
     /// <returns>The collection or null if it could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<Collection> RetrieveCollection(string name);
+    Task<CollectionResponse> RetrieveCollection(string name);
 
     /// <summary>
     /// Retrieve all the collections.
     /// </summary>
     /// <returns>A list of collections.</returns>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<IReadOnlyCollection<Collection>> RetrieveCollections();
+    Task<List<CollectionResponse>> RetrieveCollections();
 
     /// <summary>
     /// Deletes a document in the collection on a specified document id.
@@ -126,7 +126,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
     /// <summary>
     /// Export all documents in a given collection.
