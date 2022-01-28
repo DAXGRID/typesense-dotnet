@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Typesense;
+
 public interface ITypesenseClient
 {
     /// <summary>
@@ -178,7 +179,7 @@ public interface ITypesenseClient
     /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     Task<ListKeysResponse> ListKeys();
-    
+
     /// <summary>
     /// Generate scoped search API keys without having to make any calls to the Typesense server.
     /// By using an API key with a search scope (only), create an HMAC digest of the parameters.
