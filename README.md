@@ -10,7 +10,7 @@ Feel free to make issues or create pull requests if you find any bugs or there a
 
 Setup in service collection so it can be dependency injected. The `AddTypesenseClient` can be found in the `Typesense.Setup` namespace. Remember to change the settings to match your Typesense service. Right now you can specify multiple nodes, but the implementation has not been completed yet, so if you want to use this for multiple nodes, then put a load balancer in front of your services and point the settings to your load balancer.
 
-``` c#
+```c#
 var provider = new ServiceCollection()
     .AddTypesenseClient(config =>
     {
@@ -28,7 +28,7 @@ var provider = new ServiceCollection()
 ```
 
 After that you can get it from the `provider` instance or dependency inject it.
-``` c#
+```c#
 var typesenseClient = provider.GetService<ITypesenseClient>();
 ```
 
@@ -54,7 +54,7 @@ var createCollectionResult = await typesenseClient.CreateCollection(schema);
 
 ## Index document
 
-``` c#
+```c#
 var address = new Address
 {
     Id = 1,
@@ -67,7 +67,7 @@ var createDocumentResult = await typesenseClient.CreateDocument<Address>("Addres
 
 ## Upsert document
 
-``` c#
+```c#
 var address = new Address
 {
     Id = 1,
@@ -80,7 +80,7 @@ var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", ad
 
 ## Search document in collection
 
-``` c#
+```c#
 var query = new SearchParameters
 {
     Text = "Smed",
@@ -92,13 +92,13 @@ var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 
 ## Retrieve a document on id
 
-``` c#
+```c#
 var retrievedDocument = await typesenseClient.RetrieveDocument<Address>("Addresses", "1");
 ```
 
 ## Update document on id
 
-``` c#
+```c#
 var address = new Address
 {
     Id = 1,
@@ -111,19 +111,19 @@ var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addres
 
 ## Delete document on id
 
-``` c#
+```c#
 var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1");
 ```
 
 ## Delete documents using filter
 
-``` c#
+```c#
 var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
 ```
 
 ## Drop a collection on name
 
-``` c#
+```c#
 var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
 ```
 
@@ -134,14 +134,14 @@ The default ImportType is `Create`.
 You can pick between three different import types `Create`, `Upsert`, `Update`.
 The returned values are a list of `ImportResponse` that contains a `success code`, `error` and the failed `document` as a string representation.
 
-``` c#
+```c#
 
 var importDocumentResults = await typesenseClient.ImportDocuments<Address>("Addresses", addresses, 40, ImportType.Create);
 ```
 
 ## Export documents
 
-``` c#
+```c#
 var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```
 
@@ -152,7 +152,7 @@ var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 
 `ExpiresAt` is optional.
 
-``` c#
+```c#
 var apiKey = new Key()
 {
     Description = "Example key one",
@@ -167,25 +167,25 @@ var createdKey = await typesenseClient.CreateKey(apiKey);
 
 ### Retrieve key
 
-``` c#
+```c#
 var retrievedKey = await typesenseClient.RetrieveKey(0);
 ```
 
 ### List keys
 
-``` c#
+```c#
 var keys = await typesenseClient.ListKeys();
 ```
 
 ### Delete key
 
-``` c#
+```c#
 var deletedKey = await typesenseClient.DeleteKey(0);
 ```
 
 ### Generate Scoped Search key
 
-``` c#
+```c#
 var scopedSearchKey = typesenseClient.GenerateScopedSearchKey("MainOrParentAPIKey", "{\"filter_by\":\"accessible_to_user_ids:2\"}");
 ```
 
@@ -198,26 +198,26 @@ Using overrides, you can include or exclude specific documents for a given query
 
 ### Upsert
 
-``` C#
+```c#
 var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
 var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride("Addresses", "addresses-override", searchOverride);
 ```
 
 ### List all overrides
 
-``` c#
+```c#
 var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
 ```
 
 ### Retrieve overrides
 
-``` c#
+```c#
 var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride("Addresses", "addresses-override");
 ```
 
 ### Delete override
 
-``` c#
+```c#
 var deletedSearchOverrideResult = await typesenseClient.DeleteSearchOverride("Addresses", "addresses-override");
 ```
 
@@ -227,25 +227,25 @@ An alias is a virtual collection name that points to a real collection. Read mor
 
 ### Upsert collection alias
 
-``` c#
+```c#
 var upsertCollectionAlias = await typesenseClient.UpsertCollectionAlias("Address_Alias", new CollectionAlias("Addresses"));
 ```
 
 ### List all collection aliases
 
-``` c#
+```c#
 var listCollectionAliases = await typesenseClient.ListCollectionAliases();
 ```
 
 ### Retrieve collection alias
 
-``` c#
+```c#
 var retrieveCollectionAlias = await typesenseClient.RetrieveCollectionAlias("Address_Alias");
 ```
 
 ### Delete collection alias
 
-``` c#
+```c#
 var deleteCollectionAlias = await typesenseClient.DeleteCollectionAlias("Addresses_Alias");
 ```
 
@@ -255,24 +255,48 @@ The synonyms feature allows you to define search terms that should be considered
 
 ### Upsert synonym
 
-``` c#
+```c#
 var upsertSynonym = await typesenseClient.UpsertSynonym("Addresses", "Address_Synonym", new SynonymSchema(new List<string> { "Sultan", "Soltan", "Softan" }));
 ```
 
 ### Retrieve a synonym
 
-``` c#
+```c#
 var retrieveSynonym = await typesenseClient.RetrieveSynonym("Addresses", "Address_Synonym");
 ```
 
 ### List all synonyms
 
-``` c#
+```c#
 var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
 ```
 
 ### Delete synonym
 
-``` c#
+```c#
 var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
 ```
+
+## Tests
+
+Running all tests.
+
+```sh
+dotnet test
+```
+
+### Running only unit tests
+```sh
+dotnet test --filter Category=Unit
+```
+
+### Running integration tests
+
+```sh
+dotnet test --filter Category=Integration
+```
+
+To enable running integration tests you can run Typesense in a docker container using the command below.
+
+```sh
+docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.22.1 --data-dir /data --api-key=key```
