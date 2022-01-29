@@ -284,6 +284,67 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(8)]
+    [Trait("Category", "Integration")]
+    public async Task Retrieve_document()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 5215,
+            Country = "USA",
+        };
+
+        var response = await _client.RetrieveDocument<Company>("companies", "124");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(9)]
+    [Trait("Category", "Integration")]
+    public async Task Update_document()
+    {
+        var company = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var response = await _client.UpdateDocument("companies", "124", company);
+
+        response.Should().BeEquivalentTo(response);
+    }
+
+    [Fact, TestPriority(9)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_document_by_id()
+    {
+        var company = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var response = await _client.DeleteDocument<Company>("companies", "124");
+
+        response.Should().BeEquivalentTo(response);
+    }
+
+    [Fact, TestPriority(10)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_document_by_query()
+    {
+        var expected = new FilterDeleteResponse { NumberOfDeleted = 2 };
+        var response = await _client.DeleteDocuments("companies", "num_employees:>100");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema

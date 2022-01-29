@@ -104,7 +104,7 @@ public interface ITypesenseClient
     /// <returns>A response containing a count of the deleted documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
+    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40);
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.
