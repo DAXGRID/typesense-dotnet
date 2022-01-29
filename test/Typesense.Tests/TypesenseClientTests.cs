@@ -29,6 +29,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(0)]
+    [Trait("Category", "Integration")]
     public async Task Create_schema()
     {
         var expected = new CollectionResponse
@@ -62,6 +63,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(1)]
+    [Trait("Category", "Integration")]
     public async Task Retrieve_collection()
     {
         var expected = new CollectionResponse
@@ -83,6 +85,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(2)]
+    [Trait("Category", "Integration")]
     public async Task Retrieve_collections()
     {
         var expected = new List<CollectionResponse>
@@ -106,6 +109,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(3)]
+    [Trait("Category", "Integration")]
     public async Task Delete_collection()
     {
         var expected = new CollectionResponse
@@ -127,6 +131,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(4)]
+    [Trait("Category", "Integration")]
     public async Task Index_document()
     {
         // We create collection for test cases.
@@ -146,6 +151,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(5)]
+    [Trait("Category", "Integration")]
     public async Task Upsert_document_existing_document()
     {
         var company = new Company
@@ -162,6 +168,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(6)]
+    [Trait("Category", "Integration")]
     public async Task Upsert_document_new_document()
     {
         var company = new Company
@@ -178,6 +185,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
+    [Trait("Category", "Integration")]
     public async Task Import_documents_create()
     {
         var expected = new List<ImportResponse>
@@ -210,6 +218,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
+    [Trait("Category", "Integration")]
     public async Task Import_documents_update()
     {
         var expected = new List<ImportResponse>
@@ -242,6 +251,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
+    [Trait("Category", "Integration")]
     public async Task Import_documents_upsert()
     {
         var expected = new List<ImportResponse>
@@ -268,7 +278,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
              }
         };
 
-        var response = await _client.ImportDocuments<Company>("companies", companies, 40, ImportType.Upsert);
+        var response = await _client.ImportDocuments<Company>(
+            "companies", companies, 40, ImportType.Upsert);
 
         response.Should().BeEquivalentTo(expected);
     }
