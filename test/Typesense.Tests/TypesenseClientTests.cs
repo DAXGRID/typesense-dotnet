@@ -1,5 +1,6 @@
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
@@ -286,6 +287,47 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
     [Fact, TestPriority(8)]
     [Trait("Category", "Integration")]
+    public async Task Export_documents()
+    {
+        var expected = new List<Company>
+        {
+            new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries",
+                NumEmployees = 5215,
+                Country = "USA",
+            },
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                NumEmployees = 1232,
+                Country = "UK",
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                NumEmployees = 531,
+                Country = "AU",
+            },
+            new Company
+            {
+                Id = "999",
+                CompanyName = "Awesome A/S",
+                NumEmployees = 10,
+                Country = "SWE",
+            }
+        };
+
+        var response = await _client.ExportDocuments<Company>("companies");
+
+        response.OrderBy(x => x.Id).Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(9)]
+    [Trait("Category", "Integration")]
     public async Task Retrieve_document()
     {
         var expected = new Company
@@ -301,7 +343,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(9)]
+    [Fact, TestPriority(10)]
     [Trait("Category", "Integration")]
     public async Task Update_document()
     {
@@ -318,7 +360,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(response);
     }
 
-    [Fact, TestPriority(9)]
+    [Fact, TestPriority(11)]
     [Trait("Category", "Integration")]
     public async Task Delete_document_by_id()
     {
@@ -335,7 +377,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(response);
     }
 
-    [Fact, TestPriority(10)]
+    [Fact, TestPriority(12)]
     [Trait("Category", "Integration")]
     public async Task Delete_document_by_query()
     {
