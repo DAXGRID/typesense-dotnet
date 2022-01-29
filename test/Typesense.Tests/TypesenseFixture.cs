@@ -16,11 +16,26 @@ public class TypesenseFixture
 
     private async Task Cleanup()
     {
-        var collections = await Client.RetrieveCollections();
+        var cleanCollectionsTask = CleanCollections();
+        var cleanApiKeysTask = CleanApiKeys();
+        await Task.WhenAll(cleanApiKeysTask, cleanCollectionsTask);
+    }
 
+    private async Task CleanCollections()
+    {
+        var collections = await Client.RetrieveCollections();
         foreach (var collection in collections)
         {
             await Client.DeleteCollection(collection.Name);
+        }
+    }
+
+    private async Task CleanApiKeys()
+    {
+        var apiKeys = await Client.ListKeys();
+        foreach (var key in apiKeys.Keys)
+        {
+            await Client.DeleteKey(key.Id);
         }
     }
 
@@ -30,7 +45,15 @@ public class TypesenseFixture
             .AddTypesenseClient(config =>
             {
                 config.ApiKey = "key";
-                config.Nodes = new List<Node> { new Node { Host = "localhost", Port = "8108", Protocol = "http" } };
+                config.Nodes = new List<Node>
+                {
+                    new Node
+                    {
+                        Host = "localhost",
+                        Port = "8108",
+                        Protocol = "http"
+                    }
+                };
             }).BuildServiceProvider().GetService<ITypesenseClient>();
     }
 }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentAssertions.Execution;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -385,6 +386,55 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var response = await _client.DeleteDocuments("companies", "num_employees:>100");
 
         response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(1)]
+    [Trait("Category", "Integration")]
+    public async Task Create_api_key()
+    {
+        var apiKey = new Key()
+        {
+            Description = "Example key one",
+            Actions = new[] { "*" },
+            Collections = new[] { "*" },
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
+
+        var response = await _client.CreateKey(apiKey);
+
+        using (var scope = new AssertionScope())
+        {
+            response.Description.Should().BeEquivalentTo(apiKey.Description);
+            response.Actions.Should().BeEquivalentTo(apiKey.Actions);
+            response.Collections.Should().BeEquivalentTo(apiKey.Collections);
+            response.Value.Should().BeEquivalentTo(apiKey.Value);
+            response.ExpiresAt.Should().Be(apiKey.ExpiresAt);
+        }
+    }
+
+    [Fact, TestPriority(2)]
+    [Trait("Category", "Integration")]
+    public async Task Retrieve_api_key()
+    {
+        var apiKeys = await _client.ListKeys();
+        var apiKey = apiKeys.Keys.First();
+
+        var response = await _client.RetrieveKey(apiKey.Id);
+
+        response.Should().BeEquivalentTo(apiKey);
+    }
+
+    [Fact, TestPriority(3)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_api_key()
+    {
+        var apiKeys = await _client.ListKeys();
+        var apiKey = apiKeys.Keys.First();
+
+        var response = await _client.RetrieveKey(apiKey.Id);
+
+        response.Should().BeEquivalentTo(apiKey);
     }
 
     private async Task CreateCompanyCollection()
