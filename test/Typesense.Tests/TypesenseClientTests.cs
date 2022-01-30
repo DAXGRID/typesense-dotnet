@@ -587,6 +587,71 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(25)]
+    [Trait("Category", "Integration")]
+    public async Task Upsert_synonym()
+    {
+        var expected = new SynonymSchemaResponse
+        {
+            Id = "apple-synonyms",
+            Root = "apple",
+            Synonyms = new List<string> { "appl", "aple", "apple" }
+        };
+
+        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" }, "apple");
+        var response = await _client.UpsertSynonym("companies", "apple-synonyms", schema);
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(26)]
+    [Trait("Category", "Integration")]
+    public async Task Retrieve_synonym()
+    {
+        var expected = new SynonymSchemaResponse
+        {
+            Id = "apple-synonyms",
+            Root = "apple",
+            Synonyms = new List<string> { "appl", "aple", "apple" }
+        };
+
+        var response = await _client.RetrieveSynonym("companies", "apple-synonyms");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(26)]
+    [Trait("Category", "Integration")]
+    public async Task List_synonyms()
+    {
+        var expected = new ListSynonymsResponse
+        {
+            Synonyms = new List<SynonymSchemaResponse>
+            {
+                new SynonymSchemaResponse
+                {
+                    Id = "apple-synonyms",
+                    Root = "apple",
+                    Synonyms = new List<string> { "appl", "aple", "apple" }
+                }
+            }
+        };
+
+        var response = await _client.ListSynonyms("companies");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(27)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_synonym()
+    {
+        var expected = new DeleteSynonymResponse { Id = "apple-synonyms" };
+        var response = await _client.DeleteSynonym("companies", "apple-synonyms");
+
+        response.Should().Be(expected);
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema
