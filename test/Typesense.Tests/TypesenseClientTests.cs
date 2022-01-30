@@ -388,11 +388,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(1)]
+    [Fact, TestPriority(13)]
     [Trait("Category", "Integration")]
     public async Task Create_api_key()
     {
-        var apiKey = new Key()
+        var expected = new Key()
         {
             Description = "Example key one",
             Actions = new[] { "*" },
@@ -401,19 +401,19 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             ExpiresAt = 1661344547
         };
 
-        var response = await _client.CreateKey(apiKey);
+        var response = await _client.CreateKey(expected);
 
         using (var scope = new AssertionScope())
         {
-            response.Description.Should().BeEquivalentTo(apiKey.Description);
-            response.Actions.Should().BeEquivalentTo(apiKey.Actions);
-            response.Collections.Should().BeEquivalentTo(apiKey.Collections);
-            response.Value.Should().BeEquivalentTo(apiKey.Value);
-            response.ExpiresAt.Should().Be(apiKey.ExpiresAt);
+            response.Description.Should().BeEquivalentTo(expected.Description);
+            response.Actions.Should().BeEquivalentTo(expected.Actions);
+            response.Collections.Should().BeEquivalentTo(expected.Collections);
+            response.Value.Should().BeEquivalentTo(expected.Value);
+            response.ExpiresAt.Should().Be(expected.ExpiresAt);
         }
     }
 
-    [Fact, TestPriority(2)]
+    [Fact, TestPriority(14)]
     [Trait("Category", "Integration")]
     public async Task Retrieve_api_key()
     {
@@ -425,7 +425,35 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(apiKey);
     }
 
-    [Fact, TestPriority(3)]
+    [Fact, TestPriority(15)]
+    [Trait("Category", "Integration")]
+    public async Task List_keys()
+    {
+        var expected = new Key()
+        {
+            Description = "Example key one",
+            Actions = new[] { "*" },
+            Collections = new[] { "*" },
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
+
+        var response = await _client.ListKeys();
+
+        response.Keys.Should()
+            .HaveCount(1).And
+            .SatisfyRespectively(
+                first =>
+                {
+                    first.Description.Should().BeEquivalentTo(expected.Description);
+                    first.Actions.Should().BeEquivalentTo(expected.Actions);
+                    first.Collections.Should().BeEquivalentTo(expected.Collections);
+                    first.Value.Should().NotBeEmpty();
+                    first.ExpiresAt.Should().Be(expected.ExpiresAt);
+                });
+    }
+
+    [Fact, TestPriority(16)]
     [Trait("Category", "Integration")]
     public async Task Delete_api_key()
     {
@@ -435,6 +463,77 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var response = await _client.RetrieveKey(apiKey.Id);
 
         response.Should().BeEquivalentTo(apiKey);
+    }
+
+    [Fact, TestPriority(17)]
+    [Trait("Category", "Integration")]
+    public async Task Upsert_search_override()
+    {
+        var searchOverride = new SearchOverride(
+            new List<Include>
+            {
+                new Include("422", 1),
+                new Include("54", 2)
+            },
+            new Rule("apple", "exact"));
+
+        var response = await _client.UpsertSearchOverride(
+            "companies", "customize-apple", searchOverride);
+    }
+
+    [Fact, TestPriority(18)]
+    [Trait("Category", "Integration")]
+    public async Task Retrive_search_override()
+    {
+        var searchOverrides = await _client.ListSearchOverrides("companies");
+
+        var expected = searchOverrides.SearchOverrides.First();
+
+        var response = await _client.RetrieveSearchOverride("companies", expected.Id);
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(19)]
+    [Trait("Category", "Integration")]
+    public async Task List_search_overrides()
+    {
+        var expected = new SearchOverride(
+            new List<Include>
+            {
+                new Include("422", 1),
+                new Include("54", 2)
+            },
+            new Rule("apple", "exact"));
+
+        var response = await _client.ListSearchOverrides("companies");
+
+        response.SearchOverrides.Should()
+            .HaveCount(1).And
+            .SatisfyRespectively(
+                first =>
+                {
+                    first.Id.Should().Be("customize-apple");
+                    first.Includes.Should().BeEquivalentTo(expected.Includes);
+                    first.Rule.Should().BeEquivalentTo(expected.Rule);
+                });
+    }
+
+    [Fact, TestPriority(20)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_search_override()
+    {
+        var expected = new SearchOverride(
+            new List<Include>
+            {
+                new Include("422", 1),
+                new Include("54", 2)
+            },
+            new Rule("apple", "exact"));
+
+        var response = await _client.DeleteSearchOverride("companies", "customize-apple");
+
+        response.Id.Should().BeEquivalentTo("customize-apple");
     }
 
     private async Task CreateCompanyCollection()

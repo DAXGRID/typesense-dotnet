@@ -16,9 +16,9 @@ public class TypesenseFixture
 
     private async Task Cleanup()
     {
-        var cleanCollectionsTask = CleanCollections();
-        var cleanApiKeysTask = CleanApiKeys();
-        await Task.WhenAll(cleanApiKeysTask, cleanCollectionsTask);
+        await CleanCollections();
+        await CleanApiKeys();
+        await CleanCurations();
     }
 
     private async Task CleanCollections()
@@ -36,6 +36,15 @@ public class TypesenseFixture
         foreach (var key in apiKeys.Keys)
         {
             await Client.DeleteKey(key.Id);
+        }
+    }
+
+    private async Task CleanCurations()
+    {
+        var curations = await Client.ListSearchOverrides("companies");
+        foreach (var curation in curations.SearchOverrides)
+        {
+            await Client.DeleteSearchOverride("companies", curation.Id);
         }
     }
 
