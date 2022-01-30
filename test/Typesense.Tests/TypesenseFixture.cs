@@ -19,6 +19,7 @@ public class TypesenseFixture
         await CleanCollections();
         await CleanApiKeys();
         await CleanCurations();
+        await CleanAlias();
     }
 
     private async Task CleanCollections()
@@ -45,6 +46,15 @@ public class TypesenseFixture
         foreach (var curation in curations.SearchOverrides)
         {
             await Client.DeleteSearchOverride("companies", curation.Id);
+        }
+    }
+
+    private async Task CleanAlias()
+    {
+        var aliases = await Client.ListCollectionAliases();
+        foreach (var alias in aliases.CollectionAliases)
+        {
+            await Client.DeleteCollectionAlias(alias.Name);
         }
     }
 

@@ -536,6 +536,57 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Id.Should().BeEquivalentTo("customize-apple");
     }
 
+    [Fact, TestPriority(21)]
+    [Trait("Category", "Integration")]
+    public async Task Upsert_collection_alias()
+    {
+        var expected = new CollectionAlias("companies", "my-companies-alias");
+
+        var response = await _client.UpsertCollectionAlias(
+            "my-companies-alias", new CollectionAlias("companies"));
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(22)]
+    [Trait("Category", "Integration")]
+    public async Task List_collection_aliases()
+    {
+        var expected = new CollectionAlias("companies", "my-companies-alias");
+
+        var response = await _client.ListCollectionAliases();
+
+        response.CollectionAliases.Should()
+            .HaveCount(1).And
+            .SatisfyRespectively(
+                first =>
+                {
+                    first.Should().BeEquivalentTo(expected);
+                });
+    }
+
+    [Fact, TestPriority(23)]
+    [Trait("Category", "Integration")]
+    public async Task Retrieve_collection_alias()
+    {
+        var expected = new CollectionAlias("companies", "my-companies-alias");
+
+        var response = await _client.RetrieveCollectionAlias("my-companies-alias");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(24)]
+    [Trait("Category", "Integration")]
+    public async Task Delete_collection_alias()
+    {
+        var expected = new CollectionAlias("companies", "my-companies-alias");
+
+        var response = await _client.DeleteCollectionAlias("my-companies-alias");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema

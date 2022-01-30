@@ -381,7 +381,8 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(response))
             return default(ListCollectionAliasesResponse);
 
-        return JsonSerializer.Deserialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
+        return JsonSerializer.Deserialize<ListCollectionAliasesResponse>(
+            response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionAlias> DeleteCollectionAlias(string collection)
