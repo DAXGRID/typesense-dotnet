@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Typesense.Setup;
 
 namespace Typesense;
+
 public class TypesenseClient : ITypesenseClient
 {
     private readonly HttpClient _httpClient;

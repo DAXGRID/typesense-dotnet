@@ -1,4 +1,5 @@
 namespace Typesense;
+
 public enum ImportType
 {
     Create,

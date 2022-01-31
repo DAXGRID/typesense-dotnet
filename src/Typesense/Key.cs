@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Typesense;
+
 public record Key
 {
     [JsonPropertyName("description")]

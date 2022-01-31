@@ -1,4 +1,5 @@
 namespace Typesense;
+
 public class ExportParameters
 {
     public string FilterBy { get; set; }

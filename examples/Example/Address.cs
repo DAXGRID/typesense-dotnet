@@ -1,4 +1,5 @@
 namespace Example;
+
 public class Address
 {
     public string Id { get; set; }

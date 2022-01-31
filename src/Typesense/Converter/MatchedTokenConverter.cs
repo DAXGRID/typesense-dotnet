@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Typesense.Converter;
+
 public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
 {
     public override IReadOnlyList<object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

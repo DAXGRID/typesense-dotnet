@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Typesense.Converter;
+
 public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, System.Enum
 {
     private readonly Dictionary<TEnum, string> _enumToString = new Dictionary<TEnum, string>();

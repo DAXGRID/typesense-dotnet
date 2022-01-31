@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
 
 namespace Typesense;
+
 public enum FieldType
 {
     [EnumMember(Value = "string")]
