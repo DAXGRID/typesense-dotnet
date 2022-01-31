@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Typesense;
 using Typesense.Setup;
 
 namespace Example;
+
 class Program
 {
     async static Task Main(string[] args)
@@ -148,7 +149,7 @@ class Program
 
         var scopedSearchKey = typesenseClient.GenerateScopedSearchKey(
             createKeyResultOne.Value, "{\"filter_by\":\"accessible_to_user_ids:2\"}");
-        
+
         Console.WriteLine($"Scoped Search Key: {scopedSearchKey}");
 
         // Curation

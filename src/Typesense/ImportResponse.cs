@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 
 namespace Typesense;
+
 public record ImportResponse
 {
     [JsonPropertyName("success")]

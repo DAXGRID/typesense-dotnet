@@ -2,6 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 
 namespace Typesense;
+
 public class SearchParameters
 {
     /// <summary>

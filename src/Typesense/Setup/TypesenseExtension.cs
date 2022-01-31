@@ -1,7 +1,8 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Typesense.Setup;
+
 public static class TypesenseExtension
 {
     /// <exception cref="ArgumentNullException"></exception>

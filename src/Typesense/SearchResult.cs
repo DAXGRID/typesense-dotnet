@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Typesense.Converter;
-using System.Linq;
 
 namespace Typesense;
+
 public record Highlight
 {
     [JsonPropertyName("field")]

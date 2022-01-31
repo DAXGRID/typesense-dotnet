@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Typesense.Converter;
 
 namespace Typesense;
+
 public class Field
 {
     [JsonPropertyName("name")]
