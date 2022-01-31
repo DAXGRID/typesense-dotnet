@@ -7,6 +7,18 @@ executors:
       auth:
         username: $DOCKER_LOGIN
         password: $DOCKER_ACCESSTOKEN
+  dotnet-core-sdk-testing:
+    docker:
+    - image: mcr.microsoft.com/dotnet/sdk:6.0
+      auth:
+        username: $DOCKER_LOGIN
+        password: $DOCKER_ACCESSTOKEN
+    - image: typesense/typesense:0.22.1 # For integration testing
+      auth:
+        username: $DOCKER_LOGIN
+        password: $DOCKER_ACCESSTOKEN
+      command: [--data-dir=/tmp, --api-key=key]
+
 jobs:
   build-app:
     executor: dotnet-core-sdk
@@ -17,9 +29,20 @@ jobs:
           command: dotnet build
 
   test-app:
-    executor: dotnet-core-sdk
+    executor: dotnet-core-sdk-testing
     steps:
       - checkout
+      - run:
+          name: install dockerize
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: Wait for Typesense
+          command: dockerize -wait tcp://localhost:8108 -timeout 1m
       - run:
           name: Test
           command: dotnet test

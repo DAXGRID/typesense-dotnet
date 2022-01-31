@@ -13,7 +13,8 @@ public record CollectionAlias
     public CollectionAlias(string collectionName)
     {
         if (string.IsNullOrWhiteSpace(collectionName))
-            throw new ArgumentException($"{nameof(collectionName)} cannot be null, empty or whitespace.");
+            throw new ArgumentException(
+                $"{nameof(collectionName)} cannot be null, empty or whitespace.");
         CollectionName = collectionName;
     }
 

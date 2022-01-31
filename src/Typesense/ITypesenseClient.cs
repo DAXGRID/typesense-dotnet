@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Typesense;
+
 public interface ITypesenseClient
 {
     /// <summary>
@@ -75,14 +76,14 @@ public interface ITypesenseClient
     /// <returns>The collection or null if it could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<Collection> RetrieveCollection(string name);
+    Task<CollectionResponse> RetrieveCollection(string name);
 
     /// <summary>
     /// Retrieve all the collections.
     /// </summary>
     /// <returns>A list of collections.</returns>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<IReadOnlyCollection<Collection>> RetrieveCollections();
+    Task<List<CollectionResponse>> RetrieveCollections();
 
     /// <summary>
     /// Deletes a document in the collection on a specified document id.
@@ -103,7 +104,7 @@ public interface ITypesenseClient
     /// <returns>A response containing a count of the deleted documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize);
+    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40);
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.
@@ -125,7 +126,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<IReadOnlyCollection<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
     /// <summary>
     /// Export all documents in a given collection.
@@ -178,7 +179,7 @@ public interface ITypesenseClient
     /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     Task<ListKeysResponse> ListKeys();
-    
+
     /// <summary>
     /// Generate scoped search API keys without having to make any calls to the Typesense server.
     /// By using an API key with a search scope (only), create an HMAC digest of the parameters.
