@@ -17,7 +17,7 @@ executors:
       auth:
         username: $DOCKER_LOGIN
         password: $DOCKER_ACCESSTOKEN
-      command: [--data-dir, /data, --api-key, key]
+      command: [--data-dir=/tmp, --api-key=key]
 
 jobs:
   build-app:
