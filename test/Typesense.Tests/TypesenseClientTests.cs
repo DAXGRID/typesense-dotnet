@@ -363,6 +363,34 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
     [Fact, TestPriority(11)]
     [Trait("Category", "Integration")]
+    public async Task Search_query_by_just_text()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new SearchParameters
+        {
+            Text = "Stark",
+            QueryBy = "company_name"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(12)]
+    [Trait("Category", "Integration")]
     public async Task Delete_document_by_id()
     {
         var company = new Company
@@ -378,7 +406,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(response);
     }
 
-    [Fact, TestPriority(12)]
+    [Fact, TestPriority(13)]
     [Trait("Category", "Integration")]
     public async Task Delete_document_by_query()
     {
@@ -388,7 +416,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(13)]
+    [Fact, TestPriority(14)]
     [Trait("Category", "Integration")]
     public async Task Create_api_key()
     {
@@ -413,7 +441,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(14)]
+    [Fact, TestPriority(15)]
     [Trait("Category", "Integration")]
     public async Task Retrieve_api_key()
     {
@@ -425,7 +453,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(apiKey);
     }
 
-    [Fact, TestPriority(15)]
+    [Fact, TestPriority(16)]
     [Trait("Category", "Integration")]
     public async Task List_keys()
     {
@@ -453,7 +481,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 });
     }
 
-    [Fact, TestPriority(16)]
+    [Fact, TestPriority(17)]
     [Trait("Category", "Integration")]
     public async Task Delete_api_key()
     {
@@ -465,7 +493,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(apiKey);
     }
 
-    [Fact, TestPriority(17)]
+    [Fact, TestPriority(18)]
     [Trait("Category", "Integration")]
     public async Task Upsert_search_override()
     {
@@ -481,7 +509,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "companies", "customize-apple", searchOverride);
     }
 
-    [Fact, TestPriority(18)]
+    [Fact, TestPriority(19)]
     [Trait("Category", "Integration")]
     public async Task Retrive_search_override()
     {
@@ -494,7 +522,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(19)]
+    [Fact, TestPriority(20)]
     [Trait("Category", "Integration")]
     public async Task List_search_overrides()
     {
@@ -519,7 +547,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 });
     }
 
-    [Fact, TestPriority(20)]
+    [Fact, TestPriority(21)]
     [Trait("Category", "Integration")]
     public async Task Delete_search_override()
     {
@@ -536,7 +564,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Id.Should().BeEquivalentTo("customize-apple");
     }
 
-    [Fact, TestPriority(21)]
+    [Fact, TestPriority(22)]
     [Trait("Category", "Integration")]
     public async Task Upsert_collection_alias()
     {
@@ -548,7 +576,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(22)]
+    [Fact, TestPriority(23)]
     [Trait("Category", "Integration")]
     public async Task List_collection_aliases()
     {
@@ -565,7 +593,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 });
     }
 
-    [Fact, TestPriority(23)]
+    [Fact, TestPriority(24)]
     [Trait("Category", "Integration")]
     public async Task Retrieve_collection_alias()
     {
@@ -576,7 +604,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(24)]
+    [Fact, TestPriority(25)]
     [Trait("Category", "Integration")]
     public async Task Delete_collection_alias()
     {
@@ -587,7 +615,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(25)]
+    [Fact, TestPriority(26)]
     [Trait("Category", "Integration")]
     public async Task Upsert_synonym()
     {
@@ -604,7 +632,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(26)]
+    [Fact, TestPriority(27)]
     [Trait("Category", "Integration")]
     public async Task Retrieve_synonym()
     {
@@ -620,7 +648,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(26)]
+    [Fact, TestPriority(28)]
     [Trait("Category", "Integration")]
     public async Task List_synonyms()
     {
@@ -642,7 +670,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(27)]
+    [Fact, TestPriority(29)]
     [Trait("Category", "Integration")]
     public async Task Delete_synonym()
     {
