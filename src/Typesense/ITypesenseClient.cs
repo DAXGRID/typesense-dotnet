@@ -23,7 +23,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<T> CreateDocument<T>(string collection, T document);
+    Task<T> CreateDocument<T>(string collection, T document) where T : class;
 
     /// <summary>
     /// Inserts the document if it does not exist or update if the document exist.
@@ -34,7 +34,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<T> UpsertDocument<T>(string collection, T document);
+    Task<T> UpsertDocument<T>(string collection, T document) where T : class;
 
     /// <summary>
     /// Search for a document in the specified collection using the supplied search parameters.
@@ -55,7 +55,7 @@ public interface ITypesenseClient
     /// <returns>The document or default(T) if the document could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<T> RetrieveDocument<T>(string collection, string id);
+    Task<T> RetrieveDocument<T>(string collection, string id) where T : class;
 
     /// <summary>
     /// Updates the document in the specified collection on id.
@@ -67,7 +67,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<T> UpdateDocument<T>(string collection, string id, T document);
+    Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class;
 
     /// <summary>
     /// Retrieve the collection on collection name.
@@ -93,7 +93,7 @@ public interface ITypesenseClient
     /// <returns>The deleted document or default(T) if it could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<T> DeleteDocument<T>(string collection, string documentId);
+    Task<T> DeleteDocument<T>(string collection, string documentId) where T : class;
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.

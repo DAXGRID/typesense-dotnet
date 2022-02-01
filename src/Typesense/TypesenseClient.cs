@@ -31,64 +31,53 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"The supplied argument {nameof(Schema)} cannot be null");
 
         var response = await Post($"/collections", schema);
-        return JsonSerializer.Deserialize<CollectionResponse>(response);
+        return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
-    public async Task<T> CreateDocument<T>(string collection, T document)
+    public async Task<T> CreateDocument<T>(string collection, T document) where T : class
     {
         if (collection is null || document is null)
             throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");
-
         if (collection == string.Empty)
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
         var response = await Post($"/collections/{collection}/documents", document);
-        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<T> UpsertDocument<T>(string collection, T document)
+    public async Task<T> UpsertDocument<T>(string collection, T document) where T : class
     {
         if (collection is null || document is null)
             throw new ArgumentNullException($"{nameof(collection)} or {nameof(document)} cannot be null.");
-
         if (collection == string.Empty)
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
         var response = await Post($"/collections/{collection}/documents?action=upsert", document);
-
-        if (string.IsNullOrEmpty(response))
-            return default(T);
-
-        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
     {
         if (collection is null || searchParameters is null)
             throw new ArgumentNullException($"{nameof(collection)} or {nameof(searchParameters)} cannot be null.");
-
         if (collection == string.Empty)
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
-        return JsonSerializer.Deserialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<T> RetrieveDocument<T>(string collection, string id)
+    public async Task<T> RetrieveDocument<T>(string collection, string id) where T : class
     {
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
             throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
 
         var response = await Get($"/collections/{collection}/documents/{id}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(T);
-
-        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<T> UpdateDocument<T>(string collection, string id, T document)
+    public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
     {
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
             throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
@@ -97,11 +86,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"{nameof(document)} cannot be null");
 
         var response = await Patch($"collections/{collection}/documents/{id}", document);
-
-        if (string.IsNullOrEmpty(response))
-            return default(T);
-
-        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionResponse> RetrieveCollection(string name)
@@ -110,30 +95,22 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
 
         var response = await Get($"/collections/{name}");
-
-        if (string.IsNullOrEmpty(response))
-            return null;
-
-        return JsonSerializer.Deserialize<CollectionResponse>(response);
+        return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
     public async Task<List<CollectionResponse>> RetrieveCollections()
     {
         var response = await Get($"/collections");
-        return JsonSerializer.Deserialize<List<CollectionResponse>>(response);
+        return HandleEmptyStringJsonSerialize<List<CollectionResponse>>(response);
     }
 
-    public async Task<T> DeleteDocument<T>(string collection, string documentId)
+    public async Task<T> DeleteDocument<T>(string collection, string documentId) where T : class
     {
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(documentId))
             throw new ArgumentException($"{nameof(collection)} or {nameof(documentId)} cannot be null or empty.");
 
         var response = await Delete($"/collections/{collection}/documents/{documentId}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(T);
-
-        return JsonSerializer.Deserialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
@@ -142,7 +119,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
 
         var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
-        return JsonSerializer.Deserialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionResponse> DeleteCollection(string name)
@@ -151,14 +128,11 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(name)} cannot be null or empty");
 
         var response = await Delete($"/collections/{name}");
-
-        if (string.IsNullOrEmpty(response))
-            return null;
-
-        return JsonSerializer.Deserialize<CollectionResponse>(response);
+        return HandleEmptyStringJsonSerialize<CollectionResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<List<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
+    public async Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
     {
         if (string.IsNullOrEmpty(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null or empty");
@@ -238,37 +212,25 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
 
         var response = await Post($"/keys", key);
-        return JsonSerializer.Deserialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<KeyResponse> RetrieveKey(int id)
     {
         var response = await Get($"/keys/{id}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(KeyResponse);
-
-        return JsonSerializer.Deserialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<DeleteKeyResponse> DeleteKey(int id)
     {
         var response = await Delete($"/keys/{id}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(DeleteKeyResponse);
-
-        return JsonSerializer.Deserialize<DeleteKeyResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<DeleteKeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListKeysResponse> ListKeys()
     {
         var response = await Get($"/keys");
-
-        if (string.IsNullOrEmpty(response))
-            return default(ListKeysResponse);
-
-        return JsonSerializer.Deserialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public string GenerateScopedSearchKey(string securityKey, string parameters)
@@ -286,7 +248,8 @@ public class TypesenseClient : ITypesenseClient
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
     }
 
-    public async Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride)
+    public async Task<SearchOverride> UpsertSearchOverride(
+        string collection, string overrideName, SearchOverride searchOverride)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
@@ -296,12 +259,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"{nameof(searchOverride)} cannot be null.");
 
         var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride);
-
-        if (string.IsNullOrEmpty(response))
-            return default(SearchOverride);
-
-        return JsonSerializer.Deserialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
-
+        return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListSearchOverridesResponse> ListSearchOverrides(string collection)
@@ -310,11 +268,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
         var response = await Get($"collections/{collection}/overrides");
-
-        if (string.IsNullOrEmpty(response))
-            return default(ListSearchOverridesResponse);
-
-        return JsonSerializer.Deserialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName)
@@ -325,14 +279,11 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
 
         var response = await Get($"/collections/{collection}/overrides/{overrideName}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(SearchOverride);
-
-        return JsonSerializer.Deserialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName)
+    public async Task<DeleteSearchOverrideResponse> DeleteSearchOverride(
+        string collection, string overrideName)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
@@ -340,11 +291,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
 
         var response = await Delete($"/collections/{collection}/overrides/{overrideName}");
-
-        if (string.IsNullOrEmpty(response))
-            return default(DeleteSearchOverrideResponse);
-
-        return JsonSerializer.Deserialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionAlias> UpsertCollectionAlias(string alias, CollectionAlias collectionAlias)
@@ -355,11 +302,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException($"{nameof(collectionAlias)} cannot be null.");
 
         var response = await Put($"/aliases/{alias}", collectionAlias);
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(CollectionAlias);
-
-        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionAlias> RetrieveCollectionAlias(string collection)
@@ -368,22 +311,13 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
         var response = await Get($"/aliases/{collection}");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(CollectionAlias);
-
-        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListCollectionAliasesResponse> ListCollectionAliases()
     {
         var response = await Get("/aliases");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(ListCollectionAliasesResponse);
-
-        return JsonSerializer.Deserialize<ListCollectionAliasesResponse>(
-            response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<CollectionAlias> DeleteCollectionAlias(string collection)
@@ -392,14 +326,11 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
         var response = await Delete($"/aliases/{collection}");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(CollectionAlias);
-
-        return JsonSerializer.Deserialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SynonymSchemaResponse> UpsertSynonym(string collection, string synonym, SynonymSchema schema)
+    public async Task<SynonymSchemaResponse> UpsertSynonym(
+        string collection, string synonym, SynonymSchema schema)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
@@ -409,8 +340,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(schema)} cannot be null.");
 
         var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema);
-
-        return JsonSerializer.Deserialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym)
@@ -421,11 +351,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
         var response = await Get($"/collections/{collection}/synonyms/{synonym}");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(SynonymSchemaResponse);
-
-        return JsonSerializer.Deserialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListSynonymsResponse> ListSynonyms(string collection)
@@ -434,11 +360,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
         var response = await Get($"/collections/{collection}/synonyms");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(ListSynonymsResponse);
-
-        return JsonSerializer.Deserialize<ListSynonymsResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<ListSynonymsResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym)
@@ -449,11 +371,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
         var response = await Delete($"/collections/{collection}/synonyms/{synonym}");
-
-        if (string.IsNullOrWhiteSpace(response))
-            return default(DeleteSynonymResponse);
-
-        return JsonSerializer.Deserialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     private string CreateUrlSearchParameters(SearchParameters searchParameters)
@@ -522,7 +440,9 @@ public class TypesenseClient : ITypesenseClient
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
-        var response = await _httpClient.PostAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+
+        var response = await _httpClient.PostAsync(
+            path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
         if (!response.IsSuccessStatusCode)
             throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
@@ -564,7 +484,8 @@ public class TypesenseClient : ITypesenseClient
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
 
-        var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+        var response = await _httpClient.PatchAsync(
+            path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
@@ -590,4 +511,10 @@ public class TypesenseClient : ITypesenseClient
 
         return await response.Content.ReadAsStringAsync();
     }
+
+    private static T HandleEmptyStringJsonSerialize<T>(
+        string json, JsonSerializerOptions options = null) where T : class
+        => !string.IsNullOrEmpty(json)
+               ? JsonSerializer.Deserialize<T>(json, options)
+               : null;
 }
