@@ -30,7 +30,7 @@ public class TypesenseClient : ITypesenseClient
         if (schema is null)
             throw new ArgumentNullException($"The supplied argument {nameof(Schema)} cannot be null");
 
-        var response = await Post($"/collections", schema);
+        var response = await Post($"/collections", schema).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
@@ -41,7 +41,7 @@ public class TypesenseClient : ITypesenseClient
         if (collection == string.Empty)
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
-        var response = await Post($"/collections/{collection}/documents", document);
+        var response = await Post($"/collections/{collection}/documents", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -52,7 +52,7 @@ public class TypesenseClient : ITypesenseClient
         if (collection == string.Empty)
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
-        var response = await Post($"/collections/{collection}/documents?action=upsert", document);
+        var response = await Post($"/collections/{collection}/documents?action=upsert", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -64,7 +64,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException($"{nameof(collection)} cannot be empty");
 
         var parameters = CreateUrlSearchParameters(searchParameters);
-        var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}");
+        var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -73,7 +73,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
             throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
 
-        var response = await Get($"/collections/{collection}/documents/{id}");
+        var response = await Get($"/collections/{collection}/documents/{id}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -85,7 +85,7 @@ public class TypesenseClient : ITypesenseClient
         if (document is null)
             throw new ArgumentNullException($"{nameof(document)} cannot be null");
 
-        var response = await Patch($"collections/{collection}/documents/{id}", document);
+        var response = await Patch($"collections/{collection}/documents/{id}", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -94,13 +94,13 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
 
-        var response = await Get($"/collections/{name}");
+        var response = await Get($"/collections/{name}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
     public async Task<List<CollectionResponse>> RetrieveCollections()
     {
-        var response = await Get($"/collections");
+        var response = await Get($"/collections").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<List<CollectionResponse>>(response);
     }
 
@@ -109,7 +109,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(documentId))
             throw new ArgumentException($"{nameof(collection)} or {nameof(documentId)} cannot be null or empty.");
 
-        var response = await Delete($"/collections/{collection}/documents/{documentId}");
+        var response = await Delete($"/collections/{collection}/documents/{documentId}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -118,7 +118,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(filter))
             throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
 
-        var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}");
+        var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -127,7 +127,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException($"{nameof(name)} cannot be null or empty");
 
-        var response = await Delete($"/collections/{name}");
+        var response = await Delete($"/collections/{name}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -168,12 +168,11 @@ public class TypesenseClient : ITypesenseClient
             jsonString.Append(json + '\n');
         }
 
-        var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain"));
+        var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain")).ConfigureAwait(false);
+        var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
 
         if (!response.IsSuccessStatusCode)
-            throw new Exception(await response.Content.ReadAsStringAsync());
-
-        var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync());
+            throw new Exception(responseString);
 
         return responseString.Split('\n').Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList();
     }
@@ -187,7 +186,6 @@ public class TypesenseClient : ITypesenseClient
     {
         if (string.IsNullOrEmpty(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null or empty.");
-
         if (exportParameters is null)
             throw new ArgumentNullException($"{nameof(exportParameters)} cannot be null.");
 
@@ -200,7 +198,7 @@ public class TypesenseClient : ITypesenseClient
             extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
 
         var searchParameters = string.Join("&", extraParameters);
-        var response = await Get($"/collections/{collection}/documents/export?{searchParameters}");
+        var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
 
         var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
@@ -211,25 +209,25 @@ public class TypesenseClient : ITypesenseClient
         if (key is null)
             throw new ArgumentNullException($"{nameof(key)} or {nameof(key)} cannot be null.");
 
-        var response = await Post($"/keys", key);
+        var response = await Post($"/keys", key).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<KeyResponse> RetrieveKey(int id)
     {
-        var response = await Get($"/keys/{id}");
+        var response = await Get($"/keys/{id}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<DeleteKeyResponse> DeleteKey(int id)
     {
-        var response = await Delete($"/keys/{id}");
+        var response = await Delete($"/keys/{id}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<DeleteKeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListKeysResponse> ListKeys()
     {
-        var response = await Get($"/keys");
+        var response = await Get($"/keys").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -258,7 +256,7 @@ public class TypesenseClient : ITypesenseClient
         if (searchOverride is null)
             throw new ArgumentNullException($"{nameof(searchOverride)} cannot be null.");
 
-        var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride);
+        var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -267,7 +265,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"collections/{collection}/overrides");
+        var response = await Get($"collections/{collection}/overrides").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -278,7 +276,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/collections/{collection}/overrides/{overrideName}");
+        var response = await Get($"/collections/{collection}/overrides/{overrideName}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -290,7 +288,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException($"{nameof(overrideName)} cannot be null, empty or whitespace.");
 
-        var response = await Delete($"/collections/{collection}/overrides/{overrideName}");
+        var response = await Delete($"/collections/{collection}/overrides/{overrideName}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -301,7 +299,7 @@ public class TypesenseClient : ITypesenseClient
         if (collectionAlias is null)
             throw new ArgumentNullException($"{nameof(collectionAlias)} cannot be null.");
 
-        var response = await Put($"/aliases/{alias}", collectionAlias);
+        var response = await Put($"/aliases/{alias}", collectionAlias).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -310,13 +308,13 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/aliases/{collection}");
+        var response = await Get($"/aliases/{collection}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListCollectionAliasesResponse> ListCollectionAliases()
     {
-        var response = await Get("/aliases");
+        var response = await Get("/aliases").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -325,7 +323,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Delete($"/aliases/{collection}");
+        var response = await Delete($"/aliases/{collection}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -339,7 +337,7 @@ public class TypesenseClient : ITypesenseClient
         if (schema is null)
             throw new ArgumentException($"{nameof(schema)} cannot be null.");
 
-        var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema);
+        var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -350,7 +348,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/collections/{collection}/synonyms/{synonym}");
+        var response = await Get($"/collections/{collection}/synonyms/{synonym}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -359,7 +357,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/collections/{collection}/synonyms");
+        var response = await Get($"/collections/{collection}/synonyms").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListSynonymsResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -370,7 +368,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
-        var response = await Delete($"/collections/{collection}/synonyms/{synonym}");
+        var response = await Delete($"/collections/{collection}/synonyms/{synonym}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -442,38 +440,41 @@ public class TypesenseClient : ITypesenseClient
         });
 
         var response = await _httpClient.PostAsync(
-            path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+            path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
-        if (!response.IsSuccessStatusCode)
-            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return await response.Content.ReadAsStringAsync();
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
     }
 
     private async Task<string> Get(string path)
     {
-        var response = await _httpClient.GetAsync(path);
+        var response = await _httpClient.GetAsync(path).ConfigureAwait(false);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
 
-        if (!response.IsSuccessStatusCode)
-            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return await response.Content.ReadAsStringAsync();
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
     }
 
     private async Task<string> Delete(string path)
     {
-        var response = await _httpClient.DeleteAsync(path);
+        var response = await _httpClient.DeleteAsync(path).ConfigureAwait(false);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
 
-        if (!response.IsSuccessStatusCode)
-            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return await response.Content.ReadAsStringAsync();
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
     }
 
     private async Task<string> Patch(string path, object obj)
@@ -484,16 +485,16 @@ public class TypesenseClient : ITypesenseClient
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
 
-        var response = await _httpClient.PatchAsync(
-            path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+        var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
 
-        if (!response.IsSuccessStatusCode)
-            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        return await response.Content.ReadAsStringAsync();
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
     }
 
     private async Task<string> Put(string path, object obj)
@@ -504,12 +505,12 @@ public class TypesenseClient : ITypesenseClient
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
 
-        var response = await _httpClient.PutAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+        var response = await _httpClient.PutAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        if (!response.IsSuccessStatusCode)
-            throw new TypesenseApiException(await response.Content.ReadAsStringAsync());
-
-        return await response.Content.ReadAsStringAsync();
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
     }
 
     private static T HandleEmptyStringJsonSerialize<T>(
