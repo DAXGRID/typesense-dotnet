@@ -17,6 +17,11 @@ public class TypesenseClient : ITypesenseClient
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonNameCaseInsentiveTrue = new() { PropertyNameCaseInsensitive = true };
+    private readonly JsonSerializerOptions _jsonOptionsCamelCaseIgnoreWritingNull = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 
     public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
     {
@@ -81,7 +86,6 @@ public class TypesenseClient : ITypesenseClient
     {
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(id))
             throw new ArgumentException($"{nameof(collection)} or {nameof(id)} cannot be null or empty.");
-
         if (document is null)
             throw new ArgumentNullException($"{nameof(document)} cannot be null");
 
@@ -136,12 +140,10 @@ public class TypesenseClient : ITypesenseClient
     {
         if (string.IsNullOrEmpty(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null or empty");
-
         if (documents is null)
             throw new ArgumentNullException($"{nameof(documents)} cannot be null.");
 
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
-
         switch (importType)
         {
             case ImportType.Create:
@@ -155,20 +157,8 @@ public class TypesenseClient : ITypesenseClient
                 break;
         }
 
-        var jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
-
-        var jsonString = new StringBuilder();
-        foreach (var document in documents)
-        {
-            var json = JsonSerializer.Serialize(document, jsonOptions);
-            jsonString.Append(json + '\n');
-        }
-
-        var response = await _httpClient.PostAsync(path, new StringContent(jsonString.ToString(), Encoding.UTF8, "text/plain")).ConfigureAwait(false);
+        var jsonNewlines = String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, _jsonOptionsCamelCaseIgnoreWritingNull)));
+        var response = await _httpClient.PostAsync(path, GetTextPlainStringContent(jsonNewlines)).ConfigureAwait(false);
         var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
 
         if (!response.IsSuccessStatusCode)
@@ -200,8 +190,7 @@ public class TypesenseClient : ITypesenseClient
         var searchParameters = string.Join("&", extraParameters);
         var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
 
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, jsonOptions)).ToList();
+        return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, _jsonNameCaseInsentiveTrue)).ToList();
     }
 
     public async Task<KeyResponse> CreateKey(Key key)
@@ -431,24 +420,6 @@ public class TypesenseClient : ITypesenseClient
         return builder.ToString();
     }
 
-    private async Task<string> Post(string path, object obj)
-    {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        });
-
-        var response = await _httpClient.PostAsync(
-            path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-        return response.IsSuccessStatusCode
-            ? responseString
-            : throw new TypesenseApiException(responseString);
-    }
-
     private async Task<string> Get(string path)
     {
         var response = await _httpClient.GetAsync(path).ConfigureAwait(false);
@@ -477,15 +448,21 @@ public class TypesenseClient : ITypesenseClient
             : throw new TypesenseApiException(responseString);
     }
 
+    private async Task<string> Post(string path, object obj)
+    {
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await _httpClient.PostAsync(path, GetApplicationJsonStringContent(jsonString)).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw new TypesenseApiException(responseString);
+    }
+
     private async Task<string> Patch(string path, object obj)
     {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        });
-
-        var response = await _httpClient.PatchAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await _httpClient.PatchAsync(path, GetApplicationJsonStringContent(jsonString)).ConfigureAwait(false);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
             return string.Empty;
@@ -499,12 +476,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Put(string path, object obj)
     {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        });
-
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
         var response = await _httpClient.PutAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -512,6 +484,12 @@ public class TypesenseClient : ITypesenseClient
             ? responseString
             : throw new TypesenseApiException(responseString);
     }
+
+    private static StringContent GetApplicationJsonStringContent(string jsonString)
+        => new(jsonString, Encoding.UTF8, "application/json");
+
+    private static StringContent GetTextPlainStringContent(string jsonString)
+        => new(jsonString, Encoding.UTF8, "text/plain");
 
     private static T HandleEmptyStringJsonSerialize<T>(
         string json, JsonSerializerOptions options = null) where T : class
