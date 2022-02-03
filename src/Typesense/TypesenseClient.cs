@@ -477,7 +477,7 @@ public class TypesenseClient : ITypesenseClient
     private async Task<string> Put(string path, object obj)
     {
         var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await _httpClient.PutAsync(path, new StringContent(jsonString, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+        var response = await _httpClient.PutAsync(path, GetApplicationJsonStringContent(jsonString)).ConfigureAwait(false);
         var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         return response.IsSuccessStatusCode
