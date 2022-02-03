@@ -117,7 +117,7 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize)
+    public async Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40)
     {
         if (string.IsNullOrEmpty(collection) || string.IsNullOrEmpty(filter))
             throw new ArgumentException($"{nameof(collection)} or {nameof(filter)} cannot be null or empty.");
