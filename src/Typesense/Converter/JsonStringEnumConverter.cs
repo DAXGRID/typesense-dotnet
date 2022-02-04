@@ -43,15 +43,16 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
         var stringValue = reader.GetString();
 
         if (_stringToEnum.TryGetValue(stringValue, out var enumValue))
-        {
             return enumValue;
-        }
 
         return default;
     }
 
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
+        if (writer is null)
+            throw new ArgumentNullException(nameof(writer), "cannot be null");
+
         writer.WriteStringValue(_enumToString[value]);
     }
 }

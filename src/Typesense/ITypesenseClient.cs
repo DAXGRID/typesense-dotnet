@@ -126,7 +126,7 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(string collection, List<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(string collection, IEnumerable<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
     /// <summary>
     /// Export all documents in a given collection.

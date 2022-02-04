@@ -10,11 +10,17 @@ public record Highlight
 {
     [JsonPropertyName("field")]
     public string Field { get; init; }
+
     [JsonPropertyName("snippet")]
     public string Snippet { get; init; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage
+    ("Naming", "CA1721: Property names should not match get methods",
+     Justification = "Required because of special case regarding matched tokens.")]
     [JsonPropertyName("matched_tokens")]
     [JsonConverter(typeof(MatchedTokenConverter))]
     public IReadOnlyList<object> MatchedTokens { get; init; }
+
     public IReadOnlyList<T> GetMatchedTokens<T>() => MatchedTokens.Cast<T>().ToList();
 }
 
