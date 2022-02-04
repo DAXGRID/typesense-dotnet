@@ -4,17 +4,17 @@ using Typesense.Converter;
 
 namespace Typesense;
 
-public class Field
+public record Field
 {
     [JsonPropertyName("name")]
-    public string Name { get; private set; }
+    public string Name { get; init; }
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<FieldType>))]
-    public FieldType Type { get; private set; }
+    public FieldType Type { get; init; }
     [JsonPropertyName("facet")]
-    public bool Facet { get; private set; }
+    public bool Facet { get; init; }
     [JsonPropertyName("optional")]
-    public bool Optional { get; private set; }
+    public bool Optional { get; init; }
 
     [JsonConstructor]
     public Field(string name, FieldType type, bool facet, bool optional = false)
@@ -34,7 +34,7 @@ public class Field
         Optional = optional;
     }
 
-    private FieldType MapFieldType(string fieldType)
+    private static FieldType MapFieldType(string fieldType)
     {
         switch (fieldType)
         {
@@ -64,7 +64,7 @@ public class Field
                 return FieldType.Auto;
             case "string*":
                 return FieldType.AutoString;
-            default: throw new Exception($"Could not map field type {nameof(fieldType)}");
+            default: throw new ArgumentException($"Could not map field type with value '{fieldType}'", nameof(fieldType));
         }
     }
 }

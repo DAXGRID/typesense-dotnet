@@ -12,8 +12,8 @@ public record Exclude
     [JsonConstructor]
     public Exclude(string id)
     {
-        if (string.IsNullOrEmpty(id))
-            throw new ArgumentException($"{nameof(id)} cannot be null or empty.");
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(id));
         Id = id;
     }
 }
@@ -28,8 +28,8 @@ public record Include
     [JsonConstructor]
     public Include(string id, int position)
     {
-        if (string.IsNullOrEmpty(id))
-            throw new ArgumentException($"{nameof(id)} cannot be null or empty.");
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(id));
         Id = id;
         Position = position;
     }
@@ -45,10 +45,10 @@ public record Rule
     [JsonConstructor]
     public Rule(string query, string match)
     {
-        if (string.IsNullOrEmpty(query))
-            throw new ArgumentException($"{nameof(query)} cannot be null or empty.");
-        if (string.IsNullOrEmpty(match))
-            throw new ArgumentException($"{nameof(match)} cannot be null or empty.");
+        if (string.IsNullOrWhiteSpace(query))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(query));
+        if (string.IsNullOrWhiteSpace(match))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(match));
         Match = match;
         Query = query;
     }
@@ -65,10 +65,10 @@ public record SearchOverride
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
 
-    public SearchOverride(List<Include> includes, Rule rule)
+    public SearchOverride(IEnumerable<Include> includes, Rule rule)
     {
         if (rule is null)
-            throw new ArgumentNullException($"{nameof(rule)} cannot be null.");
+            throw new ArgumentNullException(nameof(rule), "cannot be null.");
         Includes = includes;
         Rule = rule;
     }
@@ -76,7 +76,7 @@ public record SearchOverride
     public SearchOverride(IEnumerable<Exclude> excludes, Rule rule)
     {
         if (rule is null)
-            throw new ArgumentNullException($"{nameof(rule)} cannot be null.");
+            throw new ArgumentNullException(nameof(rule), "cannot be null.");
         Excludes = excludes;
         Rule = rule;
     }
@@ -84,7 +84,7 @@ public record SearchOverride
     public SearchOverride(IEnumerable<Exclude> excludes, IEnumerable<Include> includes, Rule rule)
     {
         if (rule is null)
-            throw new ArgumentNullException($"{nameof(rule)} cannot be null.");
+            throw new ArgumentNullException(nameof(rule), "cannot be null.");
         Excludes = excludes;
         Includes = includes;
         Rule = rule;

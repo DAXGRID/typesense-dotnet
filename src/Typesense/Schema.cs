@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Typesense;
 
-public class Schema
+public record Schema
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; init; }
     [JsonPropertyName("fields")]
-    public List<Field> Fields { get; set; }
+    public IEnumerable<Field> Fields { get; init; }
     [JsonPropertyName("default_sorting_field")]
-    public string DefaultSortingField { get; set; }
+    public string DefaultSortingField { get; init; }
 }
