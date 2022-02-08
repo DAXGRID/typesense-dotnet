@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Typesense;
 
-public class ListKeysResponse
+public record ListKeysResponse
 {
     [JsonPropertyName("keys")]
     public IEnumerable<KeyResponse> Keys { get; init; }
