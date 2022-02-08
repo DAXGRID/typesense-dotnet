@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Typesense;
 
-public class SearchParameters
+public record SearchParameters
 {
     /// <summary>
     /// The query text to search for in the collection.

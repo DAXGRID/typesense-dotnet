@@ -4,7 +4,7 @@ namespace Typesense.Setup;
 /// <summary>
 /// The node contains the configuration for a remote Typesense service.
 /// </summary>
-public class Node
+public record Node
 {
     /// <summary>
     /// Hostname for the Typesense service.
