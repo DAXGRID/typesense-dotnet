@@ -240,11 +240,15 @@ public class TypesenseClient : ITypesenseClient
 
     public string GenerateScopedSearchKey(string securityKey, string parameters)
     {
+        if (String.IsNullOrWhiteSpace(securityKey))
+            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(securityKey));
+        if (String.IsNullOrWhiteSpace(parameters))
+            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(parameters));
+
         var securityKeyAsBuffer = Encoding.UTF8.GetBytes(securityKey);
         var parametersAsBuffer = Encoding.UTF8.GetBytes(parameters);
 
         using var hmac = new HMACSHA256(securityKeyAsBuffer);
-
         var hash = hmac.ComputeHash(parametersAsBuffer);
         var digest = Convert.ToBase64String(hash);
         var keyPrefix = securityKey[..4];
