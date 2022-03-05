@@ -299,4 +299,5 @@ dotnet test --filter Category=Integration
 To enable running integration tests you can run Typesense in a docker container using the command below.
 
 ```sh
-docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.22.1 --data-dir /data --api-key=key```
+docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.22.1 --data-dir /data --api-key=key
+```
