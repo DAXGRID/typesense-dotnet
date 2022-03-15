@@ -2,23 +2,18 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Typesense.Setup;
+using Xunit;
 
 namespace Typesense.Tests;
 
-public class TypesenseFixture
+public class TypesenseFixture : IAsyncLifetime
 {
     public ITypesenseClient Client => GetClient();
 
-    public TypesenseFixture()
-    {
-        Cleanup().ContinueWith(_ => { });
-    }
-
-    private async Task Cleanup()
+    public async Task InitializeAsync()
     {
         await CleanCollections();
         await CleanApiKeys();
-        await CleanCurations();
         await CleanAlias();
     }
 
@@ -37,15 +32,6 @@ public class TypesenseFixture
         foreach (var key in apiKeys.Keys)
         {
             await Client.DeleteKey(key.Id);
-        }
-    }
-
-    private async Task CleanCurations()
-    {
-        var curations = await Client.ListSearchOverrides("companies");
-        foreach (var curation in curations.SearchOverrides)
-        {
-            await Client.DeleteSearchOverride("companies", curation.Id);
         }
     }
 
@@ -74,5 +60,10 @@ public class TypesenseFixture
                     }
                 };
             }).BuildServiceProvider().GetService<ITypesenseClient>();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 }

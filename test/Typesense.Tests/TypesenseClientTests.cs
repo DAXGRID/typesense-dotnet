@@ -484,13 +484,17 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(17)]
     [Trait("Category", "Integration")]
     public async Task Delete_api_key()
-    {
+    {   
         var apiKeys = await _client.ListKeys();
-        var apiKey = apiKeys.Keys.First();
+        var apiKey = apiKeys.Keys.First(x => x.Description.Equals("Example key one"));
+        var expected = new DeleteKeyResponse
+        {
+            Id = apiKey.Id
+        };
 
-        var response = await _client.RetrieveKey(apiKey.Id);
+        var response = await _client.DeleteKey(apiKey.Id);
 
-        response.Should().BeEquivalentTo(apiKey);
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(18)]
