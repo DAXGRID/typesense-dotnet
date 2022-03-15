@@ -14,7 +14,6 @@ public class TypesenseFixture : IAsyncLifetime
     {
         await CleanCollections();
         await CleanApiKeys();
-        await CleanCurations();
         await CleanAlias();
     }
 
@@ -33,20 +32,6 @@ public class TypesenseFixture : IAsyncLifetime
         foreach (var key in apiKeys.Keys)
         {
             await Client.DeleteKey(key.Id);
-        }
-    }
-
-    private async Task CleanCurations()
-    {
-        var curations = await Client.ListSearchOverrides("companies");
-        if (curations == null)
-        {
-            return;
-        }
-
-        foreach (var curation in curations.SearchOverrides)
-        {
-            await Client.DeleteSearchOverride("companies", curation.Id);
         }
     }
 
