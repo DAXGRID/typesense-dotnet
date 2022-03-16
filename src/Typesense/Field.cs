@@ -15,23 +15,27 @@ public record Field
     public bool Facet { get; init; }
     [JsonPropertyName("optional")]
     public bool Optional { get; init; }
+    [JsonPropertyName("index")]
+    public bool Index { get; init; }
 
     [JsonConstructor]
-    public Field(string name, FieldType type, bool facet, bool optional = false)
+    public Field(string name, FieldType type, bool facet, bool optional = false, bool index = true)
     {
         Name = name;
         Type = type;
         Facet = facet;
         Optional = optional;
+        Index = index;
     }
 
     [Obsolete("A better choice going forward is using the constructor with 'FieldType' enum instead.")]
-    public Field(string name, string type, bool facet, bool optional = false)
+    public Field(string name, string type, bool facet, bool optional = false, bool index = true)
     {
         Name = name;
         Type = MapFieldType(type);
         Facet = facet;
         Optional = optional;
+        Index = index;
     }
 
     private static FieldType MapFieldType(string fieldType)
