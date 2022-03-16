@@ -29,6 +29,7 @@ class Program
                     new Field("id", FieldType.String, false),
                     new Field("houseNumber", FieldType.Int32, false),
                     new Field("accessAddress", FieldType.String, false, true),
+                    new Field("metadataNotes", FieldType.String, false, true, false),
                 },
             DefaultSortingField = "houseNumber"
         };
@@ -66,6 +67,14 @@ class Program
             HouseNumber = 3,
         };
 
+        // Example to show non indexed field
+        var addressFive = new Address
+        {
+            HouseNumber = 12,
+            AccessAddress = "Singel 12",
+            MetadataNotes = "This is not indexed and will not use memory"
+        };
+
         var houseOneResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressOne);
         Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseOneResponse)}");
         var houseTwoResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressTwo);
@@ -74,6 +83,8 @@ class Program
         Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseThreeResponse)}");
         var houseFourResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressFour);
         Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseFourResponse)}");
+        var houseFiveResponse = await typesenseClient.CreateDocument<Address>("Addresses", addressFive);
+        Console.WriteLine($"Created document: {JsonSerializer.Serialize(houseFiveResponse)}");
 
         var exportResult = await typesenseClient.ExportDocuments<Address>("Addresses");
         Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");

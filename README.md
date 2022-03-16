@@ -34,7 +34,7 @@ var typesenseClient = provider.GetService<ITypesenseClient>();
 
 ## Create collection
 
-When you create the collection, you can specify each field with `name`, `type` and if it should be a `facet` or be an `optional` field.
+When you create the collection, you can specify each field with `name`, `type` and if it should be a `facet`, an `optional` or an `indexed` field.
 
 ``` c#
 var schema = new Schema
@@ -45,6 +45,7 @@ var schema = new Schema
         new Field("id", FieldType.Int32, false),
         new Field("houseNumber", FieldType.Int32, false),
         new Field("accessAddress", FieldType.String, false, true),
+        new Field("metadataNotes", FieldType.String, false, true, false),
     },
     DefaultSortingField = "id"
 };
