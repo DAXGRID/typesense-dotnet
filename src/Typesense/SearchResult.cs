@@ -31,7 +31,7 @@ public record Hit<T>
     [JsonPropertyName("document")]
     public T Document { get; init; }
     [JsonPropertyName("text_match")]
-    public int TextMatch { get; init; }
+    public long TextMatch { get; init; }
 }
 
 public record SearchResult<T>

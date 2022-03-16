@@ -389,6 +389,34 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(11)]
+    [Trait("Category", "Integration")]
+    public async Task Search_query_by_two_fields()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new SearchParameters
+        {
+            Text = "Stark",
+            QueryBy = "company_name,country"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
     [Fact, TestPriority(12)]
     [Trait("Category", "Integration")]
     public async Task Delete_document_by_id()
