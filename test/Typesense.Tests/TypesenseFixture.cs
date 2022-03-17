@@ -12,9 +12,10 @@ public class TypesenseFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await CleanCollections();
-        await CleanApiKeys();
-        await CleanAlias();
+        await Task.WhenAll(
+            CleanCollections(),
+            CleanApiKeys(),
+            CleanAlias());
     }
 
     private async Task CleanCollections()
