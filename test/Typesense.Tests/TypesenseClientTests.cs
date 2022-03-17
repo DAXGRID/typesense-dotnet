@@ -381,7 +381,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.Search<Company>("companies", query);
 
-
         using (var scope = new AssertionScope())
         {
             response.Found.Should().Be(1);
@@ -408,7 +407,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         };
 
         var response = await _client.Search<Company>("companies", query);
-
 
         using (var scope = new AssertionScope())
         {
@@ -512,7 +510,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(17)]
     [Trait("Category", "Integration")]
     public async Task Delete_api_key()
-    {   
+    {
         var apiKeys = await _client.ListKeys();
         var apiKey = apiKeys.Keys.First(x => x.Description.Equals("Example key one"));
         var expected = new DeleteKeyResponse
