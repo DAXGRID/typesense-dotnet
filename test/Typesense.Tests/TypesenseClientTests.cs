@@ -20,6 +20,7 @@ public record Company()
     public string Country { get; init; }
 }
 
+[Trait("Category", "Integration")]
 [TestCaseOrderer("Typesense.Tests.PriorityOrderer", "Typesense.Tests")]
 public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 {
@@ -31,7 +32,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(0)]
-    [Trait("Category", "Integration")]
     public async Task Create_schema()
     {
         var expected = new CollectionResponse
@@ -65,7 +65,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(1)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_collection()
     {
         var expected = new CollectionResponse
@@ -87,7 +86,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(2)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_collections()
     {
         var expected = new List<CollectionResponse>
@@ -111,7 +109,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(3)]
-    [Trait("Category", "Integration")]
     public async Task Delete_collection()
     {
         var expected = new CollectionResponse
@@ -133,7 +130,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(4)]
-    [Trait("Category", "Integration")]
     public async Task Index_document()
     {
         // We create collection for test cases.
@@ -153,7 +149,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(5)]
-    [Trait("Category", "Integration")]
     public async Task Upsert_document_existing_document()
     {
         var company = new Company
@@ -170,7 +165,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(6)]
-    [Trait("Category", "Integration")]
     public async Task Upsert_document_new_document()
     {
         var company = new Company
@@ -187,7 +181,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
-    [Trait("Category", "Integration")]
     public async Task Import_documents_create()
     {
         var expected = new List<ImportResponse>
@@ -220,7 +213,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
-    [Trait("Category", "Integration")]
     public async Task Import_documents_update()
     {
         var expected = new List<ImportResponse>
@@ -253,7 +245,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(7)]
-    [Trait("Category", "Integration")]
     public async Task Import_documents_upsert()
     {
         var expected = new List<ImportResponse>
@@ -287,7 +278,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(8)]
-    [Trait("Category", "Integration")]
     public async Task Export_documents()
     {
         var expected = new List<Company>
@@ -328,7 +318,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(9)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_document()
     {
         var expected = new Company
@@ -345,7 +334,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(10)]
-    [Trait("Category", "Integration")]
     public async Task Update_document()
     {
         var company = new Company
@@ -362,7 +350,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
-    [Trait("Category", "Integration")]
     public async Task Search_query_by_just_text()
     {
         var expected = new Company
@@ -389,7 +376,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
-    [Trait("Category", "Integration")]
     public async Task Search_query_by_two_fields()
     {
         var expected = new Company
@@ -416,7 +402,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(12)]
-    [Trait("Category", "Integration")]
     public async Task Delete_document_by_id()
     {
         var company = new Company
@@ -433,7 +418,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(13)]
-    [Trait("Category", "Integration")]
     public async Task Delete_document_by_query()
     {
         var expected = new FilterDeleteResponse { NumberOfDeleted = 2 };
@@ -443,7 +427,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(14)]
-    [Trait("Category", "Integration")]
     public async Task Create_api_key()
     {
         var expected = new Key()
@@ -468,7 +451,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(15)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_api_key()
     {
         var apiKeys = await _client.ListKeys();
@@ -480,7 +462,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(16)]
-    [Trait("Category", "Integration")]
     public async Task List_keys()
     {
         var expected = new Key()
@@ -508,7 +489,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(17)]
-    [Trait("Category", "Integration")]
     public async Task Delete_api_key()
     {
         var apiKeys = await _client.ListKeys();
@@ -524,7 +504,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(18)]
-    [Trait("Category", "Integration")]
     public async Task Upsert_search_override()
     {
         var searchOverride = new SearchOverride(
@@ -540,7 +519,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(19)]
-    [Trait("Category", "Integration")]
     public async Task Retrive_search_override()
     {
         var searchOverrides = await _client.ListSearchOverrides("companies");
@@ -553,7 +531,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(20)]
-    [Trait("Category", "Integration")]
     public async Task List_search_overrides()
     {
         var expected = new SearchOverride(
@@ -578,7 +555,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(21)]
-    [Trait("Category", "Integration")]
     public async Task Delete_search_override()
     {
         var expected = new SearchOverride(
@@ -607,7 +583,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(23)]
-    [Trait("Category", "Integration")]
     public async Task List_collection_aliases()
     {
         var expected = new CollectionAlias("companies", "my-companies-alias");
@@ -624,7 +599,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(24)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_collection_alias()
     {
         var expected = new CollectionAlias("companies", "my-companies-alias");
@@ -635,7 +609,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(25)]
-    [Trait("Category", "Integration")]
     public async Task Delete_collection_alias()
     {
         var expected = new CollectionAlias("companies", "my-companies-alias");
@@ -646,7 +619,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(26)]
-    [Trait("Category", "Integration")]
     public async Task Upsert_synonym()
     {
         var expected = new SynonymSchemaResponse
@@ -663,7 +635,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(27)]
-    [Trait("Category", "Integration")]
     public async Task Retrieve_synonym()
     {
         var expected = new SynonymSchemaResponse
@@ -679,7 +650,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(28)]
-    [Trait("Category", "Integration")]
     public async Task List_synonyms()
     {
         var expected = new ListSynonymsResponse
@@ -701,7 +671,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(29)]
-    [Trait("Category", "Integration")]
     public async Task Delete_synonym()
     {
         var expected = new DeleteSynonymResponse { Id = "apple-synonyms" };
