@@ -175,7 +175,7 @@ public class TypesenseClient : ITypesenseClient
                 throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
         }
 
-        var jsonNewlines = String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, _jsonOptionsCamelCaseIgnoreWritingNull)));
+        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetTextPlainStringContent(jsonNewlines);
         var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
         var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
@@ -444,8 +444,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Get(string path)
     {
-        var response = await _httpClient.GetAsync(path).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.GetAsync, path).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -453,8 +452,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Delete(string path)
     {
-        var response = await _httpClient.DeleteAsync(path).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -462,7 +460,9 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Post(string path, object obj)
     {
-        var (response, responseString) = await HandleParameterResponse(_httpClient.PostAsync, path, obj).ConfigureAwait(false);
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PostAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -470,7 +470,9 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Patch(string path, object obj)
     {
-        var (response, responseString) = await HandleParameterResponse(_httpClient.PatchAsync, path, obj).ConfigureAwait(false);
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -478,7 +480,9 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Put(string path, object obj)
     {
-        var (response, responseString) = await HandleParameterResponse(_httpClient.PutAsync, path, obj).ConfigureAwait(false);
+        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PutAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -496,31 +500,33 @@ public class TypesenseClient : ITypesenseClient
             _ => throw new ArgumentException($"Could not convert statuscode {Enum.GetName(statusCode)}.")
         };
 
-    private static async Task<(HttpResponseMessage response, string responseString)> HandleParameterResponse(
-        Func<string, HttpContent, Task<HttpResponseMessage>> f, string path, object obj)
+    private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
+        Func<string, Task<HttpResponseMessage>> f, string path)
     {
-        var jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        var response = await f(path).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return (response, responseString);
+    }
 
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), jsonOptions);
-        using var stringContent = GetApplicationJsonStringContent(jsonString);
+    private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
+        Func<string, HttpContent, Task<HttpResponseMessage>> f, string path, StringContent stringContent)
+    {
         var response = await f(path, stringContent).ConfigureAwait(false);
         var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         return (response, responseString);
     }
 
     private static StringContent GetApplicationJsonStringContent(string jsonString)
-    => new(jsonString, Encoding.UTF8, "application/json");
+        => new(jsonString, Encoding.UTF8, "application/json");
 
     private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
 
-    private static T HandleEmptyStringJsonSerialize<T>(
-        string json, JsonSerializerOptions options = null) where T : class
+    private static T HandleEmptyStringJsonSerialize<T>(string json, JsonSerializerOptions options = null) where T : class
         => !string.IsNullOrEmpty(json)
                ? JsonSerializer.Deserialize<T>(json, options)
                : null;
+
+    private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
+        => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
 }
