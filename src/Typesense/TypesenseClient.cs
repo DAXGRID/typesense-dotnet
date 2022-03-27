@@ -522,9 +522,12 @@ public class TypesenseClient : ITypesenseClient
     private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
 
-    private static T HandleEmptyStringJsonSerialize<T>(string json, JsonSerializerOptions options = null) where T : class
+    private static T HandleEmptyStringJsonSerialize<T>(string json) where T : class
+        => HandleEmptyStringJsonSerialize<T>(json, null);
+
+    private static T HandleEmptyStringJsonSerialize<T>(string json, JsonSerializerOptions? options) where T : class
         => !string.IsNullOrEmpty(json)
-        ? JsonSerializer.Deserialize<T>(json, options)
+        ? JsonSerializer.Deserialize<T>(json, options) ?? throw new ArgumentException("Deserialize is not allowed to return null.")
         : throw new ArgumentException("Empty JSON response is not valid.");
 
     private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)

@@ -6,4 +6,10 @@ public record DeleteSynonymResponse
 {
     [JsonPropertyName("id")]
     public string Id { get; init; }
+
+    [JsonConstructor]
+    public DeleteSynonymResponse(string id)
+    {
+        Id = id;
+    }
 }

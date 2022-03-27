@@ -6,5 +6,11 @@ namespace Typesense;
 public record ListKeysResponse
 {
     [JsonPropertyName("keys")]
-    public IEnumerable<KeyResponse> Keys { get; init; }
+    public IReadOnlyCollection<KeyResponse> Keys { get; init; }
+
+    [JsonConstructor]
+    public ListKeysResponse(IReadOnlyCollection<KeyResponse> keys)
+    {
+        Keys = keys;
+    }
 }

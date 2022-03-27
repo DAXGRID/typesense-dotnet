@@ -6,5 +6,11 @@ namespace Typesense;
 public record ListSynonymsResponse
 {
     [JsonPropertyName("synonyms")]
-    public IEnumerable<SynonymSchemaResponse> Synonyms { get; init; }
+    public IReadOnlyCollection<SynonymSchemaResponse> Synonyms { get; init; }
+
+    [JsonConstructor]
+    public ListSynonymsResponse(IReadOnlyCollection<SynonymSchemaResponse> synonyms)
+    {
+        Synonyms = synonyms;
+    }
 }

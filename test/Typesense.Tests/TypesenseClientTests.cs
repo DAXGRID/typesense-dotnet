@@ -34,18 +34,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(0)]
     public async Task Create_schema()
     {
-        var expected = new CollectionResponse
-        {
-            Name = "companies",
-            NumberOfDocuments = 0,
-            Fields = new List<Field>
+        var expected = new CollectionResponse(
+            "companies",
+            0,
+            new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, false),
                 new Field("country", FieldType.String, true),
             },
-            DefaultSortingField = "num_employees"
-        };
+            "num_employees");
 
         var schema = new Schema
         {
@@ -67,18 +65,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(1)]
     public async Task Retrieve_collection()
     {
-        var expected = new CollectionResponse
-        {
-            Name = "companies",
-            NumberOfDocuments = 0,
-            Fields = new List<Field>
+        var expected = new CollectionResponse(
+            "companies",
+            0,
+            new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, false),
                 new Field("country", FieldType.String, true),
             },
-            DefaultSortingField = "num_employees"
-        };
+            "num_employees");
 
         var response = await _client.RetrieveCollection("companies");
 
@@ -90,19 +86,17 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new List<CollectionResponse>
         {
-            new CollectionResponse
-            {
-                Name = "companies",
-                NumberOfDocuments = 0,
-                Fields = new List<Field>
+            new CollectionResponse(
+                "companies",
+                0,
+                new List<Field>
                 {
                     new Field("company_name", FieldType.String, false),
                     new Field("num_employees", FieldType.Int32, false),
                     new Field("country", FieldType.String, true),
                 },
-                DefaultSortingField = "num_employees"
-            }
-        };
+                "num_employees")
+    };
 
         var response = await _client.RetrieveCollections();
         response.Should().BeEquivalentTo(expected);
@@ -111,18 +105,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(3)]
     public async Task Delete_collection()
     {
-        var expected = new CollectionResponse
-        {
-            Name = "companies",
-            NumberOfDocuments = 0,
-            Fields = new List<Field>
+        var expected = new CollectionResponse(
+            "companies",
+            0,
+            new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, false),
                 new Field("country", FieldType.String, true),
             },
-            DefaultSortingField = "num_employees"
-        };
+            "num_employees");
 
         var result = await _client.DeleteCollection("companies");
 
@@ -185,8 +177,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new List<ImportResponse>
         {
-            new ImportResponse { Success = true },
-            new ImportResponse { Success = true },
+            new ImportResponse(true),
+            new ImportResponse(true),
         };
 
         var companies = new List<Company>
@@ -217,8 +209,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new List<ImportResponse>
         {
-            new ImportResponse { Success = true },
-            new ImportResponse { Success = true },
+            new ImportResponse(true),
+            new ImportResponse(true),
         };
 
         var companies = new List<Company>
@@ -249,8 +241,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new List<ImportResponse>
         {
-            new ImportResponse { Success = true },
-            new ImportResponse { Success = true },
+            new ImportResponse(true),
+            new ImportResponse(true),
         };
 
         var companies = new List<Company>
@@ -420,7 +412,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(13)]
     public async Task Delete_document_by_query()
     {
-        var expected = new FilterDeleteResponse { NumberOfDeleted = 2 };
+        var expected = new FilterDeleteResponse(2);
         var response = await _client.DeleteDocuments("companies", "num_employees:>100");
 
         response.Should().BeEquivalentTo(expected);
@@ -557,17 +549,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(21)]
     public async Task Delete_search_override()
     {
-        var expected = new SearchOverride(
-            new List<Include>
-            {
-                new Include("422", 1),
-                new Include("54", 2)
-            },
-            new Rule("apple", "exact"));
+        var expected = new DeleteSearchOverrideResponse("customize-apple");
 
         var response = await _client.DeleteSearchOverride("companies", "customize-apple");
 
-        response.Id.Should().BeEquivalentTo("customize-apple");
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(22)]
@@ -585,17 +571,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(23)]
     public async Task List_collection_aliases()
     {
-        var expected = new CollectionAlias("companies", "my-companies-alias");
+        var expected = new ListCollectionAliasesResponse(new List<CollectionAlias>
+        {
+            new CollectionAlias("companies", "my-companies-alias")
+        });
 
         var response = await _client.ListCollectionAliases();
 
-        response.CollectionAliases.Should()
-            .HaveCount(1).And
-            .SatisfyRespectively(
-                first =>
-                {
-                    first.Should().BeEquivalentTo(expected);
-                });
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(24)]
@@ -621,12 +604,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(26)]
     public async Task Upsert_synonym()
     {
-        var expected = new SynonymSchemaResponse
-        {
-            Id = "apple-synonyms",
-            Root = "apple",
-            Synonyms = new List<string> { "appl", "aple", "apple" }
-        };
+        var expected = new SynonymSchemaResponse(
+            "apple-synonyms",
+            new List<string> { "appl", "aple", "apple" },
+            "apple");
 
         var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" }, "apple");
         var response = await _client.UpsertSynonym("companies", "apple-synonyms", schema);
@@ -637,12 +618,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(27)]
     public async Task Retrieve_synonym()
     {
-        var expected = new SynonymSchemaResponse
-        {
-            Id = "apple-synonyms",
-            Root = "apple",
-            Synonyms = new List<string> { "appl", "aple", "apple" }
-        };
+        var expected = new SynonymSchemaResponse(
+            "apple-synonyms",
+            new List<string> { "appl", "aple", "apple" },
+            "apple");
 
         var response = await _client.RetrieveSynonym("companies", "apple-synonyms");
 
@@ -652,18 +631,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(28)]
     public async Task List_synonyms()
     {
-        var expected = new ListSynonymsResponse
-        {
-            Synonyms = new List<SynonymSchemaResponse>
+        var expected = new ListSynonymsResponse(
+            new List<SynonymSchemaResponse>
             {
-                new SynonymSchemaResponse
-                {
-                    Id = "apple-synonyms",
-                    Root = "apple",
-                    Synonyms = new List<string> { "appl", "aple", "apple" }
-                }
-            }
-        };
+                new SynonymSchemaResponse(
+                    "apple-synonyms",
+                    new List<string> { "appl", "aple", "apple" },
+                    "apple")
+            });
 
         var response = await _client.ListSynonyms("companies");
 
@@ -673,7 +648,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(29)]
     public async Task Delete_synonym()
     {
-        var expected = new DeleteSynonymResponse { Id = "apple-synonyms" };
+        var expected = new DeleteSynonymResponse("apple-synonyms");
         var response = await _client.DeleteSynonym("companies", "apple-synonyms");
 
         response.Should().Be(expected);

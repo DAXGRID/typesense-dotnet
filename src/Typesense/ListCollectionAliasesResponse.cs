@@ -7,4 +7,10 @@ public record ListCollectionAliasesResponse
 {
     [JsonPropertyName("aliases")]
     public IEnumerable<CollectionAlias> CollectionAliases { get; init; }
+
+    [JsonConstructor]
+    public ListCollectionAliasesResponse(IEnumerable<CollectionAlias> collectionAliases)
+    {
+        CollectionAliases = collectionAliases;
+    }
 }

@@ -10,5 +10,5 @@ public record Schema
     [JsonPropertyName("fields")]
     public IEnumerable<Field> Fields { get; init; }
     [JsonPropertyName("default_sorting_field")]
-    public string DefaultSortingField { get; init; }
+    public string? DefaultSortingField { get; init; }
 }
