@@ -65,9 +65,9 @@ public class TypesenseApiUnprocessableEntityException : TypesenseApiException
 /// <summary>
 /// Service Unavailable - We’re temporarily offline. Please try again later.
 /// </summary>
-public class TypesenseApiServiceUnavilableException : TypesenseApiException
+public class TypesenseApiServiceUnavailableException : TypesenseApiException
 {
-    public TypesenseApiServiceUnavilableException() { }
-    public TypesenseApiServiceUnavilableException(string message) : base(message) { }
-    public TypesenseApiServiceUnavilableException(string message, Exception innerException) : base(message, innerException) { }
+    public TypesenseApiServiceUnavailableException() { }
+    public TypesenseApiServiceUnavailableException(string message) : base(message) { }
+    public TypesenseApiServiceUnavailableException(string message, Exception innerException) : base(message, innerException) { }
 }
