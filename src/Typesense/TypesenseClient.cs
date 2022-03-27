@@ -524,8 +524,8 @@ public class TypesenseClient : ITypesenseClient
 
     private static T HandleEmptyStringJsonSerialize<T>(string json, JsonSerializerOptions options = null) where T : class
         => !string.IsNullOrEmpty(json)
-               ? JsonSerializer.Deserialize<T>(json, options)
-               : null;
+        ? JsonSerializer.Deserialize<T>(json, options)
+        : throw new ArgumentException("Empty JSON response is not valid.");
 
     private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
         => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
