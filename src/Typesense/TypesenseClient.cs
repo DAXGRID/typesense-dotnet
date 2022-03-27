@@ -175,7 +175,7 @@ public class TypesenseClient : ITypesenseClient
                 throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
         }
 
-        var jsonNewlines = String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, _jsonOptionsCamelCaseIgnoreWritingNull)));
+        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetTextPlainStringContent(jsonNewlines);
         var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
         var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
@@ -383,7 +383,7 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    private string CreateUrlSearchParameters(SearchParameters searchParameters)
+    private static string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var builder = new StringBuilder();
         if (searchParameters.MaxHits is not null)
@@ -444,70 +444,76 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Get(string path)
     {
-        var response = await _httpClient.GetAsync(path).ConfigureAwait(false);
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return string.Empty;
-
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        var (response, responseString) = await HandleHttpResponse(_httpClient.GetAsync, path).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
-            : throw new TypesenseApiException(responseString);
+            : throw GetException(response.StatusCode, responseString);
     }
 
     private async Task<string> Delete(string path)
     {
-        var response = await _httpClient.DeleteAsync(path).ConfigureAwait(false);
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return string.Empty;
-
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
-            : throw new TypesenseApiException(responseString);
+            : throw GetException(response.StatusCode, responseString);
     }
 
     private async Task<string> Post(string path, object obj)
     {
         var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetApplicationJsonStringContent(jsonString);
-        var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PostAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
-            : throw new TypesenseApiException(responseString);
+            : throw GetException(response.StatusCode, responseString);
     }
 
     private async Task<string> Patch(string path, object obj)
     {
         var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetApplicationJsonStringContent(jsonString);
-        var response = await _httpClient.PatchAsync(path, stringContent).ConfigureAwait(false);
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return string.Empty;
-
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
-            : throw new TypesenseApiException(responseString);
+            : throw GetException(response.StatusCode, responseString);
     }
 
     private async Task<string> Put(string path, object obj)
     {
         var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetApplicationJsonStringContent(jsonString);
-        var response = await _httpClient.PutAsync(path, stringContent).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PutAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
-            : throw new TypesenseApiException(responseString);
+            : throw GetException(response.StatusCode, responseString);
+    }
+
+    private static TypesenseApiException GetException(HttpStatusCode statusCode, string message)
+        => statusCode switch
+        {
+            HttpStatusCode.BadRequest => new TypesenseApiBadRequestException(message),
+            HttpStatusCode.Unauthorized => new TypesenseApiUnauthorizedException(message),
+            HttpStatusCode.NotFound => new TypesenseApiNotFoundException(message),
+            HttpStatusCode.Conflict => new TypesenseApiConflictException(message),
+            HttpStatusCode.UnprocessableEntity => new TypesenseApiUnprocessableEntityException(message),
+            HttpStatusCode.ServiceUnavailable => new TypesenseApiUnprocessableEntityException(message),
+            _ => throw new ArgumentException($"Could not convert statuscode {Enum.GetName(statusCode)}.")
+        };
+
+    private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
+        Func<string, Task<HttpResponseMessage>> f, string path)
+    {
+        var response = await f(path).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return (response, responseString);
+    }
+
+    private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
+        Func<string, HttpContent, Task<HttpResponseMessage>> f, string path, StringContent stringContent)
+    {
+        var response = await f(path, stringContent).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return (response, responseString);
     }
 
     private static StringContent GetApplicationJsonStringContent(string jsonString)
@@ -516,9 +522,11 @@ public class TypesenseClient : ITypesenseClient
     private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
 
-    private static T HandleEmptyStringJsonSerialize<T>(
-        string json, JsonSerializerOptions options = null) where T : class
+    private static T HandleEmptyStringJsonSerialize<T>(string json, JsonSerializerOptions options = null) where T : class
         => !string.IsNullOrEmpty(json)
-               ? JsonSerializer.Deserialize<T>(json, options)
-               : null;
+        ? JsonSerializer.Deserialize<T>(json, options)
+        : throw new ArgumentException("Empty JSON response is not valid.");
+
+    private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
+        => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
 }

@@ -12,6 +12,11 @@ public interface ITypesenseClient
     /// <returns>The created collection.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionResponse> CreateCollection(Schema schema);
 
     /// <summary>
@@ -23,6 +28,11 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> CreateDocument<T>(string collection, T document) where T : class;
 
     /// <summary>
@@ -34,6 +44,11 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> UpsertDocument<T>(string collection, T document) where T : class;
 
     /// <summary>
@@ -45,6 +60,9 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters);
 
     /// <summary>
@@ -55,6 +73,9 @@ public interface ITypesenseClient
     /// <returns>The document or default(T) if the document could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> RetrieveDocument<T>(string collection, string id) where T : class;
 
     /// <summary>
@@ -63,19 +84,27 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="id">The document id.</param>
     /// <param name="document">The document to be updated.</param>
-    /// <returns>The updated document or null if the document could not be found.</returns>
+    /// <returns>The updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class;
 
     /// <summary>
     /// Retrieve the collection on collection name.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <returns>The collection or null if it could not be found.</returns>
+    /// <returns>The collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionResponse> RetrieveCollection(string name);
 
     /// <summary>
@@ -83,6 +112,9 @@ public interface ITypesenseClient
     /// </summary>
     /// <returns>A list of collections.</returns>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<List<CollectionResponse>> RetrieveCollections();
 
     /// <summary>
@@ -93,6 +125,9 @@ public interface ITypesenseClient
     /// <returns>The deleted document or default(T) if it could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> DeleteDocument<T>(string collection, string documentId) where T : class;
 
     /// <summary>
@@ -104,15 +139,21 @@ public interface ITypesenseClient
     /// <returns>A response containing a count of the deleted documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40);
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.
     /// </summary>
     /// <param name="name">The collection name.</param>
-    /// <returns>A response with the collection deleted or null if it could not be found.</returns>
+    /// <returns>A response with the collection deleted.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionResponse> DeleteCollection(string name);
 
     /// <summary>
@@ -126,6 +167,11 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<List<ImportResponse>> ImportDocuments<T>(string collection, IEnumerable<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
     /// <summary>
@@ -135,6 +181,9 @@ public interface ITypesenseClient
     /// <returns>A collection of documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<List<T>> ExportDocuments<T>(string collection);
 
     /// <summary>
@@ -146,6 +195,9 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters);
 
     /// <summary>
@@ -155,6 +207,11 @@ public interface ITypesenseClient
     /// <returns>The created key.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<KeyResponse> CreateKey(Key key);
 
     /// <summary>
@@ -163,6 +220,9 @@ public interface ITypesenseClient
     /// <param name="id">Id of key to be retrived</param>
     /// <returns>A single key.</returns>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<KeyResponse> RetrieveKey(int id);
 
     /// <summary>
@@ -171,6 +231,9 @@ public interface ITypesenseClient
     /// <param name="id">Id of key to be deleted.</param>
     /// <returns>A DeletedKeyResponse with an id of the deleted Key or default(DeleteKeyResponse) if it could not be found.</returns>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<DeleteKeyResponse> DeleteKey(int id);
 
     /// <summary>
@@ -178,6 +241,9 @@ public interface ITypesenseClient
     /// </summary>
     /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<ListKeysResponse> ListKeys();
 
     /// <summary>
@@ -194,6 +260,7 @@ public interface ITypesenseClient
     /// than the expiration of the parent API key with which it is generated. expires_at is optional.
     /// </param>
     /// <returns>Scope API key</returns>
+    /// <exception cref="ArgumentException"></exception>
     string GenerateScopedSearchKey(string securityKey, string parameters);
 
     /// <summary>
@@ -205,6 +272,11 @@ public interface ITypesenseClient
     /// <returns>The upserted search override.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride);
 
     /// <summary>
@@ -215,6 +287,9 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<ListSearchOverridesResponse> ListSearchOverrides(string collection);
 
     /// <summary>
@@ -222,9 +297,12 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="overrideName">The override name that should be retrieved.</param>
-    /// <returns>The search override or null if not found.</returns>
+    /// <returns>The search override.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName);
 
     /// <summary>
@@ -235,6 +313,9 @@ public interface ITypesenseClient
     /// <returns>The deleted search override.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName);
 
     /// <summary>
@@ -246,15 +327,23 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionAlias> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias);
 
     /// <summary>
     /// Retrieve alias on collection name.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <returns>The given alias on collection name. If not found return null.</returns>
+    /// <returns>The given alias on collection name.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionAlias> RetrieveCollectionAlias(string collection);
 
     /// <summary>
@@ -262,6 +351,9 @@ public interface ITypesenseClient
     /// </summary>
     /// <returns>List of aliases.</returns>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<ListCollectionAliasesResponse> ListCollectionAliases();
 
     /// <summary>
@@ -271,6 +363,9 @@ public interface ITypesenseClient
     /// <returns>The deleted collection alias.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionAlias> DeleteCollectionAlias(string aliasName);
 
     /// <summary>
@@ -283,6 +378,11 @@ public interface ITypesenseClient
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<SynonymSchemaResponse> UpsertSynonym(string collection, string synonym, SynonymSchema schema);
 
     /// <summary>
@@ -290,18 +390,24 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The synonym collection name.</param>
     /// <param name="synonym">The name of the synonym.</param>
-    /// <returns>Synonym in colection on name or null if not found.</returns>
+    /// <returns>Synonym on name associated with the collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym);
 
     /// <summary>
     /// List all synonyms associated with a given collection.
     /// </summary>
     /// <param name="collection">Collection name.</param>
-    /// <returns>All synonyms in collection or null if not found.</returns>
+    /// <returns>All synonyms associated with the collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<ListSynonymsResponse> ListSynonyms(string collection);
 
     /// <summary>
@@ -312,5 +418,8 @@ public interface ITypesenseClient
     /// <returns>Id of the deleted synonym.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym);
 }
