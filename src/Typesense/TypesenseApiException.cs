@@ -2,6 +2,9 @@ using System;
 
 namespace Typesense;
 
+/// <summary>
+/// TypesenseApiException general TypesenseApiException.
+/// </summary>
 public class TypesenseApiException : Exception
 {
     public TypesenseApiException() { }
@@ -9,6 +12,9 @@ public class TypesenseApiException : Exception
     public TypesenseApiException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Bad Request - The request could not be understood due to malformed syntax.
+/// </summary>
 public class TypesenseApiBadRequestException : TypesenseApiException
 {
     public TypesenseApiBadRequestException() { }
@@ -16,6 +22,9 @@ public class TypesenseApiBadRequestException : TypesenseApiException
     public TypesenseApiBadRequestException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Unauthorized - Your API key is wrong.
+/// </summary>
 public class TypesenseApiUnauthorizedException : TypesenseApiException
 {
     public TypesenseApiUnauthorizedException() { }
@@ -23,6 +32,9 @@ public class TypesenseApiUnauthorizedException : TypesenseApiException
     public TypesenseApiUnauthorizedException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Not Found - The requested resource is not found.
+/// </summary>
 public class TypesenseApiNotFoundException : TypesenseApiException
 {
     public TypesenseApiNotFoundException() { }
@@ -30,6 +42,9 @@ public class TypesenseApiNotFoundException : TypesenseApiException
     public TypesenseApiNotFoundException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Conflict - When a resource already exists.
+/// </summary>
 public class TypesenseApiConflictException : TypesenseApiException
 {
     public TypesenseApiConflictException() { }
@@ -37,6 +52,9 @@ public class TypesenseApiConflictException : TypesenseApiException
     public TypesenseApiConflictException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Unprocessable Entity - Request is well-formed, but cannot be processed.
+/// </summary>
 public class TypesenseApiUnprocessableEntityException : TypesenseApiException
 {
     public TypesenseApiUnprocessableEntityException() { }
@@ -44,6 +62,9 @@ public class TypesenseApiUnprocessableEntityException : TypesenseApiException
     public TypesenseApiUnprocessableEntityException(string message, Exception innerException) : base(message, innerException) { }
 }
 
+/// <summary>
+/// Service Unavailable - We’re temporarily offline. Please try again later.
+/// </summary>
 public class TypesenseApiServiceUnavilableException : TypesenseApiException
 {
     public TypesenseApiServiceUnavilableException() { }
