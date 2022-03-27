@@ -278,6 +278,20 @@ var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
 var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
 ```
 
+### Typesense API Errors
+
+Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.22.2/api/api-errors.html) spec.
+
+| Type                                       | Description                                                                |
+|:-------------------------------------------|:---------------------------------------------------------------------------|
+| `TypesenseApiException`                    | Base exception type for Typesense api exceptions.                          |
+| `TypesenseApiBadRequestException`          | Bad Request - The request could not be understood due to malformed syntax. |
+| `TypesenseApiUnauthorizedException`        | Unauthorized - Your API key is wrong.                                      |
+| `TypesenseApiNotFoundException`            | Not Found - The requested resource is not found.                           |
+| `TypesenseApiConflictException`            | Conflict - When a resource already exists.                                 |
+| `TypesenseApiUnprocessableEntityException` | Unprocessable Entity - Request is well-formed, but cannot be processed.    |
+| `TypesenseApiServiceUnavailableException`  | Service Unavailable - We’re temporarily offline. Please try again later.   |
+
 ## Tests
 
 Running all tests.
