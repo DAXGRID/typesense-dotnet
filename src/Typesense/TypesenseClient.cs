@@ -181,7 +181,8 @@ public class TypesenseClient : ITypesenseClient
         var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
 
         return response.IsSuccessStatusCode
-            ? responseString.Split('\n').Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)).ToList()
+            ? responseString.Split('\n').Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)
+                                                ?? throw new ArgumentException("Null is not valid for documents.")).ToList()
             : throw new TypesenseApiException(responseString);
     }
 
@@ -208,7 +209,10 @@ public class TypesenseClient : ITypesenseClient
         var searchParameters = string.Join("&", extraParameters);
         var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
 
-        return response.Split('\n').Select((x) => JsonSerializer.Deserialize<T>(x, _jsonNameCaseInsentiveTrue)).ToList();
+        return response.Split('\n')
+            .Select((x) => JsonSerializer.Deserialize<T>(x, _jsonNameCaseInsentiveTrue)
+                    ?? throw new ArgumentException("Null is not valid for documents"))
+            .ToList();
     }
 
     public async Task<KeyResponse> CreateKey(Key key)
