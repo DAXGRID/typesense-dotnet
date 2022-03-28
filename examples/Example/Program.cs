@@ -124,21 +124,22 @@ class Program
         Console.WriteLine($"Retrieved document that does not exist: {JsonSerializer.Serialize(documentNotExist)}");
 
         // Keys
-        var keyOne = new Key()
+        var keyOne = new Key(
+            "Example key one",
+            new[] { "*" },
+            new[] { "*" })
         {
-            Description = "Example key one",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
             Value = "Example-api-1-key-value",
             ExpiresAt = 1661344547
         };
 
-        var keyTwo = new Key()
+        var keyTwo = new Key(
+            "Example key two",
+            new[] { "*" },
+            new[] { "*" })
         {
-            Description = "Example key two",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
             Value = "Example-api-2-key-value",
+            ExpiresAt = 1661344547
         };
 
         var createKeyResultOne = await typesenseClient.CreateKey(keyOne);
