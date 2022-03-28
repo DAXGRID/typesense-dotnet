@@ -13,7 +13,7 @@ public record Schema
     [JsonPropertyName("default_sorting_field")]
     public string? DefaultSortingField { get; init; }
 
-    [Obsolete("Use constructor instead.")]
+    [Obsolete("Use multi-arity constructor instead.")]
     public Schema()
     {
         Name = "";
