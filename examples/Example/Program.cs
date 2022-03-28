@@ -159,7 +159,10 @@ class Program
         Console.WriteLine($"Scoped Search Key: {scopedSearchKey}");
 
         // Curation
-        var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
+        var searchOverride = new SearchOverride(new Rule("Sul", "exact"))
+        {
+            Includes = new List<Include> { new Include("2", 1) },
+        };
         var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride(
             "Addresses",
             "addresses-override",

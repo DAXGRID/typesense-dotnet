@@ -420,13 +420,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     public async Task Create_api_key()
     {
         var expected = new Key(
-
             "Example key one",
             new[] { "*" },
-            new[] { "*" },
-            "Example-api-1-key-value",
-            1661344547
-        );
+            new[] { "*" })
+        {
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
 
         var response = await _client.CreateKey(expected);
 
@@ -457,10 +457,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var expected = new Key(
             "Example key one",
             new[] { "*" },
-            new[] { "*" },
-            "Example-api-1-key-value",
-            1661344547
-        );
+            new[] { "*" })
+        {
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
 
         var response = await _client.ListKeys();
 

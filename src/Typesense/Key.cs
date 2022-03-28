@@ -34,42 +34,4 @@ public record Key
         Description = description;
         Collections = collections;
     }
-
-    public Key(
-        string description,
-        IReadOnlyCollection<string> actions,
-        IReadOnlyCollection<string> collections,
-        string value)
-    {
-        Actions = actions;
-        Description = description;
-        Collections = collections;
-        Value = value;
-    }
-
-    public Key(
-        string description,
-        IReadOnlyCollection<string> actions,
-        IReadOnlyCollection<string> collections,
-        long expiresAt)
-    {
-        Actions = actions;
-        Description = description;
-        Collections = collections;
-        ExpiresAt = expiresAt;
-    }
-
-    public Key(
-        string description,
-        IReadOnlyCollection<string> actions,
-        IReadOnlyCollection<string> collections,
-        string? value,
-        long? expiresAt)
-    {
-        Actions = actions;
-        Description = description;
-        Collections = collections;
-        Value = value;
-        ExpiresAt = expiresAt;
-    }
 }
