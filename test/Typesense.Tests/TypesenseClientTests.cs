@@ -350,11 +350,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Country = "USA",
         };
 
-        var query = new SearchParameters
-        {
-            Text = "Stark",
-            QueryBy = "company_name"
-        };
+        var query = new SearchParameters("Stark", "company_name");
 
         var response = await _client.Search<Company>("companies", query);
 
@@ -376,12 +372,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Country = "USA",
         };
 
-        var query = new SearchParameters
-        {
-            Text = "Stark",
-            QueryBy = "company_name,country"
-        };
-
+        var query = new SearchParameters("Stark", "company_name,country");
         var response = await _client.Search<Company>("companies", query);
 
         using (var scope = new AssertionScope())

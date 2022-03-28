@@ -21,14 +21,14 @@ public record SearchParameters
     /// This can be used to boost fields in priority, when looking for matches.
     /// Multiple fields are separated with a comma.
     /// </summary>
-    public string QueryByWeights { get; set; }
+    public string? QueryByWeights { get; set; }
 
     /// <summary>
     /// Maximum number of hits returned. Increasing this value might
     /// increase search latency. Default: 500. Use `all` to return all hits found.
     /// </summary>
     [Obsolete("max_hits has been deprecated since Typesense version 0.19.0")]
-    public string MaxHits { get; set; }
+    public string? MaxHits { get; set; }
 
     /// <summary>
     /// Boolean field to indicate that the last word in the query should
@@ -41,7 +41,7 @@ public record SearchParameters
     /// Filter conditions for refining your search results. Separate
     /// multiple conditions with &&.
     /// </summary>
-    public string FilterBy { get; set; }
+    public string? FilterBy { get; set; }
 
     /// <summary>
     /// A list of numerical fields and their corresponding sort orders
@@ -52,18 +52,18 @@ public record SearchParameters
     /// If no `sort_by` parameter is specified, results are sorted by
     /// `_text_match:desc,default_sorting_field:desc`
     /// </summary>
-    public string SortBy { get; set; }
+    public string? SortBy { get; set; }
 
     /// <summary>
     /// A list of fields that will be used for faceting your results
     /// on. Separate multiple fields with a comma.
     /// </summary>
-    public string FacetBy { get; set; }
+    public string? FacetBy { get; set; }
 
     /// <summary>
     /// Maximum number of facet values to be returned.
     /// </summary>
-    public string MaxFacetValues { get; set; }
+    public string? MaxFacetValues { get; set; }
 
     /// <summary>
     /// Facet values that are returned can now be filtered via this parameter.
@@ -71,71 +71,71 @@ public record SearchParameters
     /// by `category`, you can set `facet_query=category:shoe` to return only
     /// facet values that contain the prefix "shoe".
     /// </summary>
-    public string FacetQuery { get; set; }
+    public string? FacetQuery { get; set; }
 
     /// <summary>
     /// The number of typographical errors (1 or 2) that would be tolerated.
     /// </summary>
-    public string NumberOfTypos { get; set; }
+    public string? NumberOfTypos { get; set; }
 
     /// <summary>
     /// Results from this specific page number would be fetched.
     /// </summary>
-    public string Page { get; set; }
+    public string? Page { get; set; }
 
     /// <summary>
     /// Number of results to fetch per page. Default: 10
     /// </summary>
-    public string PerPage { get; set; }
+    public string? PerPage { get; set; }
 
     /// <summary>
     /// You can aggregate search results into groups or buckets by specify
     /// one or more `group_by` fields. Separate multiple fields with a comma.
     /// To group on a particular field, it must be a faceted field.
     /// </summary>
-    public string GroupBy { get; set; }
+    public string? GroupBy { get; set; }
 
     /// <summary>
     /// Maximum number of hits to be returned for every group. If the `group_limit` is
     /// set as `K` then only the top K hits in each group are returned in the response.
     /// </summary>
-    public string GroupLimit { get; set; }
+    public string? GroupLimit { get; set; }
 
     /// <summary>
     /// List of fields from the document to include in the search result.
     /// </summary>
-    public string IncludeFields { get; set; }
+    public string? IncludeFields { get; set; }
 
     /// <summary>
     /// List of fields from the document to exclude in the search result.
     /// </summary>
-    public string ExcludeFields { get; set; }
+    public string? ExcludeFields { get; set; }
 
     /// <summary>
     /// List of fields which should be highlighted fully without snippeting.
     /// </summary>
-    public string HighlightFullFields { get; set; }
+    public string? HighlightFullFields { get; set; }
 
     /// <summary>
     /// The number of tokens that should surround the highlighted text on each side.
     /// </summary>
-    public string HighlightAffixNumberOfTokens { get; set; }
+    public string? HighlightAffixNumberOfTokens { get; set; }
 
     /// <summary>
     /// The start tag used for the highlighted snippets.
     /// </summary>
-    public string HighlightStartTag { get; set; }
+    public string? HighlightStartTag { get; set; }
 
     /// <summary>
     /// The end tag used for the highlighted snippets.
     /// </summary>
-    public string HighlightEndTag { get; set; }
+    public string? HighlightEndTag { get; set; }
 
     /// <summary>
     /// Field values under this length will be fully highlighted, instead of showing
     /// a snippet of relevant portion. Default: 30
     /// </summary>
-    public string SnippetThreshold { get; set; }
+    public string? SnippetThreshold { get; set; }
 
     /// <summary>
     /// If the number of results found for a specific query is less than
@@ -143,14 +143,14 @@ public record SearchParameters
     /// enough results are found. Tokens that have the least individual hits
     /// are dropped first. Set to 0 to disable. Default: 10
     /// </summary>
-    public string DropTokensThreshold { get; set; }
+    public string? DropTokensThreshold { get; set; }
 
     /// <summary>
     /// If the number of results found for a specific query is less than this number,
     /// Typesense will attempt to look for tokens with more typos until
     /// enough results are found. Default: 100
     /// </summary>
-    public string TypoTokensThreshold { get; set; }
+    public string? TypoTokensThreshold { get; set; }
 
     /// <summary>
     /// A list of records to unconditionally include in the search results
@@ -163,7 +163,7 @@ public record SearchParameters
     /// on rules. Overrides are applied first, followed by `pinned_hits` and
     /// finally `hidden_hits`.
     /// </summary>
-    public string PinnedHits { get; set; }
+    public string? PinnedHits { get; set; }
 
     /// <summary>
     /// A list of records to unconditionally hide from search results.
@@ -173,7 +173,7 @@ public record SearchParameters
     /// on rules. Overrides are applied first, followed by `pinned_hits` and
     /// finally `hidden_hits`.
     /// </summary>
-    public string HiddenHits { get; set; }
+    public string? HiddenHits { get; set; }
 
     /// <summary>
     /// Maximum number of hits that can be fetched from the collection. Eg: 200
@@ -181,7 +181,7 @@ public record SearchParameters
     /// A list of custom fields that must be highlighted even if you don't query
     /// for them.
     /// </summary>
-    public string LimitHits { get; set; }
+    public string? LimitHits { get; set; }
 
     /// <summary>
     /// Set this parameter to true if you wish to split the search query into space separated words yourself.
@@ -195,4 +195,17 @@ public record SearchParameters
     /// query time, you can do that by setting this parameter to false
     /// </summary>
     public bool? EnableOverrides { get; set; }
+
+    [Obsolete("Use multi-arity constructor instead.")]
+    public SearchParameters()
+    {
+        Text = string.Empty;
+        QueryBy = string.Empty;
+    }
+
+    public SearchParameters(string text, string queryBy)
+    {
+        Text = text;
+        QueryBy = queryBy;
+    }
 }

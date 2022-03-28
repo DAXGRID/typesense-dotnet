@@ -75,11 +75,7 @@ var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", ad
 ## Search document in collection
 
 ```c#
-var query = new SearchParameters
-{
-    Text = "Smed",
-    QueryBy = "accessAddress"
-};
+var query = new SearchParameters("Smed", "accessAddress");
 
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
