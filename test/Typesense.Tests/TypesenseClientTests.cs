@@ -496,12 +496,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     public async Task Upsert_search_override()
     {
         var searchOverride = new SearchOverride(
-            new List<Include>
+            new Rule("apple", "exact"))
+        {
+            Includes = new List<Include>
             {
                 new Include("422", 1),
                 new Include("54", 2)
             },
-            new Rule("apple", "exact"));
+        };
 
         var response = await _client.UpsertSearchOverride(
             "companies", "customize-apple", searchOverride);
@@ -523,12 +525,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     public async Task List_search_overrides()
     {
         var expected = new SearchOverride(
-            new List<Include>
+            new Rule("apple", "exact"))
+        {
+            Includes = new List<Include>
             {
                 new Include("422", 1),
                 new Include("54", 2)
             },
-            new Rule("apple", "exact"));
+        };
 
         var response = await _client.ListSearchOverrides("companies");
 

@@ -261,7 +261,7 @@ public class TypesenseClient : ITypesenseClient
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
     }
 
-    public async Task<SearchOverride> UpsertSearchOverride(
+    public async Task<SearchOverrideResponse> UpsertSearchOverride(
         string collection, string overrideName, SearchOverride searchOverride)
     {
         if (string.IsNullOrWhiteSpace(collection))
@@ -272,7 +272,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException(nameof(searchOverride), "cannot be null.");
 
         var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride).ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListSearchOverridesResponse> ListSearchOverrides(string collection)
@@ -284,7 +284,7 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName)
+    public async Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
@@ -292,7 +292,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
 
         var response = await Get($"/collections/{collection}/overrides/{overrideName}").ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<SearchOverride>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<DeleteSearchOverrideResponse> DeleteSearchOverride(

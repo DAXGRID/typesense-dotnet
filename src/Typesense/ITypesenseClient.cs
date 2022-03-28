@@ -277,7 +277,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SearchOverride> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride);
+    Task<SearchOverrideResponse> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride);
 
     /// <summary>
     /// Listing all search overrides associated with a given collection.
@@ -303,7 +303,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SearchOverride> RetrieveSearchOverride(string collection, string overrideName);
+    Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName);
 
     /// <summary>
     /// Deleting an override associated with a collection.
