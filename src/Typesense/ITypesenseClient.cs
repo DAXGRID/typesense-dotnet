@@ -332,7 +332,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAlias> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias);
+    Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias);
 
     /// <summary>
     /// Retrieve alias on collection name.
@@ -344,7 +344,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAlias> RetrieveCollectionAlias(string collection);
+    Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection);
 
     /// <summary>
     /// List all aliases and the corresponding collections that they map to.
@@ -366,7 +366,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAlias> DeleteCollectionAlias(string aliasName);
+    Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName);
 
     /// <summary>
     /// Upsert synonym.

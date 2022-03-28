@@ -419,14 +419,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(14)]
     public async Task Create_api_key()
     {
-        var expected = new Key()
-        {
-            Description = "Example key one",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
-            Value = "Example-api-1-key-value",
-            ExpiresAt = 1661344547
-        };
+        var expected = new Key(
+
+            "Example key one",
+            new[] { "*" },
+            new[] { "*" },
+            "Example-api-1-key-value",
+            1661344547
+        );
 
         var response = await _client.CreateKey(expected);
 
@@ -454,14 +454,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(16)]
     public async Task List_keys()
     {
-        var expected = new Key()
-        {
-            Description = "Example key one",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
-            Value = "Example-api-1-key-value",
-            ExpiresAt = 1661344547
-        };
+        var expected = new Key(
+            "Example key one",
+            new[] { "*" },
+            new[] { "*" },
+            "Example-api-1-key-value",
+            1661344547
+        );
 
         var response = await _client.ListKeys();
 
@@ -558,7 +557,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Trait("Category", "Integration")]
     public async Task Upsert_collection_alias()
     {
-        var expected = new CollectionAlias("companies", "my-companies-alias");
+        var expected = new CollectionAliasResponse("companies", "my-companies-alias");
 
         var response = await _client.UpsertCollectionAlias(
             "my-companies-alias", new CollectionAlias("companies"));
@@ -569,9 +568,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(23)]
     public async Task List_collection_aliases()
     {
-        var expected = new ListCollectionAliasesResponse(new List<CollectionAlias>
+        var expected = new ListCollectionAliasesResponse(new List<CollectionAliasResponse>
         {
-            new CollectionAlias("companies", "my-companies-alias")
+            new CollectionAliasResponse("companies", "my-companies-alias")
         });
 
         var response = await _client.ListCollectionAliases();
@@ -582,7 +581,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(24)]
     public async Task Retrieve_collection_alias()
     {
-        var expected = new CollectionAlias("companies", "my-companies-alias");
+        var expected = new CollectionAliasResponse("companies", "my-companies-alias");
 
         var response = await _client.RetrieveCollectionAlias("my-companies-alias");
 
@@ -592,7 +591,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(25)]
     public async Task Delete_collection_alias()
     {
-        var expected = new CollectionAlias("companies", "my-companies-alias");
+        var expected = new CollectionAliasResponse("companies", "my-companies-alias");
 
         var response = await _client.DeleteCollectionAlias("my-companies-alias");
 

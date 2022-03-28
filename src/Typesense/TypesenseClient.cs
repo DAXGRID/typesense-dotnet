@@ -307,7 +307,7 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<DeleteSearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<CollectionAlias> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias)
+    public async Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias)
     {
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(aliasName));
@@ -315,16 +315,16 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException(nameof(collectionAlias), "cannot be null.");
 
         var response = await Put($"/aliases/{aliasName}", collectionAlias).ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<CollectionAlias> RetrieveCollectionAlias(string collection)
+    public async Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
 
         var response = await Get($"/aliases/{collection}").ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<ListCollectionAliasesResponse> ListCollectionAliases()
@@ -333,13 +333,13 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<CollectionAlias> DeleteCollectionAlias(string aliasName)
+    public async Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName)
     {
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(aliasName));
 
         var response = await Delete($"/aliases/{aliasName}").ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<CollectionAlias>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<SynonymSchemaResponse> UpsertSynonym(

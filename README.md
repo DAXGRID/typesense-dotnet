@@ -145,16 +145,13 @@ var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ### Create key
 
 `ExpiresAt` is optional.
+`Value` is optional.
 
 ```c#
-var apiKey = new Key()
-{
-    Description = "Example key one",
-    Actions = new[] { "*" },
-    Collections = new[] { "*" },
-    Value = "Example-api-1-key-value",
-    ExpiresAt = 1661344547
-};
+var apiKey = new Key(
+    "Example key one",
+    new[] { "*" },
+    new[] { "*" });
 
 var createdKey = await typesenseClient.CreateKey(apiKey);
 ```
