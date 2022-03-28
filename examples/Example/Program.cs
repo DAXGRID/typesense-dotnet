@@ -88,10 +88,7 @@ class Program
         Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");
 
         var exportResultParameters =
-            await typesenseClient.ExportDocuments<Address>("Addresses", new ExportParameters
-            {
-                ExcludeFields = "houseNumber",
-            });
+            await typesenseClient.ExportDocuments<Address>("Addresses", new ExportParameters { IncludeFields = "houseNumber" });
         Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResultParameters)}");
 
 
