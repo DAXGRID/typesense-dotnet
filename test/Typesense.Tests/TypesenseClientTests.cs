@@ -45,17 +45,15 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "num_employees");
 
-        var schema = new Schema
-        {
-            Name = "companies",
-            Fields = new List<Field>
+        var schema = new Schema(
+            "companies",
+            new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, false),
                 new Field("country", FieldType.String, true),
             },
-            DefaultSortingField = "num_employees"
-        };
+            "num_employees");
 
         var response = await _client.CreateCollection(schema);
 
@@ -656,17 +654,15 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
     private async Task CreateCompanyCollection()
     {
-        var schema = new Schema
-        {
-            Name = "companies",
-            Fields = new List<Field>
+        var schema = new Schema(
+            "companies",
+            new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, false),
                 new Field("country", FieldType.String, true),
             },
-            DefaultSortingField = "num_employees"
-        };
+            "num_employees");
 
         _ = await _client.CreateCollection(schema);
     }

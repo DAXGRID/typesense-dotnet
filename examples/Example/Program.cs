@@ -21,18 +21,16 @@ class Program
 
         var typesenseClient = provider.GetService<ITypesenseClient>();
 
-        var schema = new Schema
-        {
-            Name = "Addresses",
-            Fields = new List<Field>
-                {
-                    new Field("id", FieldType.String, false),
-                    new Field("houseNumber", FieldType.Int32, false),
-                    new Field("accessAddress", FieldType.String, false, true),
-                    new Field("metadataNotes", FieldType.String, false, true, false),
-                },
-            DefaultSortingField = "houseNumber"
-        };
+        var schema = new Schema(
+            "Addresses",
+            new List<Field>
+            {
+                new Field("id", FieldType.String, false),
+                new Field("houseNumber", FieldType.Int32, false),
+                new Field("accessAddress", FieldType.String, false, true),
+                new Field("metadataNotes", FieldType.String, false, true, false),
+            },
+            "houseNumber");
 
         var createCollectionResponse = await typesenseClient.CreateCollection(schema);
         Console.WriteLine($"Created collection: {JsonSerializer.Serialize(createCollectionResponse)}");
