@@ -611,7 +611,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<string> { "appl", "aple", "apple" },
             "apple");
 
-        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" }, "apple");
+        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" }) { Root = "apple" };
         var response = await _client.UpsertSynonym("companies", "apple-synonyms", schema);
 
         response.Should().BeEquivalentTo(expected);
