@@ -16,23 +16,21 @@ class Program
             .AddTypesenseClient(config =>
             {
                 config.ApiKey = "key";
-                config.Nodes = new List<Node> { new Node { Host = "localhost", Port = "8108", Protocol = "http" } };
+                config.Nodes = new List<Node> { new Node("localhost", "8108", "http") };
             }).BuildServiceProvider();
 
         var typesenseClient = provider.GetService<ITypesenseClient>();
 
-        var schema = new Schema
-        {
-            Name = "Addresses",
-            Fields = new List<Field>
-                {
-                    new Field("id", FieldType.String, false),
-                    new Field("houseNumber", FieldType.Int32, false),
-                    new Field("accessAddress", FieldType.String, false, true),
-                    new Field("metadataNotes", FieldType.String, false, true, false),
-                },
-            DefaultSortingField = "houseNumber"
-        };
+        var schema = new Schema(
+            "Addresses",
+            new List<Field>
+            {
+                new Field("id", FieldType.String, false),
+                new Field("houseNumber", FieldType.Int32, false),
+                new Field("accessAddress", FieldType.String, false, true),
+                new Field("metadataNotes", FieldType.String, false, true, false),
+            },
+            "houseNumber");
 
         var createCollectionResponse = await typesenseClient.CreateCollection(schema);
         Console.WriteLine($"Created collection: {JsonSerializer.Serialize(createCollectionResponse)}");
@@ -90,10 +88,7 @@ class Program
         Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResult)}");
 
         var exportResultParameters =
-            await typesenseClient.ExportDocuments<Address>("Addresses", new ExportParameters
-            {
-                ExcludeFields = "houseNumber",
-            });
+            await typesenseClient.ExportDocuments<Address>("Addresses", new ExportParameters { IncludeFields = "houseNumber" });
         Console.WriteLine($"Export result: {JsonSerializer.Serialize(exportResultParameters)}");
 
 
@@ -113,12 +108,7 @@ class Program
         var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addresses", "4", addressFour);
         Console.WriteLine($"Updated document: ${JsonSerializer.Serialize(updateDocumentResult)}");
 
-        var query = new SearchParameters
-        {
-            Text = "Sul",
-            QueryBy = "accessAddress"
-        };
-
+        var query = new SearchParameters("Sul", "accessAddress");
         var searchResult = await typesenseClient.Search<Address>("Addresses", query);
         Console.WriteLine($"Search result: {JsonSerializer.Serialize(searchResult)}");
 
@@ -129,21 +119,22 @@ class Program
         Console.WriteLine($"Retrieved document that does not exist: {JsonSerializer.Serialize(documentNotExist)}");
 
         // Keys
-        var keyOne = new Key()
+        var keyOne = new Key(
+            "Example key one",
+            new[] { "*" },
+            new[] { "*" })
         {
-            Description = "Example key one",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
             Value = "Example-api-1-key-value",
             ExpiresAt = 1661344547
         };
 
-        var keyTwo = new Key()
+        var keyTwo = new Key(
+            "Example key two",
+            new[] { "*" },
+            new[] { "*" })
         {
-            Description = "Example key two",
-            Actions = new[] { "*" },
-            Collections = new[] { "*" },
             Value = "Example-api-2-key-value",
+            ExpiresAt = 1661344547
         };
 
         var createKeyResultOne = await typesenseClient.CreateKey(keyOne);
@@ -164,7 +155,10 @@ class Program
         Console.WriteLine($"Scoped Search Key: {scopedSearchKey}");
 
         // Curation
-        var searchOverride = new SearchOverride(new List<Include> { new Include("2", 1) }, new Rule("Sul", "exact"));
+        var searchOverride = new SearchOverride(new Rule("Sul", "exact"))
+        {
+            Includes = new List<Include> { new Include("2", 1) },
+        };
         var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride(
             "Addresses",
             "addresses-override",

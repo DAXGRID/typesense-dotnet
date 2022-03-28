@@ -8,17 +8,10 @@ public record SynonymSchema
     [JsonPropertyName("synonyms")]
     public IEnumerable<string> Synonyms { get; init; }
     [JsonPropertyName("root")]
-    public string Root { get; init; }
+    public string? Root { get; init; }
 
     public SynonymSchema(IEnumerable<string> synonyms)
     {
         Synonyms = synonyms;
-    }
-
-    [JsonConstructor]
-    public SynonymSchema(IEnumerable<string> synonyms, string root)
-    {
-        Synonyms = synonyms;
-        Root = root;
     }
 }

@@ -12,11 +12,30 @@ public record KeyResponse
     [JsonPropertyName("value_prefix")]
     public string ValuePrefix { get; init; }
     [JsonPropertyName("description")]
-    public string Description { get; init; }
+    public string? Description { get; init; }
     [JsonPropertyName("actions")]
-    public IEnumerable<string> Actions { get; init; }
+    public IReadOnlyCollection<string>? Actions { get; init; }
     [JsonPropertyName("collections")]
-    public IEnumerable<string> Collections { get; init; }
+    public IReadOnlyCollection<string>? Collections { get; init; }
     [JsonPropertyName("expires_at")]
     public long ExpiresAt { get; init; }
+
+    [JsonConstructor]
+    public KeyResponse(
+        int id,
+        string value,
+        string valuePrefix,
+        long expiresAt,
+        string? description = null,
+        IReadOnlyCollection<string>? actions = null,
+        IReadOnlyCollection<string>? collections = null)
+    {
+        Id = id;
+        Value = value;
+        ValuePrefix = valuePrefix;
+        ExpiresAt = expiresAt;
+        Description = description;
+        Actions = actions;
+        Collections = collections;
+    }
 }

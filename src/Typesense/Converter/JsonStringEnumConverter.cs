@@ -41,6 +41,8 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
     public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var stringValue = reader.GetString();
+        if (stringValue is null)
+            throw new ArgumentException("Cannot be null.", nameof(stringValue));
 
         if (_stringToEnum.TryGetValue(stringValue, out var enumValue))
             return enumValue;

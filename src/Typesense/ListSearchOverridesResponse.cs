@@ -6,5 +6,11 @@ namespace Typesense;
 public record ListSearchOverridesResponse
 {
     [JsonPropertyName("overrides")]
-    public IEnumerable<SearchOverride> SearchOverrides { get; init; }
+    public IReadOnlyCollection<SearchOverrideResponse> SearchOverrides { get; init; }
+
+    [JsonConstructor]
+    public ListSearchOverridesResponse(IReadOnlyCollection<SearchOverrideResponse> searchOverrides)
+    {
+        SearchOverrides = searchOverrides;
+    }
 }

@@ -17,12 +17,7 @@ var provider = new ServiceCollection()
         config.ApiKey = "mysecretapikey";
         config.Nodes = new List<Node>
         {
-            new Node
-            {
-                Host = "localhost",
-                Port = "8108",
-                Protocol = "http"
-            }
+            new Node("localhost", "8108", "http");
         };
     }).BuildServiceProvider();
 ```
@@ -37,18 +32,16 @@ var typesenseClient = provider.GetService<ITypesenseClient>();
 When you create the collection, you can specify each field with `name`, `type` and if it should be a `facet`, an `optional` or an `indexed` field.
 
 ``` c#
-var schema = new Schema
-{
-    Name = "Addresses",
-    Fields = new List<Field>
+var schema = new Schema(
+    "Addresses",
+    new List<Field>
     {
         new Field("id", FieldType.Int32, false),
         new Field("houseNumber", FieldType.Int32, false),
         new Field("accessAddress", FieldType.String, false, true),
         new Field("metadataNotes", FieldType.String, false, true, false),
     },
-    DefaultSortingField = "id"
-};
+    "houseNumber");
 
 var createCollectionResult = await typesenseClient.CreateCollection(schema);
 ```
@@ -82,11 +75,7 @@ var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", ad
 ## Search document in collection
 
 ```c#
-var query = new SearchParameters
-{
-    Text = "Smed",
-    QueryBy = "accessAddress"
-};
+var query = new SearchParameters("Smed", "accessAddress");
 
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
@@ -152,16 +141,13 @@ var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ### Create key
 
 `ExpiresAt` is optional.
+`Value` is optional.
 
 ```c#
-var apiKey = new Key()
-{
-    Description = "Example key one",
-    Actions = new[] { "*" },
-    Collections = new[] { "*" },
-    Value = "Example-api-1-key-value",
-    ExpiresAt = 1661344547
-};
+var apiKey = new Key(
+    "Example key one",
+    new[] { "*" },
+    new[] { "*" });
 
 var createdKey = await typesenseClient.CreateKey(apiKey);
 ```

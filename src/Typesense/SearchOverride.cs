@@ -56,46 +56,17 @@ public record Rule
 
 public record SearchOverride
 {
-    [JsonPropertyName("id")]
-    public string Id { get; init; }
     [JsonPropertyName("excludes")]
-    public IEnumerable<Exclude> Excludes { get; init; }
+    public IEnumerable<Exclude>? Excludes { get; init; }
     [JsonPropertyName("includes")]
-    public IEnumerable<Include> Includes { get; init; }
+    public IEnumerable<Include>? Includes { get; init; }
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
 
-    public SearchOverride(IEnumerable<Include> includes, Rule rule)
+    public SearchOverride(Rule rule)
     {
         if (rule is null)
             throw new ArgumentNullException(nameof(rule), "cannot be null.");
-        Includes = includes;
         Rule = rule;
-    }
-
-    public SearchOverride(IEnumerable<Exclude> excludes, Rule rule)
-    {
-        if (rule is null)
-            throw new ArgumentNullException(nameof(rule), "cannot be null.");
-        Excludes = excludes;
-        Rule = rule;
-    }
-
-    public SearchOverride(IEnumerable<Exclude> excludes, IEnumerable<Include> includes, Rule rule)
-    {
-        if (rule is null)
-            throw new ArgumentNullException(nameof(rule), "cannot be null.");
-        Excludes = excludes;
-        Includes = includes;
-        Rule = rule;
-    }
-
-    [JsonConstructor]
-    public SearchOverride(IEnumerable<Exclude> excludes, IEnumerable<Include> includes, Rule rule, string id)
-    {
-        Excludes = excludes;
-        Includes = includes;
-        Rule = rule;
-        Id = id;
     }
 }

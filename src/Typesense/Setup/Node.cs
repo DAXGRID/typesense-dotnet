@@ -19,7 +19,13 @@ public record Node
     /// </summary>
     public string Protocol { get; set; } = "http";
 
-    public Node() { }
+    [Obsolete("Use multi-arity constructor instead.")]
+    public Node()
+    {
+        Host = "";
+        Port = "";
+        Protocol = "";
+    }
 
     /// <param name="host">Hostname for the Typesense service.</param>
     /// <param name="port">Port for the typesense service.</param>
