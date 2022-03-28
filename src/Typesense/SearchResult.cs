@@ -10,18 +10,22 @@ public record Highlight
 {
     [JsonPropertyName("field")]
     public string Field { get; init; }
-
     [JsonPropertyName("snippet")]
     public string Snippet { get; init; }
-
     [System.Diagnostics.CodeAnalysis.SuppressMessage
     ("Naming", "CA1721: Property names should not match get methods",
      Justification = "Required because of special case regarding matched tokens.")]
     [JsonPropertyName("matched_tokens")]
     [JsonConverter(typeof(MatchedTokenConverter))]
     public IReadOnlyList<object> MatchedTokens { get; init; }
-
     public IReadOnlyList<T> GetMatchedTokens<T>() => MatchedTokens.Cast<T>().ToList();
+
+    public Highlight(string field, string snippet, IReadOnlyList<object> matchedTokens)
+    {
+        Field = field;
+        Snippet = snippet;
+        MatchedTokens = matchedTokens;
+    }
 }
 
 public record Hit<T>
@@ -32,12 +36,19 @@ public record Hit<T>
     public T Document { get; init; }
     [JsonPropertyName("text_match")]
     public long TextMatch { get; init; }
+
+    public Hit(IReadOnlyList<Highlight> highlights, T document, long textMatch)
+    {
+        Highlights = highlights;
+        Document = document;
+        TextMatch = textMatch;
+    }
 }
 
 public record SearchResult<T>
 {
     [JsonPropertyName("facet_counts")]
-    public IReadOnlyList<int> FacetCounts { get; init; }
+    public IReadOnlyCollection<int> FacetCounts { get; init; }
     [JsonPropertyName("found")]
     public int Found { get; init; }
     [JsonPropertyName("out_of")]
@@ -50,5 +61,22 @@ public record SearchResult<T>
     public IReadOnlyList<Hit<T>> Hits { get; init; }
     [JsonPropertyName("took_ms")]
     [Obsolete("Obsolete since version v0.18.0 use SearchTimeMs instead.")]
-    public int TookMs { get; init; }
+    public int? TookMs { get; init; }
+
+    [JsonConstructor]
+    public SearchResult(
+        IReadOnlyCollection<int> facetCounts,
+        int found,
+        int outOf,
+        int page,
+        int searchTimeMs,
+        IReadOnlyList<Hit<T>> hits)
+    {
+        FacetCounts = facetCounts;
+        Found = found;
+        OutOf = outOf;
+        Page = page;
+        SearchTimeMs = searchTimeMs;
+        Hits = hits;
+    }
 }
