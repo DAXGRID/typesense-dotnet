@@ -16,7 +16,7 @@ class Program
             .AddTypesenseClient(config =>
             {
                 config.ApiKey = "key";
-                config.Nodes = new List<Node> { new Node { Host = "localhost", Port = "8108", Protocol = "http" } };
+                config.Nodes = new List<Node> { new Node("localhost", "8108", "http") };
             }).BuildServiceProvider();
 
         var typesenseClient = provider.GetService<ITypesenseClient>();

@@ -17,12 +17,7 @@ var provider = new ServiceCollection()
         config.ApiKey = "mysecretapikey";
         config.Nodes = new List<Node>
         {
-            new Node
-            {
-                Host = "localhost",
-                Port = "8108",
-                Protocol = "http"
-            }
+            new Node("localhost", "8108", "http");
         };
     }).BuildServiceProvider();
 ```
