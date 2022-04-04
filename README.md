@@ -46,6 +46,22 @@ var schema = new Schema(
 var createCollectionResult = await typesenseClient.CreateCollection(schema);
 ```
 
+The example uses `camelCase` by default for field names, but you override this on the document you want to insert. Below is an example using `snake_case`.
+
+```C#
+public class Address
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+    [JsonPropertyName("house_number")]
+    public int HouseNumber { get; set; }
+    [JsonPropertyName("access_address")]
+    public string AccessAddress { get; set; }
+    [JsonPropertyName("metadata_notes")]
+    public string MetadataNotes { get; set; }
+}
+```
+
 ## Index document
 
 ```c#
