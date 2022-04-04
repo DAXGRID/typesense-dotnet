@@ -76,8 +76,23 @@ var upsertResult = await typesenseClient.UpsertDocument<Address>("Addresses", ad
 
 ```c#
 var query = new SearchParameters("Smed", "accessAddress");
-
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
+```
+
+## Multi search documents
+
+I haven't found a good way to implement multi-search in C#, because of the dynamic nature of the response. If you have any suggestion please open and issue.
+
+Until then, you can just start multiple `tasks` at the same time and await them after.
+
+```c#
+var queryOne = new SearchParameters("Smed", "accessAddress");
+var queryTwo = new SearchParameters("Potato", "accessAddress");
+var searchResultTaskOne = typesenseClient.Search<Address>("Addresses", query);
+var searchResultTaskTwo = typesenseClient.Search<Address>("Addresses", query);
+
+var searchResultOne = await searchResultTaskOne;
+var searchResultTwo = await searchResultTaskTwo;
 ```
 
 ## Retrieve a document on id
