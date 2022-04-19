@@ -389,61 +389,62 @@ public class TypesenseClient : ITypesenseClient
 
     private static string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
-        var builder = new StringBuilder();
-        if (searchParameters.MaxHits is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&max_hits={searchParameters.MaxHits}");
-        if (searchParameters.QueryByWeights is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&query_by_weights={searchParameters.QueryByWeights}");
-        if (searchParameters.Prefix is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&prefix={searchParameters.Prefix.Value.ToString().ToLowerInvariant()}");
-        if (searchParameters.FilterBy is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&filter_by={searchParameters.FilterBy}");
-        if (searchParameters.SortBy is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&sort_by={searchParameters.SortBy}");
-        if (searchParameters.FacetBy is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&facet_by={searchParameters.FacetBy}");
-        if (searchParameters.MaxFacetValues is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&max_facet_values={searchParameters.MaxFacetValues}");
-        if (searchParameters.FacetQuery is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&facet_query={searchParameters.FacetQuery}");
-        if (searchParameters.NumberOfTypos is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&num_typos={searchParameters.NumberOfTypos}");
-        if (searchParameters.Page is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&page={searchParameters.Page}");
-        if (searchParameters.PerPage is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&per_page={searchParameters.PerPage}");
-        if (searchParameters.GroupBy is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&group_by={searchParameters.GroupBy}");
-        if (searchParameters.GroupLimit is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&group_limit={searchParameters.GroupLimit}");
-        if (searchParameters.IncludeFields is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&include_fields={searchParameters.IncludeFields}");
-        if (searchParameters.HighlightFullFields is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&highlight_full_fields={searchParameters.HighlightFullFields}");
-        if (searchParameters.HighlightAffixNumberOfTokens is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&highlight_affix_num_tokens={searchParameters.HighlightAffixNumberOfTokens}");
-        if (searchParameters.HighlightStartTag is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&highlight_start_tag={searchParameters.HighlightStartTag}");
-        if (searchParameters.HighlightEndTag is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&highlight_end_tag={searchParameters.HighlightEndTag}");
-        if (searchParameters.SnippetThreshold is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&snippet_threshold={searchParameters.SnippetThreshold}");
-        if (searchParameters.DropTokensThreshold is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&drop_tokens_threshold={searchParameters.DropTokensThreshold}");
-        if (searchParameters.TypoTokensThreshold is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&typo_tokens_threshold={searchParameters.TypoTokensThreshold}");
-        if (searchParameters.PinnedHits is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&pinned_hits={searchParameters.PinnedHits}");
-        if (searchParameters.HiddenHits is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&hidden_hits={searchParameters.HiddenHits}");
-        if (searchParameters.LimitHits is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&limit_hits={searchParameters.LimitHits}");
-        if (searchParameters.PreSegmentedQuery is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&pre_segmented_query={searchParameters.PreSegmentedQuery.Value.ToString().ToLowerInvariant()}");
-        if (searchParameters.EnableOverrides is not null)
-            _ = builder.Append(CultureInfo.InvariantCulture, $"&enable_overrides={searchParameters.EnableOverrides.Value.ToString().ToLowerInvariant()}");
+        var urlParameters = "";
 
-        return builder.ToString();
+        if (searchParameters.MaxHits is not null)
+            urlParameters += $"&max_hits={searchParameters.MaxHits}";
+        if (searchParameters.QueryByWeights is not null)
+            urlParameters += $"&query_by_weights={searchParameters.QueryByWeights}";
+        if (searchParameters.Prefix is not null)
+            urlParameters += $"&prefix={searchParameters.Prefix.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.FilterBy is not null)
+            urlParameters += $"&filter_by={searchParameters.FilterBy}";
+        if (searchParameters.SortBy is not null)
+            urlParameters += $"&sort_by={searchParameters.SortBy}";
+        if (searchParameters.FacetBy is not null)
+            urlParameters += $"&facet_by={searchParameters.FacetBy}";
+        if (searchParameters.MaxFacetValues is not null)
+            urlParameters += $"&max_facet_values={searchParameters.MaxFacetValues}";
+        if (searchParameters.FacetQuery is not null)
+            urlParameters += $"&facet_query={searchParameters.FacetQuery}";
+        if (searchParameters.NumberOfTypos is not null)
+            urlParameters += $"&num_typos={searchParameters.NumberOfTypos}";
+        if (searchParameters.Page is not null)
+            urlParameters += $"&page={searchParameters.Page}";
+        if (searchParameters.PerPage is not null)
+            urlParameters += $"&per_page={searchParameters.PerPage}";
+        if (searchParameters.GroupBy is not null)
+            urlParameters += $"&group_by={searchParameters.GroupBy}";
+        if (searchParameters.GroupLimit is not null)
+            urlParameters += $"&group_limit={searchParameters.GroupLimit}";
+        if (searchParameters.IncludeFields is not null)
+            urlParameters += $"&include_fields={searchParameters.IncludeFields}";
+        if (searchParameters.HighlightFullFields is not null)
+            urlParameters += $"&highlight_full_fields={searchParameters.HighlightFullFields}";
+        if (searchParameters.HighlightAffixNumberOfTokens is not null)
+            urlParameters += $"&highlight_affix_num_tokens={searchParameters.HighlightAffixNumberOfTokens}";
+        if (searchParameters.HighlightStartTag is not null)
+            urlParameters += $"&highlight_start_tag={searchParameters.HighlightStartTag}";
+        if (searchParameters.HighlightEndTag is not null)
+            urlParameters += $"&highlight_end_tag={searchParameters.HighlightEndTag}";
+        if (searchParameters.SnippetThreshold is not null)
+            urlParameters += $"&snippet_threshold={searchParameters.SnippetThreshold}";
+        if (searchParameters.DropTokensThreshold is not null)
+            urlParameters += $"&drop_tokens_threshold={searchParameters.DropTokensThreshold}";
+        if (searchParameters.TypoTokensThreshold is not null)
+            urlParameters += $"&typo_tokens_threshold={searchParameters.TypoTokensThreshold}";
+        if (searchParameters.PinnedHits is not null)
+            urlParameters += $"&pinned_hits={searchParameters.PinnedHits}";
+        if (searchParameters.HiddenHits is not null)
+            urlParameters += $"&hidden_hits={searchParameters.HiddenHits}";
+        if (searchParameters.LimitHits is not null)
+            urlParameters += $"&limit_hits={searchParameters.LimitHits}";
+        if (searchParameters.PreSegmentedQuery is not null)
+            urlParameters += $"&pre_segmented_query={searchParameters.PreSegmentedQuery.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.EnableOverrides is not null)
+            urlParameters += $"&enable_overrides={searchParameters.EnableOverrides.Value.ToString().ToLowerInvariant()}";
+
+        return urlParameters;
     }
 
     private async Task<string> Get(string path)
