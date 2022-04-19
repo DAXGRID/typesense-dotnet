@@ -354,7 +354,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.Search<Company>("companies", query);
 
-        using(var scope = new AssertionScope())
+        using (var scope = new AssertionScope())
         {
             response.Found.Should().Be(1);
             response.Hits.First().Document.Should().BeEquivalentTo(expected);
@@ -375,7 +375,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var query = new SearchParameters("Stark", "company_name,country");
         var response = await _client.Search<Company>("companies", query);
 
-        using(var scope = new AssertionScope())
+        using (var scope = new AssertionScope())
         {
             response.Found.Should().Be(1);
             response.Hits.First().Document.Should().BeEquivalentTo(expected);
@@ -421,7 +421,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.CreateKey(expected);
 
-        using(var scope = new AssertionScope())
+        using (var scope = new AssertionScope())
         {
             response.Description.Should().BeEquivalentTo(expected.Description);
             response.Actions.Should().BeEquivalentTo(expected.Actions);
