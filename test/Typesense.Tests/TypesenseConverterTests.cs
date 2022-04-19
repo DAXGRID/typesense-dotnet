@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using FluentAssertions;
+using FluentAssertions.Execution;
+using System.Collections.Generic;
 using System.Text.Json;
 using Xunit;
 
@@ -38,11 +40,14 @@ public class TypesenseConverterTests
 
         var response = JsonSerializer.Deserialize<Highlight[]>(json);
 
-        Assert.NotNull(response);
-        Assert.Equal(2, response.Length);
-        Assert.Equal(1, response[0].MatchedTokens.Count);
-        Assert.True(response[0].MatchedTokens[0] is List<string>);
-        Assert.Equal(1, response[1].MatchedTokens.Count);
-        Assert.True(response[1].MatchedTokens[0] is string);
+        using (new AssertionScope())
+        {
+            response.Should().NotBeNull();
+            response.Length.Should().Be(2);
+            response[0].MatchedTokens.Count.Should().Be(1);
+            response[0].MatchedTokens[0].Should().BeOfType<List<string>>();
+            response[1].MatchedTokens.Count.Should().Be(1);
+            response[1].MatchedTokens[0].Should().BeOfType<string>();
+        }
     }
 }
