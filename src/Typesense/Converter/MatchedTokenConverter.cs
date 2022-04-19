@@ -14,12 +14,12 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
 
         foreach (var element in jsonDocument.RootElement.EnumerateArray())
         {
-            var elementValue = element.GetString();
-            if (elementValue is null)
-                throw new ArgumentNullException(nameof(elementValue));
-
             if (element.ValueKind == JsonValueKind.String)
             {
+                var elementValue = element.GetString();
+                if (elementValue is null)
+                    throw new ArgumentNullException(nameof(elementValue));
+
                 matchedTokens.Add(elementValue);
             }
             else if (element.ValueKind == JsonValueKind.Array)
@@ -27,7 +27,11 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
                 var stringElements = new List<string>();
                 foreach (var stringElement in element.EnumerateArray())
                 {
-                    stringElements.Add(elementValue);
+                    var stringElementValue = stringElement.GetString();
+                    if (stringElementValue is null)
+                        throw new ArgumentNullException(nameof(stringElementValue));
+
+                    stringElements.Add(stringElementValue);
                 }
 
                 matchedTokens.Add(stringElements);
