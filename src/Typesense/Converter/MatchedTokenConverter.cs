@@ -12,9 +12,9 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
         var jsonDocument = JsonDocument.ParseValue(ref reader);
         var matchedTokens = new List<object>();
 
-        foreach(var element in jsonDocument.RootElement.EnumerateArray())
+        foreach (var element in jsonDocument.RootElement.EnumerateArray())
         {
-            if(element.ValueKind == JsonValueKind.String)
+            if (element.ValueKind == JsonValueKind.String)
             {
                 var elementValue = element.GetString();
                 if(elementValue is null)
@@ -22,10 +22,10 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
 
                 matchedTokens.Add(elementValue);
             }
-            else if(element.ValueKind == JsonValueKind.Array)
+            else if (element.ValueKind == JsonValueKind.Array)
             {
                 var stringElements = new List<string>();
-                foreach(var stringElement in element.EnumerateArray())
+                foreach (var stringElement in element.EnumerateArray())
                 {
                     var stringElementValue = stringElement.GetString();
                     if(stringElementValue is null)
