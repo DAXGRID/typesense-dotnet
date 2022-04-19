@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,6 +19,62 @@ public record Company()
     public int NumEmployees { get; init; }
     [JsonPropertyName("country")]
     public string Country { get; init; }
+}
+
+public record EventSearchEntity
+{
+    public string Id { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string[] Tags { get; set; }
+    public string GameId { get; set; }
+    public string Location { get; set; }
+    public int? LocationId { get; set; }
+    public long StartsAt { get; set; }
+    public long EndsAt { get; set; }
+}
+
+[Trait("Category", "Unit")]
+public class TypesenseConverterTests
+{
+    [Fact]
+    public void TestMixedTokens()
+    {
+        var json = @"
+        [
+            {
+                ""field"": ""tags"",
+                ""indices"": [
+                    0
+                ],
+                ""matched_tokens"": [
+                    [
+                        ""Bar""
+                    ]
+                ],
+                ""snippets"": [
+                    ""<mark>Bar</mark>""
+                ]
+            },
+            {
+                ""field"": ""title"",
+                ""matched_tokens"": [
+                    ""Bar""
+                ],
+                ""snippet"": ""Wayward Star <mark>Bar</mark>""
+            }
+        ]
+        ";
+
+        var response = JsonSerializer.Deserialize<Highlight[]>(json);
+
+        Assert.NotNull(response);
+        Assert.Equal(2, response.Length);
+        Assert.Equal(1, response[0].MatchedTokens.Count);
+        Assert.True(response[0].MatchedTokens[0] is List<string>);
+        Assert.Equal(1, response[1].MatchedTokens.Count);
+        Assert.True(response[1].MatchedTokens[0] is string);
+    }
 }
 
 [Trait("Category", "Integration")]
@@ -354,7 +411,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.Search<Company>("companies", query);
 
-        using (var scope = new AssertionScope())
+        using(var scope = new AssertionScope())
         {
             response.Found.Should().Be(1);
             response.Hits.First().Document.Should().BeEquivalentTo(expected);
@@ -375,7 +432,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var query = new SearchParameters("Stark", "company_name,country");
         var response = await _client.Search<Company>("companies", query);
 
-        using (var scope = new AssertionScope())
+        using(var scope = new AssertionScope())
         {
             response.Found.Should().Be(1);
             response.Hits.First().Document.Should().BeEquivalentTo(expected);
@@ -421,7 +478,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.CreateKey(expected);
 
-        using (var scope = new AssertionScope())
+        using(var scope = new AssertionScope())
         {
             response.Description.Should().BeEquivalentTo(expected.Description);
             response.Actions.Should().BeEquivalentTo(expected.Actions);
