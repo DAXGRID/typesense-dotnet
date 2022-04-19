@@ -17,7 +17,7 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
             if (element.ValueKind == JsonValueKind.String)
             {
                 var elementValue = element.GetString();
-                if(elementValue is null)
+                if (elementValue is null)
                     throw new ArgumentNullException(nameof(elementValue));
 
                 matchedTokens.Add(elementValue);
@@ -28,7 +28,7 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
                 foreach (var stringElement in element.EnumerateArray())
                 {
                     var stringElementValue = stringElement.GetString();
-                    if(stringElementValue is null)
+                    if (stringElementValue is null)
                         throw new ArgumentNullException(nameof(stringElementValue));
 
                     stringElements.Add(stringElementValue);
