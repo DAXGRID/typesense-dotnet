@@ -26,9 +26,9 @@ public class TypesenseClient : ITypesenseClient
     public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
     {
         if (config is null)
-            throw new ArgumentNullException(nameof(config), "cannot be null");
+            throw new ArgumentNullException(nameof(config));
         if (httpClient is null)
-            throw new ArgumentNullException(nameof(httpClient), "cannot be null");
+            throw new ArgumentNullException(nameof(httpClient));
 
         var node = config.Value.Nodes.First();
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
@@ -39,7 +39,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<CollectionResponse> CreateCollection(Schema schema)
     {
         if (schema is null)
-            throw new ArgumentNullException(nameof(schema), "cannot be null");
+            throw new ArgumentNullException(nameof(schema));
 
         var response = await Post($"/collections", schema).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
@@ -50,7 +50,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (document is null)
-            throw new ArgumentNullException(nameof(document), "cannot be null.");
+            throw new ArgumentNullException(nameof(document));
 
         var response = await Post($"/collections/{collection}/documents", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
@@ -61,7 +61,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (document is null)
-            throw new ArgumentNullException(nameof(document), "cannot be null.");
+            throw new ArgumentNullException(nameof(document));
 
         var response = await Post($"/collections/{collection}/documents?action=upsert", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
@@ -72,7 +72,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (searchParameters is null)
-            throw new ArgumentNullException(nameof(searchParameters), "cannot be null.");
+            throw new ArgumentNullException(nameof(searchParameters));
 
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
@@ -95,7 +95,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (document is null)
-            throw new ArgumentNullException(nameof(document), "cannot be null.");
+            throw new ArgumentNullException(nameof(document));
 
         var response = await Patch($"collections/{collection}/documents/{id}", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
@@ -156,7 +156,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace", nameof(collection));
         if (documents is null)
-            throw new ArgumentNullException(nameof(documents), "cannot be null.");
+            throw new ArgumentNullException(nameof(documents));
 
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
         switch (importType)
@@ -195,7 +195,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
         if (exportParameters is null)
-            throw new ArgumentNullException(nameof(exportParameters), "cannot be null.");
+            throw new ArgumentNullException(nameof(exportParameters));
 
         var extraParameters = new List<string>();
         if (exportParameters.IncludeFields is not null)
@@ -217,7 +217,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<KeyResponse> CreateKey(Key key)
     {
         if (key is null)
-            throw new ArgumentNullException(nameof(key), $"cannot be null.");
+            throw new ArgumentNullException(nameof(key));
 
         var response = await Post($"/keys", key).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
@@ -268,7 +268,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
         if (searchOverride is null)
-            throw new ArgumentNullException(nameof(searchOverride), "cannot be null.");
+            throw new ArgumentNullException(nameof(searchOverride));
 
         var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
@@ -311,7 +311,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(aliasName));
         if (collectionAlias is null)
-            throw new ArgumentNullException(nameof(collectionAlias), "cannot be null.");
+            throw new ArgumentNullException(nameof(collectionAlias));
 
         var response = await Put($"/aliases/{aliasName}", collectionAlias).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
@@ -349,7 +349,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException("cannot be null or whitespace.", nameof(synonym));
         if (schema is null)
-            throw new ArgumentException($"{nameof(schema)} cannot be null.");
+            throw new ArgumentNullException(nameof(schema));
 
         var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);

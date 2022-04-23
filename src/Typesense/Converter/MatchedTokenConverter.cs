@@ -18,23 +18,23 @@ public class MatchedTokenConverter : JsonConverter<IReadOnlyList<object>>
             {
                 var elementValue = element.GetString();
                 if (elementValue is null)
-                    throw new ArgumentNullException(nameof(elementValue));
+                    throw new InvalidOperationException($"{nameof(elementValue)} being null is invalid.");
 
                 matchedTokens.Add(elementValue);
             }
             else if (element.ValueKind == JsonValueKind.Array)
             {
-                var stringElements = new List<string>();
+                var elements = new List<string>();
                 foreach (var stringElement in element.EnumerateArray())
                 {
-                    var stringElementValue = stringElement.GetString();
-                    if (stringElementValue is null)
-                        throw new ArgumentNullException(nameof(stringElementValue));
+                    var elementValue = stringElement.GetString();
+                    if (elementValue is null)
+                        throw new InvalidOperationException($"{nameof(elementValue)} being null is invalid.");
 
-                    stringElements.Add(stringElementValue);
+                    elements.Add(elementValue);
                 }
 
-                matchedTokens.Add(stringElements);
+                matchedTokens.Add(elements);
             }
         }
 

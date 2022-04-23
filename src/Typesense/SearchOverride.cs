@@ -66,7 +66,7 @@ public record SearchOverride
     public SearchOverride(Rule rule)
     {
         if (rule is null)
-            throw new ArgumentNullException(nameof(rule), "cannot be null.");
+            throw new ArgumentNullException(nameof(rule));
         Rule = rule;
     }
 }
