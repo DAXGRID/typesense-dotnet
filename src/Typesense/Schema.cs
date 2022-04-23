@@ -23,7 +23,8 @@ public record Schema
     public Schema(string name, IEnumerable<Field> fields)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(nameof(name));
+
         Name = name;
         Fields = fields;
     }
@@ -31,7 +32,8 @@ public record Schema
     public Schema(string name, IEnumerable<Field> fields, string defaultSortingField)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException();
+            throw new ArgumentNullException(name);
+
         Name = name;
         Fields = fields;
         DefaultSortingField = defaultSortingField;
