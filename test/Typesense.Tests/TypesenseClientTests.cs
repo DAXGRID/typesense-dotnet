@@ -39,9 +39,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false),
-                new Field("num_employees", FieldType.Int32, false),
-                new Field("country", FieldType.String, true),
+                new Field("company_name", FieldType.String, false, false, true),
+                new Field("num_employees", FieldType.Int32, false, false, true),
+                new Field("country", FieldType.String, true, false, true),
             },
             "num_employees");
 
@@ -60,6 +60,35 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    // We test wildcard field individually,
+    // because it is a bit different than other types of fields.
+    [Fact, TestPriority(0)]
+    public async Task Create_schema_with_wildcard_field()
+    {
+        var expected = new CollectionResponse(
+            "wildcard-collection",
+            0,
+            new List<Field>
+            {
+                new Field(".*", FieldType.String, false, true, true),
+            },
+            "");
+
+        var schema = new Schema(
+            "wildcard-collection",
+            new List<Field>
+            {
+                new Field(".*", FieldType.String, false),
+            });
+
+        var response = await _client.CreateCollection(schema);
+
+        response.Should().BeEquivalentTo(expected);
+
+        // Cleanup
+        await _client.DeleteCollection("wildcard-collection");
+    }
+
     [Fact, TestPriority(1)]
     public async Task Retrieve_collection()
     {
@@ -68,9 +97,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false),
-                new Field("num_employees", FieldType.Int32, false),
-                new Field("country", FieldType.String, true),
+                new Field("company_name", FieldType.String, false, false, true),
+                new Field("num_employees", FieldType.Int32, false, false, true),
+                new Field("country", FieldType.String, true, false, true),
             },
             "num_employees");
 
@@ -89,9 +118,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 0,
                 new List<Field>
                 {
-                    new Field("company_name", FieldType.String, false),
-                    new Field("num_employees", FieldType.Int32, false),
-                    new Field("country", FieldType.String, true),
+                    new Field("company_name", FieldType.String, false, false, true),
+                    new Field("num_employees", FieldType.Int32, false, false, true),
+                    new Field("country", FieldType.String, true, false, true),
                 },
                 "num_employees")
     };
@@ -108,9 +137,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false),
-                new Field("num_employees", FieldType.Int32, false),
-                new Field("country", FieldType.String, true),
+                new Field("company_name", FieldType.String, false, false, true),
+                new Field("num_employees", FieldType.Int32, false, false, true),
+                new Field("country", FieldType.String, true, false, true),
             },
             "num_employees");
 
