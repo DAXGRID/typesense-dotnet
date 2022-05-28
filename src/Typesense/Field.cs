@@ -14,12 +14,33 @@ public record Field
     [JsonPropertyName("facet")]
     public bool Facet { get; init; }
     [JsonPropertyName("optional")]
-    public bool Optional { get; init; }
+    public bool? Optional { get; init; }
     [JsonPropertyName("index")]
-    public bool Index { get; init; }
+    public bool? Index { get; init; }
+
+    public Field(string name, FieldType type)
+    {
+        Name = name;
+        Type = type;
+    }
+
+    public Field(string name, FieldType type, bool facet)
+    {
+        Name = name;
+        Type = type;
+        Facet = facet;
+    }
+
+    public Field(string name, FieldType type, bool facet, bool? optional)
+    {
+        Name = name;
+        Type = type;
+        Facet = facet;
+        Optional = optional;
+    }
 
     [JsonConstructor]
-    public Field(string name, FieldType type, bool facet, bool optional = false, bool index = true)
+    public Field(string name, FieldType type, bool facet, bool? optional, bool? index)
     {
         Name = name;
         Type = type;
