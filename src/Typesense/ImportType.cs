@@ -4,5 +4,6 @@ public enum ImportType
 {
     Create,
     Upsert,
-    Update
+    Update,
+    Emplace
 }

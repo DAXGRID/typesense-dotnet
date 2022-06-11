@@ -170,6 +170,9 @@ public class TypesenseClient : ITypesenseClient
             case ImportType.Upsert:
                 path += "&action=upsert";
                 break;
+            case ImportType.Emplace:
+                path += "&action=emplace";
+                break;
             default:
                 throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
         }
