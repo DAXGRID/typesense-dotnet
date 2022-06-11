@@ -39,9 +39,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
@@ -70,7 +70,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field(".*", FieldType.String, false, true, true),
+                new Field(".*", FieldType.String, false, true, true, false),
             },
             "");
 
@@ -97,9 +97,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
@@ -118,9 +118,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 0,
                 new List<Field>
                 {
-                    new Field("company_name", FieldType.String, false, false, true),
-                    new Field("num_employees", FieldType.Int32, false, false, true),
-                    new Field("country", FieldType.String, true, false, true),
+                    new Field("company_name", FieldType.String, false, false, true, false),
+                    new Field("num_employees", FieldType.Int32, false, false, true, true),
+                    new Field("country", FieldType.String, true, false, true, false),
                 },
                 "num_employees")
     };
@@ -137,9 +137,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
