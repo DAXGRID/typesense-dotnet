@@ -39,9 +39,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
@@ -70,7 +70,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field(".*", FieldType.String, false, true, true),
+                new Field(".*", FieldType.String, false, true, true, false),
             },
             "");
 
@@ -97,9 +97,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
@@ -118,9 +118,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 0,
                 new List<Field>
                 {
-                    new Field("company_name", FieldType.String, false, false, true),
-                    new Field("num_employees", FieldType.Int32, false, false, true),
-                    new Field("country", FieldType.String, true, false, true),
+                    new Field("company_name", FieldType.String, false, false, true, false),
+                    new Field("num_employees", FieldType.Int32, false, false, true, true),
+                    new Field("country", FieldType.String, true, false, true, false),
                 },
                 "num_employees")
     };
@@ -137,9 +137,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name", FieldType.String, false, false, true),
-                new Field("num_employees", FieldType.Int32, false, false, true),
-                new Field("country", FieldType.String, true, false, true),
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
 
@@ -226,7 +226,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
              }
         };
 
-        var response = await _client.ImportDocuments<Company>("companies", companies, 40, ImportType.Create);
+        var response = await _client.ImportDocuments<Company>(
+            "companies", companies, 40, ImportType.Create);
 
         response.Should().BeEquivalentTo(expected);
     }
@@ -292,6 +293,39 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.ImportDocuments<Company>(
             "companies", companies, 40, ImportType.Upsert);
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(7)]
+    public async Task Import_documents_emplace()
+    {
+        var expected = new List<ImportResponse>
+        {
+            new ImportResponse(true),
+            new ImportResponse(true),
+        };
+
+        var companies = new List<Company>
+        {
+             new Company
+             {
+                 Id = "125",
+                 CompanyName = "Future Technology",
+                 NumEmployees = 1232,
+                 Country = "UK",
+             },
+             new Company
+             {
+                 Id = "126",
+                 CompanyName = "Random Corp.",
+                 NumEmployees = 531,
+                 Country = "AU",
+             }
+        };
+
+        var response = await _client.ImportDocuments<Company>(
+            "companies", companies, 40, ImportType.Emplace);
 
         response.Should().BeEquivalentTo(expected);
     }

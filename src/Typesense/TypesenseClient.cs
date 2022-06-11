@@ -170,6 +170,9 @@ public class TypesenseClient : ITypesenseClient
             case ImportType.Upsert:
                 path += "&action=upsert";
                 break;
+            case ImportType.Emplace:
+                path += "&action=emplace";
+                break;
             default:
                 throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
         }
@@ -442,6 +445,12 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&pre_segmented_query={searchParameters.PreSegmentedQuery.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.EnableOverrides is not null)
             urlParameters += $"&enable_overrides={searchParameters.EnableOverrides.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.SplitJoinTokens is not null)
+            urlParameters += $"&split_join_tokens={searchParameters.SplitJoinTokens.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.MaxCandiates is not null)
+            urlParameters += $"&max_candidates={searchParameters.MaxCandiates.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.FacetQueryNumberTypos is not null)
+            urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
 
         return urlParameters;
     }

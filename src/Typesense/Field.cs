@@ -17,6 +17,8 @@ public record Field
     public bool? Optional { get; init; }
     [JsonPropertyName("index")]
     public bool? Index { get; init; }
+    [JsonPropertyName("sort")]
+    public bool? Sort { get; init; }
 
     public Field(string name, FieldType type)
     {
@@ -39,7 +41,6 @@ public record Field
         Optional = optional;
     }
 
-    [JsonConstructor]
     public Field(string name, FieldType type, bool facet, bool? optional, bool? index)
     {
         Name = name;
@@ -47,6 +48,22 @@ public record Field
         Facet = facet;
         Optional = optional;
         Index = index;
+    }
+
+    [JsonConstructor]
+    public Field(string name,
+                 FieldType type,
+                 bool facet,
+                 bool? optional,
+                 bool? index,
+                 bool? sort)
+    {
+        Name = name;
+        Type = type;
+        Facet = facet;
+        Optional = optional;
+        Index = index;
+        Sort = sort;
     }
 
     [Obsolete("A better choice going forward is using the constructor with 'FieldType' enum instead.")]

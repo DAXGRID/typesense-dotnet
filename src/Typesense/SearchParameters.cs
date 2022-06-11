@@ -191,10 +191,26 @@ public record SearchParameters
     public bool? PreSegmentedQuery { get; set; }
 
     /// <summary>
+    /// Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
+    /// </summary>
+    public bool? SplitJoinTokens { get; set; }
+
+    /// <summary>
     /// If you have some overrides defined but want to disable all of them during
     /// query time, you can do that by setting this parameter to false
     /// </summary>
     public bool? EnableOverrides { get; set; }
+
+    /// <sumarry>
+    /// Control the number of words that Typesense considers for typo and prefix searching.
+    /// Default: 4 (or 10000 if exhaustive_search is enabled).
+    /// </summary>
+    public int? MaxCandiates { get; set; }
+
+    /// <sumarry>
+    /// Controls the fuzziness of the facet query filter.
+    /// </summary>
+    public int? FacetQueryNumberTypos { get; set; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()

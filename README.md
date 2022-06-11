@@ -297,7 +297,7 @@ var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Sy
 
 ### Typesense API Errors
 
-Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.22.2/api/api-errors.html) spec.
+Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.
 
 | Type                                       | Description                                                                |
 |:-------------------------------------------|:---------------------------------------------------------------------------|
@@ -331,5 +331,5 @@ dotnet test --filter Category=Integration
 To enable running integration tests you can run Typesense in a docker container using the command below.
 
 ```sh
-docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.22.2 --data-dir /data --api-key=key
+docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.23.0 --data-dir /data --api-key=key
 ```
