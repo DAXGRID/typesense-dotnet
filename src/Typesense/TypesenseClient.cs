@@ -202,7 +202,7 @@ public class TypesenseClient : ITypesenseClient
 
         var extraParameters = new List<string>();
         if (exportParameters.IncludeFields is not null)
-            extraParameters.Add($"include_fields={exportParameters.ExcludeFields}");
+            extraParameters.Add($"include_fields={exportParameters.IncludeFields}");
         if (exportParameters.FilterBy is not null)
             extraParameters.Add($"filter_by={exportParameters.FilterBy}");
         if (exportParameters.ExcludeFields is not null)
