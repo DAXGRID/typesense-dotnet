@@ -212,6 +212,7 @@ public class TypesenseClient : ITypesenseClient
         var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
 
         return response.Split('\n')
+            .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select((x) => JsonSerializer.Deserialize<T>(x, _jsonNameCaseInsentiveTrue)
                     ?? throw new ArgumentException("Null is not valid for documents"))
             .ToList();
