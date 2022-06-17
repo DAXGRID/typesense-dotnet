@@ -202,7 +202,7 @@ public class TypesenseClient : ITypesenseClient
 
         var extraParameters = new List<string>();
         if (exportParameters.IncludeFields is not null)
-            extraParameters.Add($"include_fields={exportParameters.ExcludeFields}");
+            extraParameters.Add($"include_fields={exportParameters.IncludeFields}");
         if (exportParameters.FilterBy is not null)
             extraParameters.Add($"filter_by={exportParameters.FilterBy}");
         if (exportParameters.ExcludeFields is not null)
@@ -212,6 +212,7 @@ public class TypesenseClient : ITypesenseClient
         var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
 
         return response.Split('\n')
+            .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select((x) => JsonSerializer.Deserialize<T>(x, _jsonNameCaseInsentiveTrue)
                     ?? throw new ArgumentException("Null is not valid for documents"))
             .ToList();
