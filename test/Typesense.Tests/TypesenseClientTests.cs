@@ -370,6 +370,93 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.OrderBy(x => x.Id).Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(8)]
+    public async Task Export_documents_filter_by_query()
+    {
+        var expected = new List<Company>
+        {
+            new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries",
+                NumEmployees = 5215,
+                Country = "USA",
+            }
+        };
+
+        var response = await _client.ExportDocuments<Company>("companies", new ExportParameters { FilterBy = "id: [124]" });
+
+        response.OrderBy(x => x.Id).Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(8)]
+    public async Task Export_documents_include_fields()
+    {
+        var expected = new List<Company>
+        {
+            new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries"
+            },
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology"
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp."
+            },
+            new Company
+            {
+                Id = "999",
+                CompanyName = "Awesome A/S"
+            }
+        };
+
+        var response = await _client.ExportDocuments<Company>("companies", new ExportParameters { IncludeFields = "id,company_name" });
+
+        response.OrderBy(x => x.Id).Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestPriority(8)]
+    public async Task Export_documents_exclude_fields()
+    {
+        var expected = new List<Company>
+        {
+            new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries",
+                Country = "USA",
+            },
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                Country = "UK",
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                Country = "AU",
+            },
+            new Company
+            {
+                Id = "999",
+                CompanyName = "Awesome A/S",
+                Country = "SWE",
+            }
+        };
+
+        var response = await _client.ExportDocuments<Company>("companies", new ExportParameters { ExcludeFields = "num_employees" });
+
+        response.OrderBy(x => x.Id).Should().BeEquivalentTo(expected);
+    }
+
     [Fact, TestPriority(9)]
     public async Task Retrieve_document()
     {
