@@ -97,18 +97,34 @@ var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 
 ## Multi search documents
 
-I haven't found a good way to implement multi-search in C#, because of the dynamic nature of the response. If you have any suggestion please open and issue.
+Multi search goes from one query to four, if you need more than that please open an issue and I'll implement more.
 
-Until then, you can just start multiple `tasks` at the same time and await them after.
+Example of using a single query in multi-search.
 
 ```c#
-var queryOne = new SearchParameters("Smed", "accessAddress");
-var queryTwo = new SearchParameters("Potato", "accessAddress");
-var searchResultTaskOne = typesenseClient.Search<Address>("Addresses", query);
-var searchResultTaskTwo = typesenseClient.Search<Address>("Addresses", query);
+var query = new MultiSearchParameters("companies", "Stark", "company_name");
 
-var searchResultOne = await searchResultTaskOne;
-var searchResultTwo = await searchResultTaskTwo;
+var (r1) = await _client.MultiSearch<Company>(queryOne);
+```
+
+
+Example of using a two queries in multi-search.
+
+```c#
+var queryOne = new MultiSearchParameters("companies", "Stark", "company_name");
+var queryTwo = new MultiSearchParameters("employees", "Kenny", "person_name");
+
+var (r1, r2) = await _client.MultiSearch<Company, Employee>(queryOne, queryTwo);
+```
+
+Example of using a three queries in multi-search (you get the pattern currently it goes up to four.).
+
+```c#
+var queryOne = new MultiSearchParameters("companies", "Stark", "company_name");
+var queryTwo = new MultiSearchParameters("employees", "Kenny", "person_name");
+var queryThree = new MultiSearchParameters("companies", "Awesome Corp.", "company_name");
+
+var (r1, r2, r3) = await _client.MultiSearch<Company, Employee>(queryOne, queryTwo, queryThree);
 ```
 
 ## Retrieve a document on id

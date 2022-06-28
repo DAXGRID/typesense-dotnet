@@ -532,6 +532,117 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_single()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new MultiSearchParameters("companies", "Stark", "company_name");
+        var response = await _client.MultiSearch<Company>(query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_two()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new MultiSearchParameters("companies", "Stark", "company_name");
+
+        // We just use the same for queries for simplicity.
+        // We mainly care about multiple queries being returned with the correct types of <T>.
+        var (r1, r2) = await _client.MultiSearch<Company, Company>(query, query);
+
+        using (var scope = new AssertionScope())
+        {
+            r1.Found.Should().Be(1);
+            r1.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r2.Found.Should().Be(1);
+            r2.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_three()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new MultiSearchParameters("companies", "Stark", "company_name");
+
+        // We just use the same for queries for simplicity.
+        // We mainly care about multiple queries being returned with the correct types of <T>.
+        var (r1, r2, r3) = await _client.MultiSearch<Company, Company, Company>(query, query, query);
+
+        using (var scope = new AssertionScope())
+        {
+            r1.Found.Should().Be(1);
+            r1.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r2.Found.Should().Be(1);
+            r2.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r3.Found.Should().Be(1);
+            r3.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_four()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new MultiSearchParameters("companies", "Stark", "company_name");
+
+        // We just use the same for queries for simplicity.
+        // We mainly care about multiple queries being returned with the correct types of <T>.
+        var (r1, r2, r3, r4) = await _client.MultiSearch<Company, Company, Company, Company>(query, query, query, query);
+
+        using (var scope = new AssertionScope())
+        {
+            r1.Found.Should().Be(1);
+            r1.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r2.Found.Should().Be(1);
+            r2.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r3.Found.Should().Be(1);
+            r3.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r4.Found.Should().Be(1);
+            r4.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
     [Fact, TestPriority(12)]
     public async Task Delete_document_by_id()
     {

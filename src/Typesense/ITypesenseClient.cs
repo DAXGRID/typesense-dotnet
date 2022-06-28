@@ -66,6 +66,62 @@ public interface ITypesenseClient
     Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters);
 
     /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First search parameters.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<SearchResult<T1>> MultiSearch<T1>(MultiSearchParameters s1);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi search parameters.</param>
+    /// <param name="s2">Second multi search parameters.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi search parameters.</param>
+    /// <param name="s2">Second multi search parameters.</param>
+    /// <param name="s3">Third multi search parameters.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>)> MultiSearch<T1, T2, T3>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi search parameters.</param>
+    /// <param name="s2">Second multi search parameters.</param>
+    /// <param name="s3">Third multi search parameters.</param>
+    /// <param name="s4">Third multi search parameters.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>, SearchResult<T4>)> MultiSearch<T1, T2, T3, T4>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4);
+
+    /// <summary>
     /// Gets the document in the specified collection on id.
     /// </summary>
     /// <param name="collection">The collection name.</param>
