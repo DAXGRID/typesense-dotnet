@@ -124,7 +124,7 @@ var queryOne = new MultiSearchParameters("companies", "Stark", "company_name");
 var queryTwo = new MultiSearchParameters("employees", "Kenny", "person_name");
 var queryThree = new MultiSearchParameters("companies", "Awesome Corp.", "company_name");
 
-var (r1, r2, r3) = await _client.MultiSearch<Company, Employee>(queryOne, queryTwo, queryThree);
+var (r1, r2, r3) = await _client.MultiSearch<Company, Employee, Company>(queryOne, queryTwo, queryThree);
 ```
 
 ## Retrieve a document on id
