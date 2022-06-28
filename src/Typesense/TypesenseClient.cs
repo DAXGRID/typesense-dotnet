@@ -76,7 +76,57 @@ public class TypesenseClient : ITypesenseClient
 
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
+
         return HandleEmptyStringJsonSerialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)
+    {
+        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1 } }).ConfigureAwait(false);
+
+        return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
+            ? HandleDeserializeMultiSearch<T>(results[0])
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2)
+    {
+        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2 } }).ConfigureAwait(false);
+
+        return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>)> MultiSearch<T1, T2, T3>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3)
+    {
+        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2, s3 } }).ConfigureAwait(false);
+
+        return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>, SearchResult<T4>)> MultiSearch<T1, T2, T3, T4>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4)
+    {
+        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } }).ConfigureAwait(false);
+
+        return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
     }
 
     public async Task<T> RetrieveDocument<T>(string collection, string id) where T : class
@@ -546,4 +596,8 @@ public class TypesenseClient : ITypesenseClient
 
     private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
         => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
+
+    private static SearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
+        => jsonElement.Deserialize<SearchResult<T>>()
+        ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{jsonElement}'.");
 }

@@ -80,3 +80,13 @@ public record SearchResult<T>
         Hits = hits;
     }
 }
+
+public record MultiSearchResult
+{
+    public IEnumerable<SearchResult<object>> SearchResults { get; init; }
+
+    public MultiSearchResult(IEnumerable<SearchResult<object>> searchResults)
+    {
+        SearchResults = searchResults;
+    }
+}
