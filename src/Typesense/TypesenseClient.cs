@@ -597,7 +597,7 @@ public class TypesenseClient : ITypesenseClient
     private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
         => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
 
-    private static SearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
-        => jsonElement.Deserialize<SearchResult<T>>()
+    private SearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
+        => jsonElement.Deserialize<SearchResult<T>>(_jsonNameCaseInsentiveTrue)
         ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{jsonElement}'.");
 }
