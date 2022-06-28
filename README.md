@@ -104,7 +104,7 @@ Example of using a single query in multi-search.
 ```c#
 var query = new MultiSearchParameters("companies", "Stark", "company_name");
 
-var (r1) = await _client.MultiSearch<Company>(queryOne);
+var response = await _client.MultiSearch<Company>(queryOne);
 ```
 
 
