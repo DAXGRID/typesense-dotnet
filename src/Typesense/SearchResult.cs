@@ -45,10 +45,75 @@ public record Hit<T>
     }
 }
 
+public record FacetCount
+{
+    [JsonPropertyName("counts")]
+    public IReadOnlyList<FacetCountHit> Counts { get; init; }
+    
+    [JsonPropertyName("field_name")]
+    public string FieldName { get; init; }
+    
+    [JsonPropertyName("stats")]
+    public FacetStats Stats { get; init; }
+
+    public FacetCount(string fieldName, IReadOnlyList<FacetCountHit> counts, FacetStats stats)
+    {
+        FieldName = fieldName;
+        Counts = counts;
+        Stats = stats;
+    }
+}
+
+public record FacetCountHit
+{
+    [JsonPropertyName("count")]
+    public int Count { get; init; }
+    
+    [JsonPropertyName("highlighted")]
+    public string Highlighted { get; init; }
+    
+    [JsonPropertyName("value")]
+    public string Value { get; init; }
+    
+    public FacetCountHit(string value, int count, string highlighted)
+    {
+        Value = value;
+        Count = count;
+        Highlighted = highlighted;
+    }
+}
+
+public record FacetStats
+{
+    [JsonPropertyName("avg")]
+    public int Average { get; init; }
+
+    [JsonPropertyName("max")]
+    public int Max { get; init; }
+
+    [JsonPropertyName("min")]
+    public int Min { get; init; }
+
+    [JsonPropertyName("sum")]
+    public int Sum { get; init; }
+
+    [JsonPropertyName("total_values")]
+    public int TotalValues { get; init; }
+
+    public FacetStats(int average, int max, int min, int sum, int totalValues)
+    {
+        Average = average;
+        Max = max;
+        Min = min;
+        Sum = sum;
+        TotalValues = totalValues;
+    }
+}
+
 public record SearchResult<T>
 {
     [JsonPropertyName("facet_counts")]
-    public IReadOnlyCollection<int> FacetCounts { get; init; }
+    public IReadOnlyCollection<FacetCount> FacetCounts { get; init; }
     [JsonPropertyName("found")]
     public int Found { get; init; }
     [JsonPropertyName("out_of")]
@@ -65,7 +130,7 @@ public record SearchResult<T>
 
     [JsonConstructor]
     public SearchResult(
-        IReadOnlyCollection<int> facetCounts,
+        IReadOnlyCollection<FacetCount> facetCounts,
         int found,
         int outOf,
         int page,

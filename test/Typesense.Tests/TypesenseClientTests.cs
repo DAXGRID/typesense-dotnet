@@ -533,6 +533,53 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_facet_by_country()
+    {
+        var expected = new FacetCount("country", new List<FacetCountHit>
+            {
+                new FacetCountHit( "AU", 1, "AU"),
+                new FacetCountHit( "UK", 1, "UK"),
+                new FacetCountHit( "SWE", 1, "SWE"),
+                new FacetCountHit( "USA", 1, "USA"),
+            }, new FacetStats(0, 0, 0, 0, 4));
+
+        var query = new SearchParameters("", "company_name")
+        {
+            FacetBy = "country"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.FacetCounts.Should().HaveCount(1);
+            response.FacetCounts.First().Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Search_facet_by_country_with_query()
+    {
+        var expected = new FacetCount("country", new List<FacetCountHit>
+            {
+                new FacetCountHit("USA", 1, "USA"),
+            }, new FacetStats(0, 0, 0, 0, 1));
+
+        var query = new SearchParameters("Stark", "company_name")
+        {
+            FacetBy = "country"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.FacetCounts.Should().HaveCount(1);
+            response.FacetCounts.First().Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Multi_search_query_single()
     {
         var expected = new Company
