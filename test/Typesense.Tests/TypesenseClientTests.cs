@@ -40,7 +40,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name", FieldType.String, false, false, true, false),
-                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
@@ -50,7 +50,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
-                new Field("num_employees", FieldType.Int32, false),
+                new Field("num_employees", FieldType.Int32, true),
                 new Field("country", FieldType.String, true),
             },
             "num_employees");
@@ -98,7 +98,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name", FieldType.String, false, false, true, false),
-                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
@@ -119,7 +119,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new List<Field>
                 {
                     new Field("company_name", FieldType.String, false, false, true, false),
-                    new Field("num_employees", FieldType.Int32, false, false, true, true),
+                    new Field("num_employees", FieldType.Int32, true, false, true, true),
                     new Field("country", FieldType.String, true, false, true, false),
                 },
                 "num_employees")
@@ -138,7 +138,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name", FieldType.String, false, false, true, false),
-                new Field("num_employees", FieldType.Int32, false, false, true, true),
+                new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
             "num_employees");
@@ -558,6 +558,31 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_facet_by_num_employees()
+    {
+        var expected = new FacetCount("num_employees", new List<FacetCountHit>
+            {
+                new FacetCountHit( "10", 1, "10"),
+                new FacetCountHit( "531", 1, "531"),
+                new FacetCountHit( "1232", 1, "1232"),
+                new FacetCountHit( "6000", 1, "6000"),
+            }, new FacetStats(1943.25F, 6000F, 10F, 7773F, 4));
+
+        var query = new SearchParameters("", "company_name")
+        {
+            FacetBy = "num_employees"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.FacetCounts.Should().HaveCount(1);
+            response.FacetCounts.First().Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Search_facet_by_country_with_query()
     {
         var expected = new FacetCount("country", new List<FacetCountHit>
@@ -962,7 +987,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name", FieldType.String, false),
-                new Field("num_employees", FieldType.Int32, false),
+                new Field("num_employees", FieldType.Int32, true),
                 new Field("country", FieldType.String, true),
             },
             "num_employees");
