@@ -26,6 +26,8 @@ public enum FieldType
     FloatArray,
     [EnumMember(Value = "bool[]")]
     BoolArray,
+    [EnumMember(Value = "geopoint[]")]
+    GeoPointArray,
     [EnumMember(Value = "auto")]
     Auto,
     [EnumMember(Value = "string*")]

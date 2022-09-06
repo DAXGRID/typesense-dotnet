@@ -102,6 +102,8 @@ public record Field
                 return FieldType.FloatArray;
             case "bool[]":
                 return FieldType.BoolArray;
+            case "geopoint[]":
+                return FieldType.GeoPointArray;
             case "auto":
                 return FieldType.Auto;
             case "string*":
