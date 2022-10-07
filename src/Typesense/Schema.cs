@@ -8,10 +8,18 @@ public record Schema
 {
     [JsonPropertyName("name")]
     public string Name { get; init; }
+
     [JsonPropertyName("fields")]
     public IEnumerable<Field> Fields { get; init; }
+
     [JsonPropertyName("default_sorting_field")]
     public string? DefaultSortingField { get; init; }
+
+    [JsonPropertyName("token_separators")]
+    public IEnumerable<string>? TokenSeparators { get; init; }
+
+    [JsonPropertyName("symbols_to_index")]
+    public IEnumerable<string>? SymbolsToIndex { get; init; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public Schema()

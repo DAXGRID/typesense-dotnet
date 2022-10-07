@@ -43,7 +43,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
-            "num_employees");
+            "num_employees",
+            new List<string>(),
+            new List<string>());
 
         var schema = new Schema(
             "companies",
@@ -60,6 +62,44 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(0)]
+    public async Task Create_schema_symbols_to_index_and_token_seperator()
+    {
+        var expected = new CollectionResponse(
+            "companies_with_symbols_and_token",
+            0,
+            new List<Field>
+            {
+                new Field("company_name", FieldType.String, false, false, true, false),
+                new Field("num_employees", FieldType.Int32, true, false, true, true),
+                new Field("country", FieldType.String, true, false, true, false),
+            },
+            "num_employees",
+            new List<string> { "-" },
+            new List<string> { "+" });
+
+        var schema = new Schema(
+            "companies_with_symbols_and_token",
+            new List<Field>
+            {
+                new Field("company_name", FieldType.String, false),
+                new Field("num_employees", FieldType.Int32, true),
+                new Field("country", FieldType.String, true),
+            },
+            "num_employees")
+        {
+            TokenSeparators = new List<string> { "-" },
+            SymbolsToIndex = new List<string> { "+" }
+        };
+
+        var response = await _client.CreateCollection(schema);
+
+        response.Should().BeEquivalentTo(expected);
+
+        // Cleanup
+        await _client.DeleteCollection(schema.Name);
+    }
+
     // We test wildcard field individually,
     // because it is a bit different than other types of fields.
     [Fact, TestPriority(0)]
@@ -72,7 +112,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 new Field(".*", FieldType.String, false, true, true, false),
             },
-            "");
+            "",
+            new List<string>(),
+            new List<string>());
 
         var schema = new Schema(
             "wildcard-collection",
@@ -101,7 +143,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
-            "num_employees");
+            "num_employees",
+            new List<string>(),
+            new List<string>());
 
         var response = await _client.RetrieveCollection("companies");
 
@@ -122,7 +166,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     new Field("num_employees", FieldType.Int32, true, false, true, true),
                     new Field("country", FieldType.String, true, false, true, false),
                 },
-                "num_employees")
+                "num_employees",
+                new List<string>(),
+                new List<string>())
     };
 
         var response = await _client.RetrieveCollections();
@@ -141,7 +187,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("num_employees", FieldType.Int32, true, false, true, true),
                 new Field("country", FieldType.String, true, false, true, false),
             },
-            "num_employees");
+            "num_employees",
+            new List<string>(),
+            new List<string>());
 
         var result = await _client.DeleteCollection("companies");
 
