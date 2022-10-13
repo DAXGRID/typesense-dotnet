@@ -259,6 +259,16 @@ public record SearchParameters
     [JsonPropertyName("facet_query_num_typos")]
     public int? FacetQueryNumberTypos { get; set; }
 
+    /// <summary>
+    ///  If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query.
+    /// This parameter can have 3 values:
+    /// off: infix search is disabled, which is default
+    /// always: infix search is performed along with regular search
+    /// fallback: infix search is performed if regular search does not produce results
+    /// </summary>
+    [JsonPropertyName("infix")]
+    public string? Infix { get; set; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
     {
