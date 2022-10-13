@@ -246,14 +246,14 @@ public record SearchParameters
     [JsonPropertyName("enable_overrides")]
     public bool? EnableOverrides { get; set; }
 
-    /// <sumarry>
+    /// <summary>
     /// Control the number of words that Typesense considers for typo and prefix searching.
     /// Default: 4 (or 10000 if exhaustive_search is enabled).
     /// </summary>
     [JsonPropertyName("max_candidates")]
     public int? MaxCandiates { get; set; }
 
-    /// <sumarry>
+    /// <summary>
     /// Controls the fuzziness of the facet query filter.
     /// </summary>
     [JsonPropertyName("facet_query_num_typos")]
