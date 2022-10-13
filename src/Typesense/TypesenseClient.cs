@@ -502,6 +502,8 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&max_candidates={searchParameters.MaxCandiates.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.FacetQueryNumberTypos is not null)
             urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
+        if (searchParameters.Infix is not null)
+            urlParameters += $"&infix={searchParameters.Infix}";
 
         return urlParameters;
     }
