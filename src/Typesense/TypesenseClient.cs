@@ -67,7 +67,8 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
+    private async Task<TResult> SearchInternal<TResult>(string collection,
+        SearchParameters searchParameters) where TResult : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -77,7 +78,22 @@ public class TypesenseClient : ITypesenseClient
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
 
-        return HandleEmptyStringJsonSerialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<TResult>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
+    {
+        if (searchParameters?.GroupBy is not null)
+        {
+            await Console.Out.WriteLineAsync($"[Typesense-Dotnet] Using GroupBy with {nameof(Search)} which does not expose the grouped results. Use {nameof(SearchGrouped)} instead!");
+        }
+
+        return await SearchInternal<SearchResult<T>>(collection, searchParameters);
+    }
+
+    public async Task<GroupedSearchResult<T>> SearchGrouped<T>(string collection, SearchParameters searchParameters)
+    {
+        return await SearchInternal<GroupedSearchResult<T>>(collection, searchParameters);
     }
 
     public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)

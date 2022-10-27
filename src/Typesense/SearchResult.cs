@@ -116,7 +116,16 @@ public record FacetStats
     }
 }
 
-public record SearchResult<T>
+public record GroupedHit<T>
+{
+    [JsonPropertyName("group_key")]
+    public IReadOnlyList<string> GroupKey { get; init; }
+    
+    [JsonPropertyName("hits")]
+    public IReadOnlyList<Hit<T>> Hits { get; init; }
+}
+
+public abstract record SearchResultBase
 {
     [JsonPropertyName("facet_counts")]
     public IReadOnlyCollection<FacetCount> FacetCounts { get; init; }
@@ -128,28 +137,22 @@ public record SearchResult<T>
     public int Page { get; init; }
     [JsonPropertyName("search_time_ms")]
     public int SearchTimeMs { get; init; }
-    [JsonPropertyName("hits")]
-    public IReadOnlyList<Hit<T>> Hits { get; init; }
+
     [JsonPropertyName("took_ms")]
     [Obsolete("Obsolete since version v0.18.0 use SearchTimeMs instead.")]
     public int? TookMs { get; init; }
+}
 
-    [JsonConstructor]
-    public SearchResult(
-        IReadOnlyCollection<FacetCount> facetCounts,
-        int found,
-        int outOf,
-        int page,
-        int searchTimeMs,
-        IReadOnlyList<Hit<T>> hits)
-    {
-        FacetCounts = facetCounts;
-        Found = found;
-        OutOf = outOf;
-        Page = page;
-        SearchTimeMs = searchTimeMs;
-        Hits = hits;
-    }
+public record SearchResult<T> : SearchResultBase
+{
+    [JsonPropertyName("hits")]
+    public IReadOnlyList<Hit<T>> Hits { get; init; }
+}
+
+public record GroupedSearchResult<T> : SearchResultBase
+{
+    [JsonPropertyName("grouped_hits")]
+    public IReadOnlyList<GroupedHit<T>> GroupedHits { get; init; }
 }
 
 public record MultiSearchResult
