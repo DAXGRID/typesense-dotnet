@@ -763,6 +763,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_grouped_by_country()
+    {
+        var query = new GroupedSearchParameters("Stark", "company_name", "country");
+        var response = await _client.SearchGrouped<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.GroupedHits.Should().NotBeEmpty();
+            var firstHit = response.GroupedHits.First();
+            firstHit.GroupKey.Should().BeEquivalentTo("USA");
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Multi_search_query_single()
     {
         var expected = new Company

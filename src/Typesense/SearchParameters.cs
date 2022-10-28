@@ -117,14 +117,6 @@ public record SearchParameters
     public string? PerPage { get; set; }
 
     /// <summary>
-    /// You can aggregate search results into groups or buckets by specify
-    /// one or more `group_by` fields. Separate multiple fields with a comma.
-    /// To group on a particular field, it must be a faceted field.
-    /// </summary>
-    [JsonPropertyName("group_by")]
-    public string? GroupBy { get; set; }
-
-    /// <summary>
     /// Maximum number of hits to be returned for every group. If the `group_limit` is
     /// set as `K` then only the top K hits in each group are returned in the response.
     /// </summary>
@@ -280,5 +272,24 @@ public record SearchParameters
     {
         Text = text;
         QueryBy = queryBy;
+    }
+}
+
+public record GroupedSearchParameters : SearchParameters
+{
+    /// <summary>
+    /// You can aggregate search results into groups or buckets by specify
+    /// one or more `group_by` fields. Separate multiple fields with a comma.
+    /// To group on a particular field, it must be a faceted field.
+    /// </summary>
+    [JsonPropertyName("group_by")]
+    public string? GroupBy { get; set; }
+
+    public GroupedSearchParameters(
+        string text,
+        string queryBy,
+        string groupBy) : base(text, queryBy)
+    {
+        GroupBy = groupBy;
     }
 }

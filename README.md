@@ -95,6 +95,13 @@ var query = new SearchParameters("Smed", "accessAddress");
 var searchResult = await typesenseClient.Search<Address>("Addresses", query);
 ```
 
+## Search grouped
+
+```c#
+var query = new GroupedSearchParameters("Stark", "company_name", "country");
+var response = await _client.SearchGrouped<Company>("companies", query);
+```
+
 ## Multi search documents
 
 Multi search goes from one query to four, if you need more than that please open an issue and I'll implement more.

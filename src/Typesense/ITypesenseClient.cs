@@ -66,6 +66,20 @@ public interface ITypesenseClient
     Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters);
 
     /// <summary>
+    /// Search for a document in the specified collection using the supplied search parameters, returning a grouped result.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="searchParameters">The search parameters.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    /// <returns>The search result.</returns>
+    Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters);
+
+    /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
     /// </summary>
     /// <param name="s1">First search parameters.</param>

@@ -67,7 +67,8 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
+    private async Task<TResult> SearchInternal<TResult>(string collection,
+        SearchParameters searchParameters) where TResult : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -77,7 +78,17 @@ public class TypesenseClient : ITypesenseClient
         var parameters = CreateUrlSearchParameters(searchParameters);
         var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
 
-        return HandleEmptyStringJsonSerialize<SearchResult<T>>(response, _jsonNameCaseInsentiveTrue);
+        return HandleEmptyStringJsonSerialize<TResult>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
+    {
+        return await SearchInternal<SearchResult<T>>(collection, searchParameters);
+    }
+
+    public async Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters)
+    {
+        return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters);
     }
 
     public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)
@@ -466,8 +477,6 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&page={searchParameters.Page}";
         if (searchParameters.PerPage is not null)
             urlParameters += $"&per_page={searchParameters.PerPage}";
-        if (searchParameters.GroupBy is not null)
-            urlParameters += $"&group_by={searchParameters.GroupBy}";
         if (searchParameters.GroupLimit is not null)
             urlParameters += $"&group_limit={searchParameters.GroupLimit}";
         if (searchParameters.IncludeFields is not null)
@@ -504,6 +513,8 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.Infix is not null)
             urlParameters += $"&infix={searchParameters.Infix}";
+        if (searchParameters is GroupedSearchParameters)
+            urlParameters += $"&group_by={((GroupedSearchParameters)searchParameters).GroupBy}";
 
         return urlParameters;
     }
