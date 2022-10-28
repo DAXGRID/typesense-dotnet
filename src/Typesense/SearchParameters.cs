@@ -283,7 +283,7 @@ public record GroupedSearchParameters : SearchParameters
     /// To group on a particular field, it must be a faceted field.
     /// </summary>
     [JsonPropertyName("group_by")]
-    public string? GroupBy { get; set; }
+    public string GroupBy { get; set; }
 
     public GroupedSearchParameters(
         string text,
