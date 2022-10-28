@@ -83,17 +83,12 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
     {
-        if (searchParameters?.GroupBy is not null)
-        {
-            await Console.Out.WriteLineAsync($"[Typesense-Dotnet] Using GroupBy with {nameof(Search)} which does not expose the grouped results. Use {nameof(SearchGrouped)} instead!");
-        }
-
         return await SearchInternal<SearchResult<T>>(collection, searchParameters);
     }
 
-    public async Task<GroupedSearchResult<T>> SearchGrouped<T>(string collection, SearchParameters searchParameters)
+    public async Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters)
     {
-        return await SearchInternal<GroupedSearchResult<T>>(collection, searchParameters);
+        return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters);
     }
 
     public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)
@@ -482,8 +477,6 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&page={searchParameters.Page}";
         if (searchParameters.PerPage is not null)
             urlParameters += $"&per_page={searchParameters.PerPage}";
-        if (searchParameters.GroupBy is not null)
-            urlParameters += $"&group_by={searchParameters.GroupBy}";
         if (searchParameters.GroupLimit is not null)
             urlParameters += $"&group_limit={searchParameters.GroupLimit}";
         if (searchParameters.IncludeFields is not null)
@@ -520,6 +513,8 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.Infix is not null)
             urlParameters += $"&infix={searchParameters.Infix}";
+        if (searchParameters is GroupedSearchParameters)
+            urlParameters += $"&group_by={((GroupedSearchParameters)searchParameters).GroupBy}";
 
         return urlParameters;
     }

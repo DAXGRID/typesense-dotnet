@@ -1,11 +1,9 @@
-using System;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Typesense.Tests;
@@ -767,8 +765,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(11)]
     public async Task Search_grouped_by_country()
     {
-        var query = new SearchParameters("Stark", "company_name")
-            { GroupBy = "country" };
+        var query = new GroupedSearchParameters("Stark", "company_name", "country");
         var response = await _client.SearchGrouped<Company>("companies", query);
 
         using (var scope = new AssertionScope())

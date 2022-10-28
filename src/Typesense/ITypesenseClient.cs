@@ -77,7 +77,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     /// <returns>The search result.</returns>
-    Task<GroupedSearchResult<T>> SearchGrouped<T>(string collection, SearchParameters searchParameters);
+    Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters);
 
     /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
