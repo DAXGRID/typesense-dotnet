@@ -119,13 +119,14 @@ public record FacetStats
 public record GroupedHit<T>
 {
     [JsonPropertyName("group_key")]
-    public IReadOnlyList<object> GroupKey { get; init; }
+    [JsonConverter(typeof(GroupKeyConverter))]
+    public IReadOnlyList<string> GroupKey { get; init; }
 
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>> Hits { get; init; }
 
     [JsonConstructor]
-    public GroupedHit(IReadOnlyList<object> groupKey, IReadOnlyList<Hit<T>> hits)
+    public GroupedHit(IReadOnlyList<string> groupKey, IReadOnlyList<Hit<T>> hits)
     {
         GroupKey = groupKey;
         Hits = hits;
