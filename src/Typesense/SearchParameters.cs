@@ -105,6 +105,14 @@ public record SearchParameters
     public string? NumberOfTypos { get; set; }
 
     /// <summary>
+    /// Whether all variations of prefixes and typo corrections should be considered,
+    /// without stopping early when enough results are found.
+    /// Ignores DropTokensThreshold and TypoTokensThreshold.
+    /// </summary>
+    [JsonPropertyName("exhaustive_search")]
+    public bool? ExhaustiveSearch { get; set; }
+
+    /// <summary>
     /// Results from this specific page number would be fetched.
     /// </summary>
     [JsonPropertyName("page")]
