@@ -477,8 +477,6 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&page={searchParameters.Page}";
         if (searchParameters.PerPage is not null)
             urlParameters += $"&per_page={searchParameters.PerPage}";
-        if (searchParameters.GroupLimit is not null)
-            urlParameters += $"&group_limit={searchParameters.GroupLimit}";
         if (searchParameters.IncludeFields is not null)
             urlParameters += $"&include_fields={searchParameters.IncludeFields}";
         if (searchParameters.HighlightFullFields is not null)
@@ -513,8 +511,16 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.Infix is not null)
             urlParameters += $"&infix={searchParameters.Infix}";
-        if (searchParameters is GroupedSearchParameters)
-            urlParameters += $"&group_by={((GroupedSearchParameters)searchParameters).GroupBy}";
+
+        if (searchParameters is GroupedSearchParameters groupedSearchParameters)
+        {
+            urlParameters += $"&group_by={groupedSearchParameters.GroupBy}";
+            if (groupedSearchParameters.GroupLimit is not null)
+            {
+                urlParameters += $"&group_limit={groupedSearchParameters.GroupLimit}";
+            }
+        }
+
 
         return urlParameters;
     }

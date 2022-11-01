@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -48,6 +49,33 @@ public class TypesenseConverterTests
             response[0].MatchedTokens[0].Should().BeOfType<List<string>>();
             response[1].MatchedTokens.Count.Should().Be(1);
             response[1].MatchedTokens[0].Should().BeOfType<string>();
+        }
+    }
+
+    [Fact]
+    public void TestGroupKeys()
+    {
+        var json = @"
+        {
+          ""group_key"": [""USA"", 12, 4.2, [""foo"", ""bar""], [42, 4.5]],
+          ""Hits"": []
+        }
+        ";
+
+        var groupedHit = JsonSerializer.Deserialize<GroupedHit<string>>(json);
+
+        using (new AssertionScope())
+        {
+            groupedHit.Should().NotBeNull();
+
+            var key = groupedHit.GroupKey;
+            key.Count.Should().Be(5);
+
+            key[0].Should().Be("USA");
+            key[1].Should().Be("12");
+            key[2].Should().Be("4.2");
+            key[3].Should().Be("foo, bar");
+            key[4].Should().Be("42, 4.5");
         }
     }
 }

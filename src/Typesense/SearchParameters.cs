@@ -117,13 +117,6 @@ public record SearchParameters
     public string? PerPage { get; set; }
 
     /// <summary>
-    /// Maximum number of hits to be returned for every group. If the `group_limit` is
-    /// set as `K` then only the top K hits in each group are returned in the response.
-    /// </summary>
-    [JsonPropertyName("group_limit")]
-    public string? GroupLimit { get; set; }
-
-    /// <summary>
     /// List of fields from the document to include in the search result.
     /// </summary>
     [JsonPropertyName("include_fields")]
@@ -284,6 +277,13 @@ public record GroupedSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("group_by")]
     public string GroupBy { get; set; }
+    
+    /// <summary>
+    /// Maximum number of hits to be returned for every group. If the `group_limit` is
+    /// set as `K` then only the top K hits in each group are returned in the response.
+    /// </summary>
+    [JsonPropertyName("group_limit")]
+    public string? GroupLimit { get; set; }
 
     public GroupedSearchParameters(
         string text,
