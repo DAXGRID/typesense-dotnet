@@ -511,6 +511,8 @@ public class TypesenseClient : ITypesenseClient
             urlParameters += $"&facet_query_num_typos={searchParameters.FacetQueryNumberTypos.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.Infix is not null)
             urlParameters += $"&infix={searchParameters.Infix}";
+        if (searchParameters.ExhaustiveSearch is not null)
+            urlParameters += $"&exhaustive_search={searchParameters.ExhaustiveSearch.Value.ToString().ToLowerInvariant()}";
 
         if (searchParameters is GroupedSearchParameters groupedSearchParameters)
         {
