@@ -504,7 +504,17 @@ public class TypesenseClient : ITypesenseClient
         if (searchParameters.EnableOverrides is not null)
             urlParameters += $"&enable_overrides={searchParameters.EnableOverrides.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.SplitJoinTokens is not null)
-            urlParameters += $"&split_join_tokens={searchParameters.SplitJoinTokens.Value.ToString().ToLowerInvariant()}";
+        {
+            var splitJoinTokensStringRepresentation = searchParameters.SplitJoinTokens switch
+            {
+                SplitJoinTokenOption.Fallback => "fallback",
+                SplitJoinTokenOption.Always => "always",
+                SplitJoinTokenOption.Off => "off",
+                _ => throw new ArgumentException($"Cannot handle value {searchParameters.SplitJoinTokens}")
+            };
+
+            urlParameters += $"&split_join_tokens={splitJoinTokensStringRepresentation}";
+        }
         if (searchParameters.MaxCandiates is not null)
             urlParameters += $"&max_candidates={searchParameters.MaxCandiates.Value.ToString().ToLowerInvariant()}";
         if (searchParameters.FacetQueryNumberTypos is not null)
