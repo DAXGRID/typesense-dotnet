@@ -3,6 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace Typesense;
 
+public enum SplitJoinTokenOption
+{
+    Fallback,
+    Always,
+    Off
+}
+
 public record MultiSearchParameters : SearchParameters
 {
     /// <summary>
@@ -230,7 +237,7 @@ public record SearchParameters
     /// Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
     /// </summary>
     [JsonPropertyName("split_join_tokens")]
-    public bool? SplitJoinTokens { get; set; }
+    public SplitJoinTokenOption? SplitJoinTokens { get; set; }
 
     /// <summary>
     /// If you have some overrides defined but want to disable all of them during
@@ -285,7 +292,7 @@ public record GroupedSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("group_by")]
     public string GroupBy { get; set; }
-    
+
     /// <summary>
     /// Maximum number of hits to be returned for every group. If the `group_limit` is
     /// set as `K` then only the top K hits in each group are returned in the response.

@@ -670,6 +670,32 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_query_by_just_text_with_split_join_tokens_set()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Country = "USA",
+        };
+
+        var query = new SearchParameters("Stark", "company_name")
+        {
+            SplitJoinTokens = SplitJoinTokenOption.Fallback
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+
+    [Fact, TestPriority(11)]
     public async Task Search_query_by_two_fields()
     {
         var expected = new Company
