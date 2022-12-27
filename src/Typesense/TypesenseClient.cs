@@ -41,7 +41,8 @@ public class TypesenseClient : ITypesenseClient
         if (schema is null)
             throw new ArgumentNullException(nameof(schema));
 
-        var response = await Post($"/collections", schema).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(schema, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post($"/collections", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
@@ -52,7 +53,8 @@ public class TypesenseClient : ITypesenseClient
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
-        var response = await Post($"/collections/{collection}/documents", document).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post($"/collections/{collection}/documents", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -63,7 +65,8 @@ public class TypesenseClient : ITypesenseClient
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
-        var response = await Post($"/collections/{collection}/documents?action=upsert", document).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post($"/collections/{collection}/documents?action=upsert", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -93,7 +96,9 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)
     {
-        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1 } }).ConfigureAwait(false);
+        var searches = new { Searches = new MultiSearchParameters[] { s1 } };
+        var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post("/multi_search", json).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? HandleDeserializeMultiSearch<T>(results[0])
@@ -102,7 +107,9 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2)
     {
-        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2 } }).ConfigureAwait(false);
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2 } };
+        var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post("/multi_search", json).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -115,7 +122,9 @@ public class TypesenseClient : ITypesenseClient
         MultiSearchParameters s2,
         MultiSearchParameters s3)
     {
-        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2, s3 } }).ConfigureAwait(false);
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3 } };
+        var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post("/multi_search", json).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -130,7 +139,9 @@ public class TypesenseClient : ITypesenseClient
         MultiSearchParameters s3,
         MultiSearchParameters s4)
     {
-        var response = await Post("/multi_search", new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } }).ConfigureAwait(false);
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } };
+        var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post("/multi_search", json).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -158,7 +169,8 @@ public class TypesenseClient : ITypesenseClient
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
-        var response = await Patch($"collections/{collection}/documents/{id}", document).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Patch($"collections/{collection}/documents/{id}", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -284,7 +296,8 @@ public class TypesenseClient : ITypesenseClient
         if (key is null)
             throw new ArgumentNullException(nameof(key));
 
-        var response = await Post($"/keys", key).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(key, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post($"/keys", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -335,7 +348,8 @@ public class TypesenseClient : ITypesenseClient
         if (searchOverride is null)
             throw new ArgumentNullException(nameof(searchOverride));
 
-        var response = await Put($"/collections/{collection}/overrides/{overrideName}", searchOverride).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(searchOverride, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Put($"/collections/{collection}/overrides/{overrideName}", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -378,7 +392,8 @@ public class TypesenseClient : ITypesenseClient
         if (collectionAlias is null)
             throw new ArgumentNullException(nameof(collectionAlias));
 
-        var response = await Put($"/aliases/{aliasName}", collectionAlias).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(collectionAlias, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Put($"/aliases/{aliasName}", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -416,7 +431,8 @@ public class TypesenseClient : ITypesenseClient
         if (schema is null)
             throw new ArgumentNullException(nameof(schema));
 
-        var response = await Put($"/collections/{collection}/synonyms/{synonym}", schema).ConfigureAwait(false);
+        var json = JsonSerializer.Serialize(schema, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Put($"/collections/{collection}/synonyms/{synonym}", json).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -553,30 +569,28 @@ public class TypesenseClient : ITypesenseClient
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Post(string path, object obj)
+    private async Task<string> Post(string path, string json)
     {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
-        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        using var stringContent = GetApplicationJsonStringContent(json);
         var (response, responseString) = await HandleHttpResponse(_httpClient.PostAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Patch(string path, object obj)
+    private async Task<string> Patch(string path, string json)
     {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
-        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        //var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var stringContent = GetApplicationJsonStringContent(json);
         var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Put(string path, object obj)
+    private async Task<string> Put(string path, string json)
     {
-        var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
-        using var stringContent = GetApplicationJsonStringContent(jsonString);
+        using var stringContent = GetApplicationJsonStringContent(json);
         var (response, responseString) = await HandleHttpResponse(_httpClient.PutAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
