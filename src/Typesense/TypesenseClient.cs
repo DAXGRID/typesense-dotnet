@@ -599,7 +599,6 @@ public class TypesenseClient : ITypesenseClient
             }
         }
 
-
         return urlParameters;
     }
 
@@ -687,7 +686,6 @@ public class TypesenseClient : ITypesenseClient
         => !string.IsNullOrEmpty(json)
         ? JsonSerializer.Deserialize<T>(json, options) ?? throw new ArgumentException("Deserialize is not allowed to return null.")
         : throw new ArgumentException("Empty JSON response is not valid.");
-
 
     private static string CreateJsonNewlines<T>(IEnumerable<string> documents, JsonSerializerOptions jsonOptions)
         => String.Join('\n', documents);
