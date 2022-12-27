@@ -577,4 +577,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym);
+
+    /// <summary>
+    /// Get current RAM, CPU, Disk & Network usage metrics.
+    /// </summary>
+    /// <returns>
+    /// Response containing current RAM, CPU, Disk & Network usage metrics.
+    /// </returns>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<MetricsResponse> RetrieveMetrics();
 }

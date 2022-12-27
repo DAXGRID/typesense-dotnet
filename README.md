@@ -318,6 +318,14 @@ var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
 var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
 ```
 
+## Metrics
+
+Get current RAM, CPU, Disk & Network usage metrics.
+
+```c#
+var metrics = await typesenseClient.RetrieveMetrics();
+```
+
 ### Typesense API Errors
 
 Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.

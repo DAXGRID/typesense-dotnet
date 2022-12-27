@@ -1178,6 +1178,33 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().Be(expected);
     }
 
+    [Fact, TestPriority(30)]
+    public async Task Can_retrieve_metrics()
+    {
+        var response = await _client.RetrieveMetrics();
+
+        using (var scope = new AssertionScope())
+        {
+            response.Should().NotBeNull();
+            response.SystemCPU1ActivePercentage.Should().NotBeNullOrWhiteSpace();
+            response.SystemCPU2ActivePercentage.Should().NotBeNull();
+            response.SystemCPU3ActivePercentage.Should().NotBeNull();
+            response.SystemCPU4ActivePercentage.Should().NotBeNull();
+            response.SystemCPUActivePercentage.Should().NotBeNullOrWhiteSpace();
+            response.SystemDiskTotalBytes.Should().NotBeNullOrWhiteSpace();
+            response.SystemDiskUsedBytes.Should().NotBeNullOrWhiteSpace();
+            response.SystemMemoryTotalBytes.Should().NotBeNullOrWhiteSpace();
+            response.SystemNetworkReceivedBytes.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryActiveBytes.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryAllocatedbytes.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryFragmentationRatio.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryMappedBytes.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryMetadataBytes.Should().NotBeNullOrWhiteSpace();
+            response.TypesenseMemoryResidentBytes.Should().NotBeNullOrWhiteSpace();
+            response.TypenseMemoryRetainedBytes.Should().NotBeNullOrWhiteSpace();
+        }
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(

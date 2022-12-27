@@ -518,6 +518,12 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<MetricsResponse> RetrieveMetrics()
+    {
+        var response = await Get("/metrics.json").ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<MetricsResponse>(response);
+    }
+
     private static string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var urlParameters = "";

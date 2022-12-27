@@ -118,6 +118,9 @@ sealed class Program
 
         // Example delete collection
         await ExampleDeleteCollection(typesenseClient);
+
+        // Example retrieve metrics
+        await ExampleRetrieveMetrics(typesenseClient);
     }
 
     private static async Task ExampleCreateCollection(ITypesenseClient typesenseClient)
@@ -434,5 +437,11 @@ sealed class Program
     {
         var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
         Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
+    }
+
+    private static async Task ExampleRetrieveMetrics(ITypesenseClient typesenseClient)
+    {
+        var metrics = await typesenseClient.RetrieveMetrics();
+        Console.WriteLine($"Retrieved metrics: {JsonSerializer.Serialize(metrics)}");
     }
 }
