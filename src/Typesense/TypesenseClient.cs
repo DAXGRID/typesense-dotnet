@@ -252,6 +252,11 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create)
     {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
+        if (string.IsNullOrWhiteSpace(documents))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(documents));
+
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
         switch (importType)
         {
@@ -287,12 +292,10 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create)
     {
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
         if (documents is null)
             throw new ArgumentNullException(nameof(documents));
 
-        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var jsonNewlines = JsonNewLines(documents);
         return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
     }
 
@@ -302,12 +305,10 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create)
     {
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
         if (documents is null)
             throw new ArgumentNullException(nameof(documents));
 
-        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var jsonNewlines = JsonNewLines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
     }
 
@@ -687,11 +688,11 @@ public class TypesenseClient : ITypesenseClient
         ? JsonSerializer.Deserialize<T>(json, options) ?? throw new ArgumentException("Deserialize is not allowed to return null.")
         : throw new ArgumentException("Empty JSON response is not valid.");
 
-    private static string CreateJsonNewlines<T>(IEnumerable<string> documents, JsonSerializerOptions jsonOptions)
+    private static string JsonNewLines(IEnumerable<string> documents)
         => String.Join('\n', documents);
 
-    private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
-        => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
+    private static string JsonNewLines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
+        => JsonNewLines(documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
 
     private SearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
         => jsonElement.Deserialize<SearchResult<T>>(_jsonNameCaseInsentiveTrue)
