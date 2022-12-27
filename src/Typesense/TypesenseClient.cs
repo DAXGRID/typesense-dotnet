@@ -46,28 +46,44 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
-    public async Task<T> CreateDocument<T>(string collection, T document) where T : class
+    public async Task<T> CreateDocument<T>(string collection, string document) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
+            throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
+        if (string.IsNullOrWhiteSpace(document))
+            throw new ArgumentException("Cannot be null empty or whitespace", nameof(document));
+
+        var response = await Post($"/collections/{collection}/documents", document).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<T> CreateDocument<T>(string collection, T document) where T : class
+    {
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
         var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post($"/collections/{collection}/documents", json).ConfigureAwait(false);
+        return await CreateDocument<T>(collection, json).ConfigureAwait(false);
+    }
+
+    public async Task<T> UpsertDocument<T>(string collection, string document) where T : class
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
+        if (string.IsNullOrWhiteSpace(document))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(document));
+
+        var response = await Post($"/collections/{collection}/documents?action=upsert", document).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<T> UpsertDocument<T>(string collection, T document) where T : class
     {
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
         var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post($"/collections/{collection}/documents?action=upsert", json).ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return await UpsertDocument<T>(collection, json);
     }
 
     private async Task<TResult> SearchInternal<TResult>(string collection,
@@ -162,16 +178,24 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
+    public async Task<T> UpdateDocument<T>(string collection, string id, string document) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
+            throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
+        if (string.IsNullOrWhiteSpace(document))
+            throw new ArgumentException("Cannot be null empty or whitespace", nameof(document));
+
+        var response = await Patch($"collections/{collection}/documents/{id}", document).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
+    {
         if (document is null)
             throw new ArgumentNullException(nameof(document));
 
         var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Patch($"collections/{collection}/documents/{id}", json).ConfigureAwait(false);
-        return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
+        return await UpdateDocument<T>(collection, id, json).ConfigureAwait(false);
     }
 
     public async Task<CollectionResponse> RetrieveCollection(string name)
@@ -209,7 +233,6 @@ public class TypesenseClient : ITypesenseClient
         if (batchSize < 0)
             throw new ArgumentException("has to be greater than 0", nameof(batchSize));
 
-
         var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
     }
@@ -224,13 +247,11 @@ public class TypesenseClient : ITypesenseClient
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
-        string collection, IEnumerable<T> documents, int batchSize = 40, ImportType importType = ImportType.Create)
+        string collection,
+        string documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create)
     {
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
-        if (documents is null)
-            throw new ArgumentNullException(nameof(documents));
-
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
         switch (importType)
         {
@@ -250,15 +271,44 @@ public class TypesenseClient : ITypesenseClient
                 throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
         }
 
-        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
-        using var stringContent = GetTextPlainStringContent(jsonNewlines);
+        using var stringContent = GetTextPlainStringContent(documents);
         var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
         var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
 
         return response.IsSuccessStatusCode
-            ? responseString.Split('\n').Select((x) => JsonSerializer.Deserialize<ImportResponse>(x)
-                                                ?? throw new ArgumentException("Null is not valid for documents.")).ToList()
+            ? responseString.Split('\n').Select(
+                (x) => JsonSerializer.Deserialize<ImportResponse>(x) ?? throw new ArgumentException("Null is not valid for documents.")).ToList()
             : throw new TypesenseApiException(responseString);
+    }
+
+    public async Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection,
+        IEnumerable<string> documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
+        if (documents is null)
+            throw new ArgumentNullException(nameof(documents));
+
+        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
+    }
+
+    public async Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection,
+        IEnumerable<T> documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
+        if (documents is null)
+            throw new ArgumentNullException(nameof(documents));
+
+        var jsonNewlines = CreateJsonNewlines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
     }
 
     public async Task<List<T>> ExportDocuments<T>(string collection)
@@ -580,7 +630,6 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Patch(string path, string json)
     {
-        //var jsonString = JsonSerializer.Serialize(obj, obj.GetType(), _jsonOptionsCamelCaseIgnoreWritingNull);
         using var stringContent = GetApplicationJsonStringContent(json);
         var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent).ConfigureAwait(false);
         return response.IsSuccessStatusCode
@@ -638,6 +687,10 @@ public class TypesenseClient : ITypesenseClient
         => !string.IsNullOrEmpty(json)
         ? JsonSerializer.Deserialize<T>(json, options) ?? throw new ArgumentException("Deserialize is not allowed to return null.")
         : throw new ArgumentException("Empty JSON response is not valid.");
+
+
+    private static string CreateJsonNewlines<T>(IEnumerable<string> documents, JsonSerializerOptions jsonOptions)
+        => String.Join('\n', documents);
 
     private static string CreateJsonNewlines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
         => String.Join('\n', documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));

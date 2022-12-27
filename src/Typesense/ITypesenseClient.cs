@@ -23,6 +23,22 @@ public interface ITypesenseClient
     /// Creates the document in the speicfied collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
+    /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
+    /// <returns>The created document.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<T> CreateDocument<T>(string collection, string document) where T : class;
+
+    /// <summary>
+    /// Creates the document in the speicfied collection.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted.</param>
     /// <returns>The created document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
@@ -34,6 +50,22 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<T> CreateDocument<T>(string collection, T document) where T : class;
+
+    /// <summary>
+    /// Inserts the document if it does not exist or update if the document exist.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
+    /// <returns>The created or updated document.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<T> UpsertDocument<T>(string collection, string document) where T : class;
 
     /// <summary>
     /// Inserts the document if it does not exist or update if the document exist.
@@ -153,6 +185,23 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="id">The document id.</param>
+    /// <param name="document">The document to be updated. The document should be in JSON format.</param>
+    /// <returns>The updated document.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<T> UpdateDocument<T>(string collection, string id, string document) where T : class;
+
+    /// <summary>
+    /// Updates the document in the specified collection on id.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="id">The document id.</param>
     /// <param name="document">The document to be updated.</param>
     /// <returns>The updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
@@ -225,6 +274,42 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionResponse> DeleteCollection(string name);
+
+    /// <summary>
+    /// Batch import documents.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="documents">A list of the documents to be imported. The whole string should be in JSON-newline format.</param>
+    /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
+    /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <returns>A collection of import responses.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<List<ImportResponse>> ImportDocuments<T>(string collection, string documents, int batchSize = 40, ImportType importType = ImportType.Create);
+
+    /// <summary>
+    /// Batch import documents.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="documents">A list of the documents to be imported. Each document should be in JSON format.</param>
+    /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
+    /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <returns>A collection of import responses.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<List<ImportResponse>> ImportDocuments<T>(string collection, IEnumerable<string> documents, int batchSize = 40, ImportType importType = ImportType.Create);
 
     /// <summary>
     /// Batch import documents.
