@@ -524,6 +524,12 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<MetricsResponse>(response);
     }
 
+    public async Task<StatsResponse> RetrieveStats()
+    {
+        var response = await Get("/stats.json").ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<StatsResponse>(response);
+    }
+
     private static string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         var urlParameters = "";

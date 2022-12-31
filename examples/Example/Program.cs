@@ -121,6 +121,9 @@ sealed class Program
 
         // Example retrieve metrics
         await ExampleRetrieveMetrics(typesenseClient);
+
+        // Example retrieve stats
+        await ExampleRetrieveStats(typesenseClient);
     }
 
     private static async Task ExampleCreateCollection(ITypesenseClient typesenseClient)
@@ -443,5 +446,11 @@ sealed class Program
     {
         var metrics = await typesenseClient.RetrieveMetrics();
         Console.WriteLine($"Retrieved metrics: {JsonSerializer.Serialize(metrics)}");
+    }
+
+    private static async Task ExampleRetrieveStats(ITypesenseClient typesenseClient)
+    {
+        var stats = await typesenseClient.RetrieveStats();
+        Console.WriteLine($"Retrieved metrics: {JsonSerializer.Serialize(stats)}");
     }
 }

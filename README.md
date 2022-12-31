@@ -326,6 +326,14 @@ Get current RAM, CPU, Disk & Network usage metrics.
 var metrics = await typesenseClient.RetrieveMetrics();
 ```
 
+## Stats
+
+Get stats about API endpoints.
+
+```c#
+var stats = await typesenseClient.RetrieveStats();
+```
+
 ### Typesense API Errors
 
 Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.
