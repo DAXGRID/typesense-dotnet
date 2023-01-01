@@ -26,6 +26,10 @@ public record MultiSearchParameters : SearchParameters
 
 public record SearchParameters
 {
+    // -------------------------------------------------------------------------------------
+    // Query parameters - https://typesense.org/docs/latest/api/search.html#query-parameters
+    // -------------------------------------------------------------------------------------
+    
     /// <summary>
     /// The query text to search for in the collection.
     /// Use * as the search string to return all documents.
@@ -41,22 +45,6 @@ public record SearchParameters
     public string QueryBy { get; set; }
 
     /// <summary>
-    /// The relative weight to give each `query_by` field when ranking results.
-    /// This can be used to boost fields in priority, when looking for matches.
-    /// Multiple fields are separated with a comma.
-    /// </summary>
-    [JsonPropertyName("query_by_weights")]
-    public string? QueryByWeights { get; set; }
-
-    /// <summary>
-    /// Maximum number of hits returned. Increasing this value might
-    /// increase search latency. Default: 500. Use `all` to return all hits found.
-    /// </summary>
-    [Obsolete("max_hits has been deprecated since Typesense version 0.19.0")]
-    [JsonPropertyName("max_hits")]
-    public string? MaxHits { get; set; }
-
-    /// <summary>
     /// Boolean field to indicate that the last word in the query should
     /// be treated as a prefix, and not as a whole word. This is used for building
     /// autocomplete and instant search interfaces. Defaults to true.
@@ -65,11 +53,45 @@ public record SearchParameters
     public bool? Prefix { get; set; }
 
     /// <summary>
+    /// If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query.
+    /// This parameter can have 3 values:
+    /// off: infix search is disabled, which is default
+    /// always: infix search is performed along with regular search
+    /// fallback: infix search is performed if regular search does not produce results
+    /// </summary>
+    [JsonPropertyName("infix")]
+    public string? Infix { get; set; }
+
+    /// <summary>
+    /// Set this parameter to true if you wish to split the search query into space separated words yourself.
+    /// When set to true, we will only split the search query by space,
+    /// instead of using the locale-aware, built-in tokenizer.
+    /// </summary>
+    [JsonPropertyName("pre_segmented_query")]
+    public bool? PreSegmentedQuery { get; set; }
+    
+    // ---------------------------------------------------------------------------------------
+    // Filter parameters - https://typesense.org/docs/latest/api/search.html#filter-parameters
+    // ---------------------------------------------------------------------------------------
+    
+    /// <summary>
     /// Filter conditions for refining your search results. Separate
     /// multiple conditions with &&.
     /// </summary>
     [JsonPropertyName("filter_by")]
     public string? FilterBy { get; set; }
+
+    // ---------------------------------------------------------------------------------------
+    // Ranking and Sorting parameters - https://typesense.org/docs/latest/api/search.html#ranking-and-sorting-parameters
+    // ---------------------------------------------------------------------------------------
+    
+    /// <summary>
+    /// The relative weight to give each `query_by` field when ranking results.
+    /// This can be used to boost fields in priority, when looking for matches.
+    /// Multiple fields are separated with a comma.
+    /// </summary>
+    [JsonPropertyName("query_by_weights")]
+    public string? QueryByWeights { get; set; }
 
     /// <summary>
     /// A list of numerical fields and their corresponding sort orders
@@ -82,6 +104,80 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("sort_by")]
     public string? SortBy { get; set; }
+
+    /// <summary>
+    /// By default, Typesense prioritizes documents whose field value matches
+    /// exactly with the query. Set this parameter to `false` to disable this behavior.
+    /// Defaults to true.
+    /// </summary>
+    [JsonPropertyName("prioritize_exact_match")]
+    public bool? PrioritizeExactMatch { get; set; }
+
+    /// <summary>
+    /// Make Typesense prioritize documents where the query words appear earlier in the text.
+    /// </summary>
+    [JsonPropertyName("prioritize_token_position")]
+    public bool? PrioritizeTokenPosition { get; set; }
+
+    /// <summary>
+    /// A list of records to unconditionally include in the search results
+    /// at specific positions. An example use case would be to feature or promote
+    /// certain items on the top of search results.
+    /// A list of `record_id:hit_position`. Eg: to include a record with ID 123
+    /// at Position 1 and another record with ID 456 at Position 5,
+    /// you'd specify `123:1,456:5`.
+    /// You could also use the Overrides feature to override search results based
+    /// on rules. Overrides are applied first, followed by `pinned_hits` and
+    /// finally `hidden_hits`.
+    /// </summary>
+    [JsonPropertyName("pinned_hits")]
+    public string? PinnedHits { get; set; }
+
+    /// <summary>
+    /// A list of records to unconditionally hide from search results.
+    /// A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
+    /// you'd specify `123,456`.
+    /// You could also use the Overrides feature to override search results based
+    /// on rules. Overrides are applied first, followed by `pinned_hits` and
+    /// finally `hidden_hits`.
+    /// </summary>
+    [JsonPropertyName("hidden_hits")]
+    public string? HiddenHits { get; set; }
+
+    /// <summary>
+    /// If you have some overrides defined but want to disable all of them during
+    /// query time, you can do that by setting this parameter to false
+    /// </summary>
+    [JsonPropertyName("enable_overrides")]
+    public bool? EnableOverrides { get; set; }
+    
+    // ---------------------------------------------------------------------------------------
+    // Pagination parameters - https://typesense.org/docs/latest/api/search.html#pagination-parameters
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Results from this specific page number would be fetched.
+    /// </summary>
+    [JsonPropertyName("page")]
+    public string? Page { get; set; }
+    
+    /// <summary>
+    /// Number of results to fetch per page. Default: 10
+    /// </summary>
+    [JsonPropertyName("per_page")]
+    public string? PerPage { get; set; }
+
+    /// <summary>
+    /// Maximum number of hits returned. Increasing this value might
+    /// increase search latency. Default: 500. Use `all` to return all hits found.
+    /// </summary>
+    [Obsolete("max_hits has been deprecated since Typesense version 0.19.0")]
+    [JsonPropertyName("max_hits")]
+    public string? MaxHits { get; set; }
+
+    // ---------------------------------------------------------------------------------------
+    // Faceting parameters - https://typesense.org/docs/latest/api/search.html#faceting-parameters
+    // ---------------------------------------------------------------------------------------
 
     /// <summary>
     /// A list of fields that will be used for faceting your results
@@ -106,30 +202,14 @@ public record SearchParameters
     public string? FacetQuery { get; set; }
 
     /// <summary>
-    /// The number of typographical errors (1 or 2) that would be tolerated.
+    /// Controls the fuzziness of the facet query filter.
     /// </summary>
-    [JsonPropertyName("num_typos")]
-    public string? NumberOfTypos { get; set; }
+    [JsonPropertyName("facet_query_num_typos")]
+    public int? FacetQueryNumberTypos { get; set; }
 
-    /// <summary>
-    /// Whether all variations of prefixes and typo corrections should be considered,
-    /// without stopping early when enough results are found.
-    /// Ignores DropTokensThreshold and TypoTokensThreshold.
-    /// </summary>
-    [JsonPropertyName("exhaustive_search")]
-    public bool? ExhaustiveSearch { get; set; }
-
-    /// <summary>
-    /// Results from this specific page number would be fetched.
-    /// </summary>
-    [JsonPropertyName("page")]
-    public string? Page { get; set; }
-
-    /// <summary>
-    /// Number of results to fetch per page. Default: 10
-    /// </summary>
-    [JsonPropertyName("per_page")]
-    public string? PerPage { get; set; }
+    // ---------------------------------------------------------------------------------------
+    // Results parameters - https://typesense.org/docs/latest/api/search.html#results-parameters
+    // ---------------------------------------------------------------------------------------
 
     /// <summary>
     /// List of fields from the document to include in the search result.
@@ -175,48 +255,6 @@ public record SearchParameters
     public string? SnippetThreshold { get; set; }
 
     /// <summary>
-    /// If the number of results found for a specific query is less than
-    /// this number, Typesense will attempt to drop the tokens in the query until
-    /// enough results are found. Tokens that have the least individual hits
-    /// are dropped first. Set to 0 to disable. Default: 10
-    /// </summary>
-    [JsonPropertyName("drop_tokens_threshold")]
-    public string? DropTokensThreshold { get; set; }
-
-    /// <summary>
-    /// If the number of results found for a specific query is less than this number,
-    /// Typesense will attempt to look for tokens with more typos until
-    /// enough results are found. Default: 100
-    /// </summary>
-    [JsonPropertyName("typo_tokens_threshold")]
-    public string? TypoTokensThreshold { get; set; }
-
-    /// <summary>
-    /// A list of records to unconditionally include in the search results
-    /// at specific positions. An example use case would be to feature or promote
-    /// certain items on the top of search results.
-    /// A list of `record_id:hit_position`. Eg: to include a record with ID 123
-    /// at Position 1 and another record with ID 456 at Position 5,
-    /// you'd specify `123:1,456:5`.
-    /// You could also use the Overrides feature to override search results based
-    /// on rules. Overrides are applied first, followed by `pinned_hits` and
-    /// finally `hidden_hits`.
-    /// </summary>
-    [JsonPropertyName("pinned_hits")]
-    public string? PinnedHits { get; set; }
-
-    /// <summary>
-    /// A list of records to unconditionally hide from search results.
-    /// A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
-    /// you'd specify `123,456`.
-    /// You could also use the Overrides feature to override search results based
-    /// on rules. Overrides are applied first, followed by `pinned_hits` and
-    /// finally `hidden_hits`.
-    /// </summary>
-    [JsonPropertyName("hidden_hits")]
-    public string? HiddenHits { get; set; }
-
-    /// <summary>
     /// Maximum number of hits that can be fetched from the collection. Eg: 200
     /// page * per_page should be less than this number for the search request to return results.
     /// A list of custom fields that must be highlighted even if you don't query
@@ -224,27 +262,14 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("limit_hits")]
     public string? LimitHits { get; set; }
-
+    
     /// <summary>
-    /// Set this parameter to true if you wish to split the search query into space separated words yourself.
-    /// When set to true, we will only split the search query by space,
-    /// instead of using the locale-aware, built-in tokenizer.
+    /// Typesense will attempt to return results early if the cutoff time has elapsed.
+    /// This is not a strict guarantee and facet computation is not bound by this parameter.
+    /// Default: no search cutoff happens.
     /// </summary>
-    [JsonPropertyName("pre_segmented_query")]
-    public bool? PreSegmentedQuery { get; set; }
-
-    /// <summary>
-    /// Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
-    /// </summary>
-    [JsonPropertyName("split_join_tokens")]
-    public SplitJoinTokenOption? SplitJoinTokens { get; set; }
-
-    /// <summary>
-    /// If you have some overrides defined but want to disable all of them during
-    /// query time, you can do that by setting this parameter to false
-    /// </summary>
-    [JsonPropertyName("enable_overrides")]
-    public bool? EnableOverrides { get; set; }
+    [JsonPropertyName("search_cutoff_ms")]
+    public int? SearchCutoffMs { get; set; }
 
     /// <summary>
     /// Control the number of words that Typesense considers for typo and prefix searching.
@@ -254,20 +279,80 @@ public record SearchParameters
     public int? MaxCandiates { get; set; }
 
     /// <summary>
-    /// Controls the fuzziness of the facet query filter.
+    /// Whether all variations of prefixes and typo corrections should be considered,
+    /// without stopping early when enough results are found.
+    /// Ignores DropTokensThreshold and TypoTokensThreshold.
     /// </summary>
-    [JsonPropertyName("facet_query_num_typos")]
-    public int? FacetQueryNumberTypos { get; set; }
+    [JsonPropertyName("exhaustive_search")]
+    public bool? ExhaustiveSearch { get; set; }
+    
+    // ---------------------------------------------------------------------------------------
+    // Typo-Tolerance parameters - https://typesense.org/docs/latest/api/search.html#typo-tolerance-parameters
+    // ---------------------------------------------------------------------------------------
 
     /// <summary>
-    ///  If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query.
-    /// This parameter can have 3 values:
-    /// off: infix search is disabled, which is default
-    /// always: infix search is performed along with regular search
-    /// fallback: infix search is performed if regular search does not produce results
+    /// The number of typographical errors (1 or 2) that would be tolerated.
     /// </summary>
-    [JsonPropertyName("infix")]
-    public string? Infix { get; set; }
+    [JsonPropertyName("num_typos")]
+    public string? NumberOfTypos { get; set; }
+    
+    /// <summary>
+    /// Minimum word length for 1-typo correction to be applied. The value
+    /// of `num_typos` is still treated as the maximum allowed typos.
+    /// Default: 4.
+    /// </summary>
+    [JsonPropertyName("min_len_1typo")]
+    public int? MinLen1Typo { get; set; }
+    
+    /// <summary>
+    /// Minimum word length for 2-typo correction to be applied. The value
+    /// of `num_typos` is still treated as the maximum allowed typos.
+    /// Default: 7.
+    /// </summary>
+    [JsonPropertyName("min_len_2typo")]
+    public int? MinLen2Typo { get; set; }
+
+    /// <summary>
+    /// Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
+    /// </summary>
+    [JsonPropertyName("split_join_tokens")]
+    public SplitJoinTokenOption? SplitJoinTokens { get; set; }
+
+    /// <summary>
+    /// If the number of results found for a specific query is less than this number,
+    /// Typesense will attempt to look for tokens with more typos until
+    /// enough results are found. Default: 100
+    /// </summary>
+    [JsonPropertyName("typo_tokens_threshold")]
+    public string? TypoTokensThreshold { get; set; }
+    
+    /// <summary>
+    /// If the number of results found for a specific query is less than
+    /// this number, Typesense will attempt to drop the tokens in the query until
+    /// enough results are found. Tokens that have the least individual hits
+    /// are dropped first. Set to 0 to disable. Default: 10
+    /// </summary>
+    [JsonPropertyName("drop_tokens_threshold")]
+    public string? DropTokensThreshold { get; set; }
+    
+    // ---------------------------------------------------------------------------------------
+    // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
+    // ---------------------------------------------------------------------------------------
+    
+    /// <summary>
+    /// Enable server side caching of search query results. By default, caching is disabled.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("use_cache")]
+    public bool? UseCache { get; set; }
+    
+    /// <summary>
+    /// The duration (in seconds) that determines how long the search query is cached.
+    /// This value can only be set as part of a scoped API key.
+    /// Default: 60
+    /// </summary>
+    [JsonPropertyName("cache_ttl")]
+    public int? CacheTtl { get; set; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
@@ -285,6 +370,10 @@ public record SearchParameters
 
 public record GroupedSearchParameters : SearchParameters
 {
+    // ---------------------------------------------------------------------------------------
+    // Grouping parameters - https://typesense.org/docs/latest/api/search.html#grouping-parameters
+    // ---------------------------------------------------------------------------------------
+
     /// <summary>
     /// You can aggregate search results into groups or buckets by specify
     /// one or more `group_by` fields. Separate multiple fields with a comma.
