@@ -451,6 +451,6 @@ sealed class Program
     private static async Task ExampleRetrieveStats(ITypesenseClient typesenseClient)
     {
         var stats = await typesenseClient.RetrieveStats();
-        Console.WriteLine($"Retrieved metrics: {JsonSerializer.Serialize(stats)}");
+        Console.WriteLine($"Retrieved stats: {JsonSerializer.Serialize(stats)}");
     }
 }

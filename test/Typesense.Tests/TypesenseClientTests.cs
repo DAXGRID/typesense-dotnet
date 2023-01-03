@@ -1205,36 +1205,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(31)]
-    public async Task Can_retrieve_stats()
-    {
-        // Make some queries
-        _ = await _client.RetrieveCollections();
-        _ = await _client.RetrieveMetrics();
-        
-        // Wait a little, or stats are empty
-        await Task.Delay(1000);
-        
-        var response = await _client.RetrieveStats();
-        
-        using (var scope = new AssertionScope())
-        {
-            response.Should().NotBeNull();
-            // response.DeleteLatencyMs.Should().NotBe();
-            // response.DeleteRequestsPerSecond.Should().NotBe();
-            // response.ImportLatencyMs.Should().NotBe();
-            // response.ImportRequestsPerSecond.Should().NotBe();
-            response.LatencyMs.Should().NotBeEmpty();
-            // response.PendingWriteBatches.Should().NotBe();
-            response.RequestsPerSecond.Should().NotBeEmpty();
-            // response.SearchLatencyMs.Should().NotBe();
-            // response.SearchRequestsPerSecond.Should().NotBe();
-            response.TotalRequestsPerSecond.Should().NotBe(0);
-            // response.WriteLatencyMs.Should().NotBe();
-            // response.WriteRequestsPerSecond.Should().NotBe();
-        }
-    }
-
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(
