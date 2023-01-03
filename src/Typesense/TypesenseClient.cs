@@ -528,6 +528,12 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<MetricsResponse>(response);
     }
 
+    public async Task<StatsResponse> RetrieveStats(CancellationToken ctk = default)
+    {
+        var response = await Get("/stats.json", ctk).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<StatsResponse>(response);
+    }
+
     private static string CreateUrlSearchParameters(SearchParameters searchParameters)
     {
         // Add all non-null properties to the query

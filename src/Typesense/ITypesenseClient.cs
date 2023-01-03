@@ -608,4 +608,15 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default);
+
+    /// <summary>
+    /// Get stats about API endpoints..
+    /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>
+    /// This endpoint returns average requests per second and latencies for all requests in the last 10 seconds.
+    /// </returns>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<StatsResponse> RetrieveStats(CancellationToken ctk = default);
 }
