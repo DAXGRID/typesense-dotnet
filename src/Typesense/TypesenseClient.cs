@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Typesense.Setup;
 
@@ -87,7 +88,7 @@ public class TypesenseClient : ITypesenseClient
     }
 
     private async Task<TResult> SearchInternal<TResult>(string collection,
-        SearchParameters searchParameters) where TResult : class
+        SearchParameters searchParameters, CancellationToken ctk = default) where TResult : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -95,37 +96,37 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentNullException(nameof(searchParameters));
 
         var parameters = CreateUrlSearchParameters(searchParameters);
-        var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}", ctk).ConfigureAwait(false);
 
         return HandleEmptyStringJsonSerialize<TResult>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters)
+    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters, CancellationToken ctk = default)
     {
-        return await SearchInternal<SearchResult<T>>(collection, searchParameters);
+        return await SearchInternal<SearchResult<T>>(collection, searchParameters, ctk);
     }
 
-    public async Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters)
+    public async Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default)
     {
-        return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters);
+        return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
     }
 
-    public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1)
+    public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1, CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1 } };
         var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post("/multi_search", json).ConfigureAwait(false);
+        var response = await Post("/multi_search", json, ctk).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? HandleDeserializeMultiSearch<T>(results[0])
             : throw new InvalidOperationException("Could not get results from multi-search result.");
     }
 
-    public async Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2)
+    public async Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2, CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2 } };
         var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post("/multi_search", json).ConfigureAwait(false);
+        var response = await Post("/multi_search", json, ctk).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -136,11 +137,12 @@ public class TypesenseClient : ITypesenseClient
     public async Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>)> MultiSearch<T1, T2, T3>(
         MultiSearchParameters s1,
         MultiSearchParameters s2,
-        MultiSearchParameters s3)
+        MultiSearchParameters s3, 
+        CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3 } };
         var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post("/multi_search", json).ConfigureAwait(false);
+        var response = await Post("/multi_search", json, ctk).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -153,11 +155,12 @@ public class TypesenseClient : ITypesenseClient
         MultiSearchParameters s1,
         MultiSearchParameters s2,
         MultiSearchParameters s3,
-        MultiSearchParameters s4)
+        MultiSearchParameters s4,
+        CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } };
         var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post("/multi_search", json).ConfigureAwait(false);
+        var response = await Post("/multi_search", json, ctk).ConfigureAwait(false);
 
         return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -167,14 +170,14 @@ public class TypesenseClient : ITypesenseClient
             : throw new InvalidOperationException("Could not get results from multi-search result.");
     }
 
-    public async Task<T> RetrieveDocument<T>(string collection, string id) where T : class
+    public async Task<T> RetrieveDocument<T>(string collection, string id, CancellationToken ctk = default) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(id));
 
-        var response = await Get($"/collections/{collection}/documents/{id}").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/documents/{id}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<T>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -198,18 +201,18 @@ public class TypesenseClient : ITypesenseClient
         return await UpdateDocument<T>(collection, id, json).ConfigureAwait(false);
     }
 
-    public async Task<CollectionResponse> RetrieveCollection(string name)
+    public async Task<CollectionResponse> RetrieveCollection(string name, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
 
-        var response = await Get($"/collections/{name}").ConfigureAwait(false);
+        var response = await Get($"/collections/{name}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response);
     }
 
-    public async Task<List<CollectionResponse>> RetrieveCollections()
+    public async Task<List<CollectionResponse>> RetrieveCollections(CancellationToken ctk = default)
     {
-        var response = await Get($"/collections").ConfigureAwait(false);
+        var response = await Get($"/collections", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<List<CollectionResponse>>(response);
     }
 
@@ -312,12 +315,12 @@ public class TypesenseClient : ITypesenseClient
         return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
     }
 
-    public async Task<List<T>> ExportDocuments<T>(string collection)
+    public async Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
     {
-        return await ExportDocuments<T>(collection, new ExportParameters()).ConfigureAwait(false);
+        return await ExportDocuments<T>(collection, new ExportParameters(), ctk).ConfigureAwait(false);
     }
 
-    public async Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters)
+    public async Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
@@ -333,7 +336,7 @@ public class TypesenseClient : ITypesenseClient
             extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
 
         var searchParameters = string.Join("&", extraParameters);
-        var response = await Get($"/collections/{collection}/documents/export?{searchParameters}").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/documents/export?{searchParameters}", ctk).ConfigureAwait(false);
 
         return response.Split('\n')
             .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -352,9 +355,9 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<KeyResponse> RetrieveKey(int id)
+    public async Task<KeyResponse> RetrieveKey(int id, CancellationToken ctk = default)
     {
-        var response = await Get($"/keys/{id}").ConfigureAwait(false);
+        var response = await Get($"/keys/{id}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<KeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -364,9 +367,9 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<DeleteKeyResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<ListKeysResponse> ListKeys()
+    public async Task<ListKeysResponse> ListKeys(CancellationToken ctk = default)
     {
-        var response = await Get($"/keys").ConfigureAwait(false);
+        var response = await Get($"/keys", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListKeysResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -404,23 +407,23 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<ListSearchOverridesResponse> ListSearchOverrides(string collection)
+    public async Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
 
-        var response = await Get($"collections/{collection}/overrides").ConfigureAwait(false);
+        var response = await Get($"collections/{collection}/overrides", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListSearchOverridesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName)
+    public async Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
 
-        var response = await Get($"/collections/{collection}/overrides/{overrideName}").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/overrides/{overrideName}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SearchOverrideResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -448,18 +451,18 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection)
+    public async Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
 
-        var response = await Get($"/aliases/{collection}").ConfigureAwait(false);
+        var response = await Get($"/aliases/{collection}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<CollectionAliasResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<ListCollectionAliasesResponse> ListCollectionAliases()
+    public async Task<ListCollectionAliasesResponse> ListCollectionAliases(CancellationToken ctk = default)
     {
-        var response = await Get("/aliases").ConfigureAwait(false);
+        var response = await Get("/aliases", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListCollectionAliasesResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -487,23 +490,23 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym)
+    public async Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/collections/{collection}/synonyms/{synonym}").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/synonyms/{synonym}", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<SynonymSchemaResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<ListSynonymsResponse> ListSynonyms(string collection)
+    public async Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        var response = await Get($"/collections/{collection}/synonyms").ConfigureAwait(false);
+        var response = await Get($"/collections/{collection}/synonyms", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<ListSynonymsResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -518,9 +521,9 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<DeleteSynonymResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
-    public async Task<MetricsResponse> RetrieveMetrics()
+    public async Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default)
     {
-        var response = await Get("/metrics.json").ConfigureAwait(false);
+        var response = await Get("/metrics.json", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<MetricsResponse>(response);
     }
 
@@ -615,44 +618,44 @@ public class TypesenseClient : ITypesenseClient
         return urlParameters;
     }
 
-    private async Task<string> Get(string path)
+    private async Task<string> Get(string path, CancellationToken ctk = default)
     {
-        var (response, responseString) = await HandleHttpResponse(_httpClient.GetAsync, path).ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.GetAsync, path, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Delete(string path)
+    private async Task<string> Delete(string path, CancellationToken ctk = default)
     {
-        var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path).ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Post(string path, string json)
+    private async Task<string> Post(string path, string json, CancellationToken ctk = default)
     {
         using var stringContent = GetApplicationJsonStringContent(json);
-        var (response, responseString) = await HandleHttpResponse(_httpClient.PostAsync, path, stringContent).ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PostAsync, path, stringContent, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Patch(string path, string json)
+    private async Task<string> Patch(string path, string json, CancellationToken ctk = default)
     {
         using var stringContent = GetApplicationJsonStringContent(json);
-        var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent).ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PatchAsync, path, stringContent, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
     }
 
-    private async Task<string> Put(string path, string json)
+    private async Task<string> Put(string path, string json, CancellationToken ctk = default)
     {
         using var stringContent = GetApplicationJsonStringContent(json);
-        var (response, responseString) = await HandleHttpResponse(_httpClient.PutAsync, path, stringContent).ConfigureAwait(false);
+        var (response, responseString) = await HandleHttpResponse(_httpClient.PutAsync, path, stringContent, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
@@ -671,18 +674,18 @@ public class TypesenseClient : ITypesenseClient
         };
 
     private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
-        Func<string, Task<HttpResponseMessage>> f, string path)
+        Func<string, CancellationToken, Task<HttpResponseMessage>> f, string path, CancellationToken ctk)
     {
-        var response = await f(path).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var response = await f(path, ctk).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
         return (response, responseString);
     }
 
     private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
-        Func<string, HttpContent, Task<HttpResponseMessage>> f, string path, StringContent stringContent)
+        Func<string, HttpContent, CancellationToken, Task<HttpResponseMessage>> f, string path, StringContent stringContent, CancellationToken ctk)
     {
-        var response = await f(path, stringContent).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var response = await f(path, stringContent, ctk).ConfigureAwait(false);
+        var responseString = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
         return (response, responseString);
     }
 

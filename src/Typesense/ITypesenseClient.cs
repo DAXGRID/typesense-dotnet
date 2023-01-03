@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Typesense;
@@ -88,6 +90,7 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="searchParameters">The search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search result.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -95,13 +98,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters);
+    Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters, CancellationToken ctk = default);
 
     /// <summary>
     /// Search for a document in the specified collection using the supplied search parameters, returning a grouped result.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <param name="searchParameters">The search parameters.</param>
+    /// <param name="groupedSearchParameters">The search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -109,32 +113,34 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     /// <returns>The search result.</returns>
-    Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters);
+    Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default);
 
     /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
     /// </summary>
     /// <param name="s1">First search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search results.</returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SearchResult<T1>> MultiSearch<T1>(MultiSearchParameters s1);
+    Task<SearchResult<T1>> MultiSearch<T1>(MultiSearchParameters s1, CancellationToken ctk = default);
 
     /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
     /// </summary>
     /// <param name="s1">First multi search parameters.</param>
     /// <param name="s2">Second multi search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search results.</returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2);
+    Task<(SearchResult<T1>, SearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2, CancellationToken ctk = default);
 
     /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
@@ -142,6 +148,7 @@ public interface ITypesenseClient
     /// <param name="s1">First multi search parameters.</param>
     /// <param name="s2">Second multi search parameters.</param>
     /// <param name="s3">Third multi search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search results.</returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -149,7 +156,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>)> MultiSearch<T1, T2, T3>
-        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3);
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, CancellationToken ctk = default);
 
     /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
@@ -158,6 +165,7 @@ public interface ITypesenseClient
     /// <param name="s2">Second multi search parameters.</param>
     /// <param name="s3">Third multi search parameters.</param>
     /// <param name="s4">Third multi search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search results.</returns>
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -165,20 +173,21 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>, SearchResult<T4>)> MultiSearch<T1, T2, T3, T4>
-        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4);
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, CancellationToken ctk = default);
 
     /// <summary>
     /// Gets the document in the specified collection on id.
     /// </summary>
     /// <param name="collection">The collection name.</param>
-    /// <param name="searchParameters">The search parameters.</param>
+    /// <param name="id">The document id.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The document or default(T) if the document could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> RetrieveDocument<T>(string collection, string id) where T : class;
+    Task<T> RetrieveDocument<T>(string collection, string id, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Updates the document in the specified collection on id.
@@ -217,14 +226,15 @@ public interface ITypesenseClient
     /// <summary>
     /// Retrieve the collection on collection name.
     /// </summary>
-    /// <param name="collection">The collection name.</param>
+    /// <param name="name">The collection name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionResponse> RetrieveCollection(string name);
+    Task<CollectionResponse> RetrieveCollection(string name, CancellationToken ctk = default);
 
     /// <summary>
     /// Retrieve all the collections.
@@ -234,7 +244,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<CollectionResponse>> RetrieveCollections();
+    Task<List<CollectionResponse>> RetrieveCollections(CancellationToken ctk = default);
 
     /// <summary>
     /// Deletes a document in the collection on a specified document id.
@@ -333,19 +343,21 @@ public interface ITypesenseClient
     /// Export all documents in a given collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<T>> ExportDocuments<T>(string collection);
+    Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default);
 
     /// <summary>
     /// Export all documents in a given collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="exportParameters">Extra query parameters for exporting documents.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
@@ -353,7 +365,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters);
+    Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters, CancellationToken ctk = default);
 
     /// <summary>
     /// Creates an api key.
@@ -373,12 +385,13 @@ public interface ITypesenseClient
     /// Retrieve a key
     /// </summary>
     /// <param name="id">Id of key to be retrived</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A single key.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<KeyResponse> RetrieveKey(int id);
+    Task<KeyResponse> RetrieveKey(int id, CancellationToken ctk = default);
 
     /// <summary>
     /// Delete an api key.
@@ -394,12 +407,13 @@ public interface ITypesenseClient
     /// <summary>
     /// List all api keys.
     /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>List of all keys.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<ListKeysResponse> ListKeys();
+    Task<ListKeysResponse> ListKeys(CancellationToken ctk = default);
 
     /// <summary>
     /// Generate scoped search API keys without having to make any calls to the Typesense server.
@@ -438,6 +452,7 @@ public interface ITypesenseClient
     /// Listing all search overrides associated with a given collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>List of search overrides.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
@@ -445,20 +460,21 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<ListSearchOverridesResponse> ListSearchOverrides(string collection);
+    Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default);
 
     /// <summary>
     /// Fetch an individual override associated with a collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="overrideName">The override name that should be retrieved.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search override.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName);
+    Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default);
 
     /// <summary>
     /// Deleting an override associated with a collection.
@@ -493,23 +509,25 @@ public interface ITypesenseClient
     /// Retrieve alias on collection name.
     /// </summary>
     /// <param name="collection">The collection name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The given alias on collection name.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection);
+    Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection, CancellationToken ctk = default);
 
     /// <summary>
     /// List all aliases and the corresponding collections that they map to.
     /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>List of aliases.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<ListCollectionAliasesResponse> ListCollectionAliases();
+    Task<ListCollectionAliasesResponse> ListCollectionAliases(CancellationToken ctk = default);
 
     /// <summary>
     /// Delete alias on alias name.
@@ -545,25 +563,27 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The synonym collection name.</param>
     /// <param name="synonym">The name of the synonym.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>Synonym on name associated with the collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym);
+    Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default);
 
     /// <summary>
     /// List all synonyms associated with a given collection.
     /// </summary>
     /// <param name="collection">Collection name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>All synonyms associated with the collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<ListSynonymsResponse> ListSynonyms(string collection);
+    Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default);
 
     /// <summary>
     /// Delete a synonym associated with a collection.
@@ -581,20 +601,22 @@ public interface ITypesenseClient
     /// <summary>
     /// Get current RAM, CPU, Disk & Network usage metrics.
     /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>
     /// Response containing current RAM, CPU, Disk & Network usage metrics.
     /// </returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<MetricsResponse> RetrieveMetrics();
+    Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default);
 
     /// <summary>
     /// Get stats about API endpoints..
     /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>
     /// This endpoint returns average requests per second and latencies for all requests in the last 10 seconds.
     /// </returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<StatsResponse> RetrieveStats();
+    Task<StatsResponse> RetrieveStats(CancellationToken ctk = default);
 }
