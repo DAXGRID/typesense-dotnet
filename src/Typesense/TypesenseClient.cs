@@ -96,8 +96,8 @@ public class TypesenseClient : ITypesenseClient
         if (searchParameters is null)
             throw new ArgumentNullException(nameof(searchParameters));
 
-        var parameters = CreateUrlSearchParameters(searchParameters);
-        var response = await Get($"/collections/{collection}/documents/search?q={searchParameters.Text}&query_by={searchParameters.QueryBy}{parameters}", ctk).ConfigureAwait(false);
+        var parameters = CreateUrlParameters(searchParameters);
+        var response = await Get($"/collections/{collection}/documents/search?{parameters}", ctk).ConfigureAwait(false);
 
         return HandleEmptyStringJsonSerialize<TResult>(response, _jsonNameCaseInsentiveTrue);
     }
@@ -237,7 +237,7 @@ public class TypesenseClient : ITypesenseClient
         if (batchSize < 0)
             throw new ArgumentException("has to be greater than 0", nameof(batchSize));
 
-        var response = await Delete($"/collections/{collection}/documents?filter_by={filter}&batch_size={batchSize}").ConfigureAwait(false);
+        var response = await Delete($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}").ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<FilterDeleteResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
@@ -327,17 +327,9 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
         if (exportParameters is null)
             throw new ArgumentNullException(nameof(exportParameters));
-
-        var extraParameters = new List<string>();
-        if (exportParameters.IncludeFields is not null)
-            extraParameters.Add($"include_fields={exportParameters.IncludeFields}");
-        if (exportParameters.FilterBy is not null)
-            extraParameters.Add($"filter_by={exportParameters.FilterBy}");
-        if (exportParameters.ExcludeFields is not null)
-            extraParameters.Add($"exclude_fields={exportParameters.ExcludeFields}");
-
-        var searchParameters = string.Join("&", extraParameters);
-        var response = await Get($"/collections/{collection}/documents/export?{searchParameters}", ctk).ConfigureAwait(false);
+        
+        var parameters = CreateUrlParameters(exportParameters);
+        var response = await Get($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
 
         return response.Split('\n')
             .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -534,14 +526,15 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<StatsResponse>(response);
     }
 
-    private static string CreateUrlSearchParameters(SearchParameters searchParameters)
+    private static string CreateUrlParameters<T>(T queryParameters)
+        where T : notnull
     {
         // Add all non-null properties to the query
-        var parameters = searchParameters.GetType()
+        var parameters = queryParameters.GetType()
             .GetProperties()
             .Select(prop =>
             {
-                var value = prop.GetValue(searchParameters);
+                var value = prop.GetValue(queryParameters);
                     
                 var stringValue = value switch
                 {
@@ -560,7 +553,7 @@ public class TypesenseClient : ITypesenseClient
             })
             .Where(parameter => parameter.Value != null && parameter.Key != null);
 
-        return string.Join("", parameters.Select(_ => $"&{_.Key}={_.Value}"));
+        return string.Join("", parameters.Select(_ => $"&{Uri.EscapeDataString(_.Key!)}={Uri.EscapeDataString(_.Value!)}"));
     }
 
     private async Task<string> Get(string path, CancellationToken ctk = default)

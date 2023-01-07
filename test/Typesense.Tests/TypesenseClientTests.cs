@@ -1205,6 +1205,30 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(31)]
+    public async Task Escape_url_parameters()
+    {
+        var company = new Company
+        {
+            Id = "9845",
+            CompanyName = "&filter_by=foo",
+            NumEmployees = 545,
+            Country = "FR",
+        };
+        
+        await _client.CreateDocument<Company>("companies", company);
+
+        var query = new SearchParameters("&filter_by=foo", "company_name");
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(company);
+        }
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(
