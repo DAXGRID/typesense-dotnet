@@ -22,6 +22,7 @@ public record Include
 {
     [JsonPropertyName("id")]
     public string Id { get; init; }
+
     [JsonPropertyName("position")]
     public int Position { get; init; }
 
@@ -39,6 +40,7 @@ public record Rule
 {
     [JsonPropertyName("query")]
     public string Query { get; init; }
+
     [JsonPropertyName("match")]
     public string Match { get; init; }
 
@@ -58,8 +60,10 @@ public record SearchOverride
 {
     [JsonPropertyName("excludes")]
     public IEnumerable<Exclude>? Excludes { get; init; }
+
     [JsonPropertyName("includes")]
     public IEnumerable<Include>? Includes { get; init; }
+
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
 

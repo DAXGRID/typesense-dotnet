@@ -8,12 +8,16 @@ public record Key
 {
     [JsonPropertyName("actions")]
     public IReadOnlyCollection<string> Actions { get; init; }
+
     [JsonPropertyName("description")]
     public string Description { get; init; }
+
     [JsonPropertyName("collections")]
     public IReadOnlyCollection<string> Collections { get; init; }
+
     [JsonPropertyName("value")]
     public string? Value { get; init; }
+
     [JsonPropertyName("expires_at")]
     public long? ExpiresAt { get; init; }
 
