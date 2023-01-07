@@ -12,7 +12,13 @@ public record Highlight
     public string Field { get; init; }
 
     [JsonPropertyName("snippet")]
-    public string Snippet { get; init; }
+    public string? Snippet { get; init; }
+
+    [JsonPropertyName("snippets")]
+    public IReadOnlyList<string>? Snippets { get; init; }
+
+    [JsonPropertyName("indices")]
+    public IReadOnlyList<int>? Indices { get; init; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage
     ("Naming", "CA1721: Property names should not match get methods",
@@ -23,11 +29,18 @@ public record Highlight
 
     public IReadOnlyList<T> GetMatchedTokens<T>() => MatchedTokens.Cast<T>().ToList();
 
-    public Highlight(string field, string snippet, IReadOnlyList<object> matchedTokens)
+    public Highlight(
+        string field,
+        string? snippet,
+        IReadOnlyList<object> matchedTokens,
+        IReadOnlyList<string>? snippets,
+        IReadOnlyList<int>? indices)
     {
         Field = field;
         Snippet = snippet;
         MatchedTokens = matchedTokens;
+        Snippets = snippets;
+        Indices = indices;
     }
 }
 
