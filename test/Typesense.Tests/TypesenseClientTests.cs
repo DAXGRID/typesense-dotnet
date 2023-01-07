@@ -1,5 +1,6 @@
 using FluentAssertions;
 using FluentAssertions.Execution;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -18,6 +19,8 @@ public record Company()
     public int NumEmployees { get; init; }
     [JsonPropertyName("country")]
     public string Country { get; init; }
+    [JsonPropertyName("aliases")]
+    public IReadOnlyCollection<string> Aliases { get; init; }
 }
 
 [Trait("Category", "Integration")]
@@ -694,7 +697,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-
     [Fact, TestPriority(11)]
     public async Task Search_query_by_two_fields()
     {
@@ -799,6 +801,73 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             response.GroupedHits.Should().NotBeEmpty();
             var firstHit = response.GroupedHits.First();
             firstHit.GroupKey.Should().BeEquivalentTo("USA");
+        }
+    }
+
+    [Fact, TestPriority(32)]
+    public async Task Search_against_array_field()
+    {
+        // Give it a random name, to avoid name clashes.
+        var collection_name = $"companies-{Guid.NewGuid()}";
+
+        // Setup the schema with a `StringArray` field.
+        var schema = new Schema(
+            collection_name,
+            new List<Field>
+            {
+                new Field("company_name", FieldType.String, false),
+                new Field("aliases", FieldType.StringArray, false),
+                new Field("num_employees", FieldType.Int32, true),
+                new Field("country", FieldType.String, true),
+            },
+            "num_employees");
+
+        var company = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 5215,
+            Country = "USA",
+            Aliases = new string[] { "Stark", "Mickey Stark Inc." }
+        };
+
+        try
+        {
+            _ = await _client.CreateCollection(schema);
+            _ = await _client.UpsertDocument(collection_name, company);
+
+            var query = new SearchParameters("Stark", "aliases");
+
+            var result = await _client.Search<Company>(collection_name, query);
+
+            var expectedHighlight = new Highlight(
+                "aliases",
+                null,
+                new List<List<string>>
+                {
+                    new List<string> { "Stark" },
+                    new List<string> { "Stark" }
+                },
+                new List<string>
+                {
+                    "<mark>Stark</mark>",
+                    "Mickey <mark>Stark</mark> Inc."
+                },
+                new List<int> { 0, 1 }
+            );
+
+            using (var scope = new AssertionScope())
+            {
+                // Only test for highlight, since it is the one that differs
+                result.Hits.First().Highlights.First()
+                    .Should()
+                    .BeEquivalentTo(expectedHighlight);
+            }
+        }
+        // Make sure that the collection is always cleaned up.
+        finally
+        {
+            await _client.DeleteCollection(collection_name);
         }
     }
 
@@ -1215,7 +1284,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             NumEmployees = 545,
             Country = "FR",
         };
-        
+
         await _client.CreateDocument<Company>("companies", company);
 
         var query = new SearchParameters("&filter_by=foo", "company_name");
