@@ -6,6 +6,7 @@ public record CollectionAliasResponse
 {
     [JsonPropertyName("collection_name")]
     public string CollectionName { get; init; }
+
     [JsonPropertyName("name")]
     public string Name { get; init; }
 

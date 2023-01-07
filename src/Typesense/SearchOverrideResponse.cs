@@ -7,10 +7,13 @@ public record SearchOverrideResponse
 {
     [JsonPropertyName("id")]
     public string Id { get; init; }
+
     [JsonPropertyName("excludes")]
     public IEnumerable<Exclude> Excludes { get; init; }
+
     [JsonPropertyName("includes")]
     public IEnumerable<Include> Includes { get; init; }
+
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
 

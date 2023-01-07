@@ -8,17 +8,23 @@ public record Field
 {
     [JsonPropertyName("name")]
     public string Name { get; init; }
+
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<FieldType>))]
     public FieldType Type { get; init; }
+
     [JsonPropertyName("facet")]
     public bool Facet { get; init; }
+
     [JsonPropertyName("optional")]
     public bool? Optional { get; init; }
+
     [JsonPropertyName("index")]
     public bool? Index { get; init; }
+
     [JsonPropertyName("sort")]
     public bool? Sort { get; init; }
+
     [JsonPropertyName("infix")]
     public bool? Infix { get; init; }
 

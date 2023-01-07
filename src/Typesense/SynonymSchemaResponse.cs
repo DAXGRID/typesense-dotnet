@@ -7,8 +7,10 @@ public record SynonymSchemaResponse
 {
     [JsonPropertyName("id")]
     public string Id { get; init; }
+
     [JsonPropertyName("synonyms")]
     public IReadOnlyCollection<string> Synonyms { get; init; }
+
     [JsonPropertyName("root")]
     public string Root { get; init; }
 
