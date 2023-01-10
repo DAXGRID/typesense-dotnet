@@ -106,6 +106,20 @@ public record SearchParameters
     public string? SortBy { get; set; }
 
     /// <summary>
+    /// By default, Typesense prioritizes documents whose field value matches
+    /// exactly with the query. Set this parameter to `false` to disable this behavior.
+    /// Defaults to true.
+    /// </summary>
+    [JsonPropertyName("prioritize_exact_match")]
+    public bool? PrioritizeExactMatch { get; set; }
+
+    /// <summary>
+    /// Make Typesense prioritize documents where the query words appear earlier in the text.
+    /// </summary>
+    [JsonPropertyName("prioritize_token_position")]
+    public bool? PrioritizeTokenPosition { get; set; }
+
+    /// <summary>
     /// A list of records to unconditionally include in the search results
     /// at specific positions. An example use case would be to feature or promote
     /// certain items on the top of search results.
@@ -248,6 +262,14 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("limit_hits")]
     public string? LimitHits { get; set; }
+    
+    /// <summary>
+    /// Typesense will attempt to return results early if the cutoff time has elapsed.
+    /// This is not a strict guarantee and facet computation is not bound by this parameter.
+    /// Default: no search cutoff happens.
+    /// </summary>
+    [JsonPropertyName("search_cutoff_ms")]
+    public int? SearchCutoffMs { get; set; }
 
     /// <summary>
     /// Control the number of words that Typesense considers for typo and prefix searching.
@@ -273,6 +295,22 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("num_typos")]
     public string? NumberOfTypos { get; set; }
+    
+    /// <summary>
+    /// Minimum word length for 1-typo correction to be applied. The value
+    /// of `num_typos` is still treated as the maximum allowed typos.
+    /// Default: 4.
+    /// </summary>
+    [JsonPropertyName("min_len_1typo")]
+    public int? MinLen1Typo { get; set; }
+    
+    /// <summary>
+    /// Minimum word length for 2-typo correction to be applied. The value
+    /// of `num_typos` is still treated as the maximum allowed typos.
+    /// Default: 7.
+    /// </summary>
+    [JsonPropertyName("min_len_2typo")]
+    public int? MinLen2Typo { get; set; }
 
     /// <summary>
     /// Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
@@ -296,6 +334,25 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("drop_tokens_threshold")]
     public string? DropTokensThreshold { get; set; }
+    
+    // ---------------------------------------------------------------------------------------
+    // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
+    // ---------------------------------------------------------------------------------------
+    
+    /// <summary>
+    /// Enable server side caching of search query results. By default, caching is disabled.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("use_cache")]
+    public bool? UseCache { get; set; }
+    
+    /// <summary>
+    /// The duration (in seconds) that determines how long the search query is cached.
+    /// This value can only be set as part of a scoped API key.
+    /// Default: 60
+    /// </summary>
+    [JsonPropertyName("cache_ttl")]
+    public int? CacheTtl { get; set; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
