@@ -29,7 +29,7 @@ public record SearchParameters
     // -------------------------------------------------------------------------------------
     // Query parameters - https://typesense.org/docs/latest/api/search.html#query-parameters
     // -------------------------------------------------------------------------------------
-    
+
     /// <summary>
     /// The query text to search for in the collection.
     /// Use * as the search string to return all documents.
@@ -69,11 +69,11 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("pre_segmented_query")]
     public bool? PreSegmentedQuery { get; set; }
-    
+
     // ---------------------------------------------------------------------------------------
     // Filter parameters - https://typesense.org/docs/latest/api/search.html#filter-parameters
     // ---------------------------------------------------------------------------------------
-    
+
     /// <summary>
     /// Filter conditions for refining your search results. Separate
     /// multiple conditions with &&.
@@ -84,7 +84,7 @@ public record SearchParameters
     // ---------------------------------------------------------------------------------------
     // Ranking and Sorting parameters - https://typesense.org/docs/latest/api/search.html#ranking-and-sorting-parameters
     // ---------------------------------------------------------------------------------------
-    
+
     /// <summary>
     /// The relative weight to give each `query_by` field when ranking results.
     /// This can be used to boost fields in priority, when looking for matches.
@@ -150,7 +150,7 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("enable_overrides")]
     public bool? EnableOverrides { get; set; }
-    
+
     // ---------------------------------------------------------------------------------------
     // Pagination parameters - https://typesense.org/docs/latest/api/search.html#pagination-parameters
     // ---------------------------------------------------------------------------------------
@@ -159,13 +159,13 @@ public record SearchParameters
     /// Results from this specific page number would be fetched.
     /// </summary>
     [JsonPropertyName("page")]
-    public string? Page { get; set; }
-    
+    public int? Page { get; set; }
+
     /// <summary>
     /// Number of results to fetch per page. Default: 10
     /// </summary>
     [JsonPropertyName("per_page")]
-    public string? PerPage { get; set; }
+    public int? PerPage { get; set; }
 
     /// <summary>
     /// Maximum number of hits returned. Increasing this value might
@@ -173,7 +173,7 @@ public record SearchParameters
     /// </summary>
     [Obsolete("max_hits has been deprecated since Typesense version 0.19.0")]
     [JsonPropertyName("max_hits")]
-    public string? MaxHits { get; set; }
+    public int? MaxHits { get; set; }
 
     // ---------------------------------------------------------------------------------------
     // Faceting parameters - https://typesense.org/docs/latest/api/search.html#faceting-parameters
@@ -190,7 +190,7 @@ public record SearchParameters
     /// Maximum number of facet values to be returned.
     /// </summary>
     [JsonPropertyName("max_facet_values")]
-    public string? MaxFacetValues { get; set; }
+    public int? MaxFacetValues { get; set; }
 
     /// <summary>
     /// Facet values that are returned can now be filtered via this parameter.
@@ -233,7 +233,7 @@ public record SearchParameters
     /// The number of tokens that should surround the highlighted text on each side.
     /// </summary>
     [JsonPropertyName("highlight_affix_num_tokens")]
-    public string? HighlightAffixNumberOfTokens { get; set; }
+    public int? HighlightAffixNumberOfTokens { get; set; }
 
     /// <summary>
     /// The start tag used for the highlighted snippets.
@@ -252,7 +252,7 @@ public record SearchParameters
     /// a snippet of relevant portion. Default: 30
     /// </summary>
     [JsonPropertyName("snippet_threshold")]
-    public string? SnippetThreshold { get; set; }
+    public int? SnippetThreshold { get; set; }
 
     /// <summary>
     /// Maximum number of hits that can be fetched from the collection. Eg: 200
@@ -261,8 +261,8 @@ public record SearchParameters
     /// for them.
     /// </summary>
     [JsonPropertyName("limit_hits")]
-    public string? LimitHits { get; set; }
-    
+    public int? LimitHits { get; set; }
+
     /// <summary>
     /// Typesense will attempt to return results early if the cutoff time has elapsed.
     /// This is not a strict guarantee and facet computation is not bound by this parameter.
@@ -285,7 +285,7 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("exhaustive_search")]
     public bool? ExhaustiveSearch { get; set; }
-    
+
     // ---------------------------------------------------------------------------------------
     // Typo-Tolerance parameters - https://typesense.org/docs/latest/api/search.html#typo-tolerance-parameters
     // ---------------------------------------------------------------------------------------
@@ -294,8 +294,8 @@ public record SearchParameters
     /// The number of typographical errors (1 or 2) that would be tolerated.
     /// </summary>
     [JsonPropertyName("num_typos")]
-    public string? NumberOfTypos { get; set; }
-    
+    public int? NumberOfTypos { get; set; }
+
     /// <summary>
     /// Minimum word length for 1-typo correction to be applied. The value
     /// of `num_typos` is still treated as the maximum allowed typos.
@@ -303,7 +303,7 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("min_len_1typo")]
     public int? MinLen1Typo { get; set; }
-    
+
     /// <summary>
     /// Minimum word length for 2-typo correction to be applied. The value
     /// of `num_typos` is still treated as the maximum allowed typos.
@@ -324,8 +324,8 @@ public record SearchParameters
     /// enough results are found. Default: 100
     /// </summary>
     [JsonPropertyName("typo_tokens_threshold")]
-    public string? TypoTokensThreshold { get; set; }
-    
+    public int? TypoTokensThreshold { get; set; }
+
     /// <summary>
     /// If the number of results found for a specific query is less than
     /// this number, Typesense will attempt to drop the tokens in the query until
@@ -333,19 +333,19 @@ public record SearchParameters
     /// are dropped first. Set to 0 to disable. Default: 10
     /// </summary>
     [JsonPropertyName("drop_tokens_threshold")]
-    public string? DropTokensThreshold { get; set; }
-    
+    public int? DropTokensThreshold { get; set; }
+
     // ---------------------------------------------------------------------------------------
     // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
     // ---------------------------------------------------------------------------------------
-    
+
     /// <summary>
     /// Enable server side caching of search query results. By default, caching is disabled.
     /// Default: false
     /// </summary>
     [JsonPropertyName("use_cache")]
     public bool? UseCache { get; set; }
-    
+
     /// <summary>
     /// The duration (in seconds) that determines how long the search query is cached.
     /// This value can only be set as part of a scoped API key.
@@ -387,7 +387,7 @@ public record GroupedSearchParameters : SearchParameters
     /// set as `K` then only the top K hits in each group are returned in the response.
     /// </summary>
     [JsonPropertyName("group_limit")]
-    public string? GroupLimit { get; set; }
+    public int? GroupLimit { get; set; }
 
     public GroupedSearchParameters(
         string text,
