@@ -21,6 +21,9 @@ public record Schema
     [JsonPropertyName("symbols_to_index")]
     public IEnumerable<string>? SymbolsToIndex { get; init; }
 
+    [JsonPropertyName("enable_nested_fields")]
+    public bool? EnableNestedFields { get; init; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public Schema()
     {

@@ -9,6 +9,14 @@ using Xunit;
 
 namespace Typesense.Tests;
 
+public record Location
+{
+    [JsonPropertyName("country")]
+    public string Country { get; init; }
+    [JsonPropertyName("city")]
+    public string City { get; init; }
+}
+
 public record Company()
 {
     [JsonPropertyName("id")]
@@ -17,8 +25,8 @@ public record Company()
     public string CompanyName { get; init; }
     [JsonPropertyName("num_employees")]
     public int NumEmployees { get; init; }
-    [JsonPropertyName("country")]
-    public string Country { get; init; }
+    [JsonPropertyName("location")]
+    public Location Location { get; init; }
     [JsonPropertyName("aliases")]
     public IReadOnlyCollection<string> Aliases { get; init; }
 }
@@ -43,22 +51,22 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<Field>
             {
                 new Field("company_name",
-                    type: FieldType.String,
-                    facet: false,
-                    optional: false,
-                    index: true,
-                    sort: false,
-                    infix: false),
+                          type: FieldType.String,
+                          facet: false,
+                          optional: false,
+                          index: true,
+                          sort: false,
+                          infix: false),
                 new Field("num_employees",
-                    type: FieldType.Int32,
-                    facet: true,
-                    optional: false,
-                    index: true,
-                    sort: true,
-                    infix: false),
+                          type: FieldType.Int32,
+                          facet: true,
+                          optional: false,
+                          index: true,
+                          sort: true,
+                          infix: false),
                 new Field(
-                    name: "country",
-                    type: FieldType.String,
+                    name: "location",
+                    type: FieldType.Object,
                     facet: true,
                     optional: false,
                     index: true,
@@ -67,7 +75,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "num_employees",
             new List<string>(),
-            new List<string>());
+            new List<string>(),
+            true);
 
         var schema = new Schema(
             "companies",
@@ -75,9 +84,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, true),
-                new Field("country", FieldType.String, true),
+                new Field("location", FieldType.Object, true),
             },
-            "num_employees");
+            "num_employees")
+            {
+                EnableNestedFields = true
+            };
 
         var response = await _client.CreateCollection(schema);
 
@@ -109,8 +121,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     sort: true,
                     infix: false),
                 new Field(
-                    name: "country",
-                    type: FieldType.String,
+                    name: "location",
+                    type: FieldType.Object,
                     facet: true,
                     optional: false,
                     index: true,
@@ -119,7 +131,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "num_employees",
             new List<string> { "-" },
-            new List<string> { "+" });
+            new List<string> { "+" },
+            true);
 
         var schema = new Schema(
             "companies_with_symbols_and_token",
@@ -127,13 +140,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, true),
-                new Field("country", FieldType.String, true),
+                new Field("location", FieldType.Object, true),
             },
             "num_employees")
-        {
-            TokenSeparators = new List<string> { "-" },
-            SymbolsToIndex = new List<string> { "+" }
-        };
+            {
+                TokenSeparators = new List<string> { "-" },
+                SymbolsToIndex = new List<string> { "+" },
+                EnableNestedFields = true,
+            };
 
         var response = await _client.CreateCollection(schema);
 
@@ -164,7 +178,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "",
             new List<string>(),
-            new List<string>());
+            new List<string>(),
+            false);
 
         var schema = new Schema(
             "wildcard-collection",
@@ -206,8 +221,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     sort: true,
                     infix: false),
                 new Field(
-                    "country",
-                    type: FieldType.String,
+                    "location",
+                    type: FieldType.Object,
                     facet: true,
                     optional: false,
                     index: true,
@@ -216,7 +231,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "num_employees",
             new List<string>(),
-            new List<string>());
+            new List<string>(),
+            true);
 
         var response = await _client.RetrieveCollection("companies");
 
@@ -250,8 +266,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         sort: true,
                         infix: false),
                     new Field(
-                        name: "country",
-                        type: FieldType.String,
+                        name: "location",
+                        type: FieldType.Object,
                         facet: true,
                         optional: false,
                         index: true,
@@ -260,8 +276,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 },
                 "num_employees",
                 new List<string>(),
-                new List<string>())
-    };
+                new List<string>(),
+                true)
+        };
 
         var response = await _client.RetrieveCollections();
         response.Should().BeEquivalentTo(expected);
@@ -292,8 +309,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     sort: true,
                     infix: false),
                 new Field(
-                    name: "country",
-                    type: FieldType.String,
+                    name: "location",
+                    type: FieldType.Object,
                     facet: true,
                     optional: false,
                     index: true,
@@ -302,7 +319,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             },
             "num_employees",
             new List<string>(),
-            new List<string>());
+            new List<string>(),
+            true);
 
         var result = await _client.DeleteCollection("companies");
 
@@ -320,7 +338,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 5215,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var response = await _client.CreateDocument<Company>("companies", company);
@@ -336,7 +358,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 5215,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var response = await _client.UpsertDocument<Company>("companies", company);
@@ -352,7 +378,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "999",
             CompanyName = "Awesome A/S",
             NumEmployees = 10,
-            Country = "SWE",
+            Location = new Location
+            {
+                City = "Stockholm",
+                Country = "SWE"
+            },
         };
 
         var response = await _client.UpsertDocument<Company>("companies", company);
@@ -371,20 +401,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var companies = new List<Company>
         {
-             new Company
-             {
-                 Id = "125",
-                 CompanyName = "Future Technology",
-                 NumEmployees = 1232,
-                 Country = "UK",
-             },
-             new Company
-             {
-                 Id = "126",
-                 CompanyName = "Random Corp.",
-                 NumEmployees = 531,
-                 Country = "AU",
-             }
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                NumEmployees = 1232,
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                NumEmployees = 531,
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
+            }
         };
 
         var response = await _client.ImportDocuments<Company>(
@@ -404,20 +442,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var companies = new List<Company>
         {
-             new Company
-             {
-                 Id = "125",
-                 CompanyName = "Future Technology",
-                 NumEmployees = 1233,
-                 Country = "UK",
-             },
-             new Company
-             {
-                 Id = "126",
-                 CompanyName = "Random Corp.",
-                 NumEmployees = 532,
-                 Country = "AU",
-             }
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                NumEmployees = 1233,
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                NumEmployees = 532,
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
+            }
         };
 
         var response = await _client.ImportDocuments<Company>("companies", companies, 40, ImportType.Update);
@@ -436,20 +482,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var companies = new List<Company>
         {
-             new Company
-             {
-                 Id = "125",
-                 CompanyName = "Future Technology",
-                 NumEmployees = 1232,
-                 Country = "UK",
-             },
-             new Company
-             {
-                 Id = "126",
-                 CompanyName = "Random Corp.",
-                 NumEmployees = 531,
-                 Country = "AU",
-             }
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                NumEmployees = 1232,
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                NumEmployees = 531,
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
+            }
         };
 
         var response = await _client.ImportDocuments<Company>(
@@ -469,20 +523,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var companies = new List<Company>
         {
-             new Company
-             {
-                 Id = "125",
-                 CompanyName = "Future Technology",
-                 NumEmployees = 1232,
-                 Country = "UK",
-             },
-             new Company
-             {
-                 Id = "126",
-                 CompanyName = "Random Corp.",
-                 NumEmployees = 531,
-                 Country = "AU",
-             }
+            new Company
+            {
+                Id = "125",
+                CompanyName = "Future Technology",
+                NumEmployees = 1232,
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
+            },
+            new Company
+            {
+                Id = "126",
+                CompanyName = "Random Corp.",
+                NumEmployees = 531,
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
+            }
         };
 
         var response = await _client.ImportDocuments<Company>(
@@ -501,28 +563,44 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 Id = "124",
                 CompanyName = "Stark Industries",
                 NumEmployees = 5215,
-                Country = "USA",
+                Location = new Location
+                {
+                    City = "Phoenix",
+                    Country = "USA"
+                },
             },
             new Company
             {
                 Id = "125",
                 CompanyName = "Future Technology",
                 NumEmployees = 1232,
-                Country = "UK",
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
             },
             new Company
             {
                 Id = "126",
                 CompanyName = "Random Corp.",
                 NumEmployees = 531,
-                Country = "AU",
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
             },
             new Company
             {
                 Id = "999",
                 CompanyName = "Awesome A/S",
                 NumEmployees = 10,
-                Country = "SWE",
+                Location = new Location
+                {
+                    City = "Stockholm",
+                    Country = "SWE"
+                },
             }
         };
 
@@ -541,7 +619,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 Id = "124",
                 CompanyName = "Stark Industries",
                 NumEmployees = 5215,
-                Country = "USA",
+                Location = new Location
+                {
+                    City = "Phoenix",
+                    Country = "USA"
+                },
             }
         };
 
@@ -591,25 +673,41 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 Id = "124",
                 CompanyName = "Stark Industries",
-                Country = "USA",
+                Location = new Location
+                {
+                    City = "Phoenix",
+                    Country = "USA"
+                },
             },
             new Company
             {
                 Id = "125",
                 CompanyName = "Future Technology",
-                Country = "UK",
+                Location = new Location
+                {
+                    City = "Aarhus",
+                    Country = "DK"
+                },
             },
             new Company
             {
                 Id = "126",
                 CompanyName = "Random Corp.",
-                Country = "AU",
+                Location = new Location
+                {
+                    City = "Copenhagen",
+                    Country = "DK"
+                },
             },
             new Company
             {
                 Id = "999",
                 CompanyName = "Awesome A/S",
-                Country = "SWE",
+                Location = new Location
+                {
+                    City = "Stockholm",
+                    Country = "SWE"
+                },
             }
         };
 
@@ -626,7 +724,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 5215,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var response = await _client.RetrieveDocument<Company>("companies", "124");
@@ -642,7 +744,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var response = await _client.UpdateDocument("companies", "124", company);
@@ -658,7 +764,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new SearchParameters("Stark", "company_name");
@@ -680,7 +790,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new SearchParameters("Stark", "company_name")
@@ -705,10 +819,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
-        var query = new SearchParameters("Stark", "company_name,country");
+        var query = new SearchParameters("Stark", "company_name,location.country");
         var response = await _client.Search<Company>("companies", query);
 
         using (var scope = new AssertionScope())
@@ -721,17 +839,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(11)]
     public async Task Search_facet_by_country()
     {
-        var expected = new FacetCount("country", new List<FacetCountHit>
-            {
-                new FacetCountHit( "AU", 1, "AU"),
-                new FacetCountHit( "UK", 1, "UK"),
-                new FacetCountHit( "SWE", 1, "SWE"),
-                new FacetCountHit( "USA", 1, "USA"),
-            }, new FacetStats(0, 0, 0, 0, 4));
+        var expected = new FacetCount("location.country", new List<FacetCountHit>
+        {
+            new FacetCountHit("DK", 2, "DK"),
+            new FacetCountHit("SWE", 1, "SWE"),
+            new FacetCountHit("USA", 1, "USA"),
+        }, new FacetStats(0, 0, 0, 0, 3));
 
         var query = new SearchParameters("", "company_name")
         {
-            FacetBy = "country"
+            FacetBy = "location.country"
         };
 
         var response = await _client.Search<Company>("companies", query);
@@ -747,12 +864,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     public async Task Search_facet_by_num_employees()
     {
         var expected = new FacetCount("num_employees", new List<FacetCountHit>
-            {
-                new FacetCountHit( "10", 1, "10"),
-                new FacetCountHit( "531", 1, "531"),
-                new FacetCountHit( "1232", 1, "1232"),
-                new FacetCountHit( "6000", 1, "6000"),
-            }, new FacetStats(1943.25F, 6000F, 10F, 7773F, 4));
+        {
+            new FacetCountHit( "10", 1, "10"),
+            new FacetCountHit( "531", 1, "531"),
+            new FacetCountHit( "1232", 1, "1232"),
+            new FacetCountHit( "6000", 1, "6000"),
+        }, new FacetStats(1943.25F, 6000F, 10F, 7773F, 4));
 
         var query = new SearchParameters("", "company_name")
         {
@@ -771,14 +888,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(11)]
     public async Task Search_facet_by_country_with_query()
     {
-        var expected = new FacetCount("country", new List<FacetCountHit>
-            {
-                new FacetCountHit("USA", 1, "USA"),
-            }, new FacetStats(0, 0, 0, 0, 1));
+        var expected = new FacetCount("location.country", new List<FacetCountHit>
+        {
+            new FacetCountHit("USA", 1, "USA"),
+        }, new FacetStats(0, 0, 0, 0, 1));
 
         var query = new SearchParameters("Stark", "company_name")
         {
-            FacetBy = "country"
+            FacetBy = "location.country"
         };
 
         var response = await _client.Search<Company>("companies", query);
@@ -793,7 +910,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     [Fact, TestPriority(11)]
     public async Task Search_grouped_by_country()
     {
-        var query = new GroupedSearchParameters("Stark", "company_name", "country");
+        var query = new GroupedSearchParameters("Stark", "company_name", "location.country");
         var response = await _client.SearchGrouped<Company>("companies", query);
 
         using (var scope = new AssertionScope())
@@ -818,16 +935,23 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("company_name", FieldType.String, false),
                 new Field("aliases", FieldType.StringArray, false),
                 new Field("num_employees", FieldType.Int32, true),
-                new Field("country", FieldType.String, true),
+                new Field("location", FieldType.Object, true),
             },
-            "num_employees");
+            "num_employees")
+            {
+                EnableNestedFields = true
+            };
 
         var company = new Company
         {
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 5215,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
             Aliases = new string[] { "Stark", "Mickey Stark Inc." }
         };
 
@@ -846,7 +970,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new List<List<string>>
                 {
                     new List<string> { "Stark" },
-                    new List<string> { "Stark" }
+                        new List<string> { "Stark" }
                 },
                 new List<string>
                 {
@@ -879,7 +1003,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new MultiSearchParameters("companies", "Stark", "company_name");
@@ -900,7 +1028,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new MultiSearchParameters("companies", "Stark", "company_name");
@@ -927,7 +1059,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new MultiSearchParameters("companies", "Stark", "company_name");
@@ -957,7 +1093,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var query = new MultiSearchParameters("companies", "Stark", "company_name");
@@ -990,7 +1130,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "124",
             CompanyName = "Stark Industries",
             NumEmployees = 6000,
-            Country = "USA",
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
         };
 
         var response = await _client.DeleteDocument<Company>("companies", "124");
@@ -1014,10 +1158,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "Example key one",
             new[] { "*" },
             new[] { "*" })
-        {
-            Value = "Example-api-1-key-value",
-            ExpiresAt = 1661344547
-        };
+            {
+                Value = "Example-api-1-key-value",
+                ExpiresAt = 1661344547
+            };
 
         var response = await _client.CreateKey(expected);
 
@@ -1049,10 +1193,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "Example key one",
             new[] { "*" },
             new[] { "*" })
-        {
-            Value = "Example-api-1-key-value",
-            ExpiresAt = 1661344547
-        };
+            {
+                Value = "Example-api-1-key-value",
+                ExpiresAt = 1661344547
+            };
 
         var response = await _client.ListKeys();
 
@@ -1089,13 +1233,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var searchOverride = new SearchOverride(
             new Rule("apple", "exact"))
-        {
-            Includes = new List<Include>
             {
-                new Include("422", 1),
-                new Include("54", 2)
-            },
-        };
+                Includes = new List<Include>
+                {
+                    new Include("422", 1),
+                    new Include("54", 2)
+                },
+            };
 
         var response = await _client.UpsertSearchOverride(
             "companies", "customize-apple", searchOverride);
@@ -1118,13 +1262,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new SearchOverride(
             new Rule("apple", "exact"))
-        {
-            Includes = new List<Include>
             {
-                new Include("422", 1),
-                new Include("54", 2)
-            },
-        };
+                Includes = new List<Include>
+                {
+                    new Include("422", 1),
+                    new Include("54", 2)
+                },
+            };
 
         var response = await _client.ListSearchOverrides("companies");
 
@@ -1282,7 +1426,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             Id = "9845",
             CompanyName = "&filter_by=foo",
             NumEmployees = 545,
-            Country = "FR",
+            Location = new Location
+            {
+                City = "Paris",
+                Country = "FR"
+            },
         };
 
         await _client.CreateDocument<Company>("companies", company);
@@ -1306,9 +1454,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 new Field("company_name", FieldType.String, false),
                 new Field("num_employees", FieldType.Int32, true),
-                new Field("country", FieldType.String, true),
+                new Field("location", FieldType.Object, true),
             },
-            "num_employees");
+            "num_employees")
+            {
+                EnableNestedFields = true
+            };
 
         _ = await _client.CreateCollection(schema);
     }
