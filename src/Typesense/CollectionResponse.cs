@@ -23,6 +23,9 @@ public record CollectionResponse
     [JsonPropertyName("symbols_to_index")]
     public IReadOnlyCollection<string> SymbolsToIndex { get; init; }
 
+    [JsonPropertyName("enable_nested_fields")]
+    public bool EnableNestedFields { get; init; }
+
     [JsonConstructor]
     public CollectionResponse(
         string name,
@@ -30,7 +33,8 @@ public record CollectionResponse
         IReadOnlyCollection<Field> fields,
         string defaultSortingField,
         IReadOnlyCollection<string> tokenSeparators,
-        IReadOnlyCollection<string> symbolsToIndex)
+        IReadOnlyCollection<string> symbolsToIndex,
+        bool enableNestedFields)
     {
         Name = name;
         NumberOfDocuments = numberOfDocuments;
@@ -38,5 +42,6 @@ public record CollectionResponse
         DefaultSortingField = defaultSortingField;
         TokenSeparators = tokenSeparators;
         SymbolsToIndex = symbolsToIndex;
+        EnableNestedFields = enableNestedFields;
     }
 }

@@ -40,6 +40,12 @@ public enum FieldType
     [EnumMember(Value = "geopoint[]")]
     GeoPointArray,
 
+    [EnumMember(Value = "object")]
+    Object,
+
+    [EnumMember(Value = "object[]")]
+    ObjectArray,
+
     [EnumMember(Value = "string*")]
     AutoString,
 
