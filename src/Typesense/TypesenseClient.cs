@@ -138,7 +138,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<(SearchResult<T1>, SearchResult<T2>, SearchResult<T3>)> MultiSearch<T1, T2, T3>(
         MultiSearchParameters s1,
         MultiSearchParameters s2,
-        MultiSearchParameters s3, 
+        MultiSearchParameters s3,
         CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3 } };
@@ -250,6 +250,24 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<CollectionResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<UpdateCollectionResponse> UpdateCollection(
+        string name,
+        UpdateSchema updateSchema)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
+
+        var json = JsonSerializer.Serialize(
+            updateSchema,
+            _jsonOptionsCamelCaseIgnoreWritingNull);
+
+        var response = await Patch($"/collections/{name}", json).ConfigureAwait(false);
+
+        return HandleEmptyStringJsonSerialize<UpdateCollectionResponse>(
+            response,
+            _jsonNameCaseInsentiveTrue);
+    }
+
     public async Task<List<ImportResponse>> ImportDocuments<T>(
         string collection,
         string documents,
@@ -327,7 +345,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
         if (exportParameters is null)
             throw new ArgumentNullException(nameof(exportParameters));
-        
+
         var parameters = CreateUrlParameters(exportParameters);
         var response = await Get($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
 
@@ -535,7 +553,7 @@ public class TypesenseClient : ITypesenseClient
             .Select(prop =>
             {
                 var value = prop.GetValue(queryParameters);
-                    
+
                 var stringValue = value switch
                 {
                     null => null,
@@ -544,7 +562,7 @@ public class TypesenseClient : ITypesenseClient
                     Enum e => e.ToString().ToLowerInvariant(),
                     _ => value.ToString(),
                 };
-                    
+
                 return new
                 {
                     Key = prop.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name,

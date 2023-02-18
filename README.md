@@ -62,6 +62,22 @@ public class Address
 }
 ```
 
+## Update collection
+
+Update existing collection.
+
+```C#
+var updateSchema = new UpdateSchema(new List<UpdateSchemaField>
+{
+    // Example deleting existing field.
+    new UpdateSchemaField("metadataNotes", drop: true),
+    // Example adding a new field.
+    new UpdateSchemaField("city", FieldType.String, facet: false, optional: true)
+});
+
+var updateCollectionResponse = await typesenseClient.UpdateCollection("Addresses", updateSchema);
+```
+
 ## Index document
 
 ```c#

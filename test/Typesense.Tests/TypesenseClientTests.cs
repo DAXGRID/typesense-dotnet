@@ -87,9 +87,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("location", FieldType.Object, true),
             },
             "num_employees")
-            {
-                EnableNestedFields = true
-            };
+        {
+            EnableNestedFields = true
+        };
 
         var response = await _client.CreateCollection(schema);
 
@@ -143,11 +143,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("location", FieldType.Object, true),
             },
             "num_employees")
-            {
-                TokenSeparators = new List<string> { "-" },
-                SymbolsToIndex = new List<string> { "+" },
-                EnableNestedFields = true,
-            };
+        {
+            TokenSeparators = new List<string> { "-" },
+            SymbolsToIndex = new List<string> { "+" },
+            EnableNestedFields = true,
+        };
 
         var response = await _client.CreateCollection(schema);
 
@@ -284,6 +284,25 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(2)]
+    public async Task Update_collection()
+    {
+        var updateSchema = new UpdateSchema(
+            new List<UpdateSchemaField>
+            {
+                new UpdateSchemaField("company_name", true),
+                new UpdateSchemaField("non_profit", FieldType.Bool)
+            }
+        );
+
+        var result = await _client.UpdateCollection("companies", updateSchema);
+
+        result.Fields.Should().Satisfy(
+            e => e.Name == "company_name" && e.Drop == true,
+            e => e.Name == "non_profit" && e.Type == FieldType.Bool
+        );
+    }
+
     [Fact, TestPriority(3)]
     public async Task Delete_collection()
     {
@@ -292,14 +311,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field(
-                    name: "company_name",
-                    type: FieldType.String,
-                    facet: false,
-                    optional: false,
-                    index: true,
-                    sort: false,
-                    infix: false),
                 new Field(
                     name: "num_employees",
                     type: FieldType.Int32,
@@ -315,6 +326,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
+                    infix: false),
+                new Field(
+                    name: "non_profit",
+                    type: FieldType.Bool,
+                    facet: false,
+                    optional: false,
+                    index: true,
+                    sort: true,
                     infix: false),
             },
             "num_employees",
@@ -938,9 +957,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("location", FieldType.Object, true),
             },
             "num_employees")
-            {
-                EnableNestedFields = true
-            };
+        {
+            EnableNestedFields = true
+        };
 
         var company = new Company
         {
@@ -1158,10 +1177,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "Example key one",
             new[] { "*" },
             new[] { "*" })
-            {
-                Value = "Example-api-1-key-value",
-                ExpiresAt = 1661344547
-            };
+        {
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
 
         var response = await _client.CreateKey(expected);
 
@@ -1193,10 +1212,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "Example key one",
             new[] { "*" },
             new[] { "*" })
-            {
-                Value = "Example-api-1-key-value",
-                ExpiresAt = 1661344547
-            };
+        {
+            Value = "Example-api-1-key-value",
+            ExpiresAt = 1661344547
+        };
 
         var response = await _client.ListKeys();
 
@@ -1233,13 +1252,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var searchOverride = new SearchOverride(
             new Rule("apple", "exact"))
-            {
-                Includes = new List<Include>
+        {
+            Includes = new List<Include>
                 {
                     new Include("422", 1),
                     new Include("54", 2)
                 },
-            };
+        };
 
         var response = await _client.UpsertSearchOverride(
             "companies", "customize-apple", searchOverride);
@@ -1262,13 +1281,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var expected = new SearchOverride(
             new Rule("apple", "exact"))
-            {
-                Includes = new List<Include>
+        {
+            Includes = new List<Include>
                 {
                     new Include("422", 1),
                     new Include("54", 2)
                 },
-            };
+        };
 
         var response = await _client.ListSearchOverrides("companies");
 
@@ -1457,9 +1476,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field("location", FieldType.Object, true),
             },
             "num_employees")
-            {
-                EnableNestedFields = true
-            };
+        {
+            EnableNestedFields = true
+        };
 
         _ = await _client.CreateCollection(schema);
     }

@@ -285,6 +285,20 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<CollectionResponse> DeleteCollection(string name);
 
+
+    /// <summary>
+    /// Update or alter a collection.
+    /// </summary>
+    /// <param name="name">The collection name.</param>
+    /// <param name="updateSchema">The update schema definition.</param>
+    /// <returns>The fields on the collection.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<UpdateCollectionResponse> UpdateCollection(string name, UpdateSchema updateSchema);
+
     /// <summary>
     /// Batch import documents.
     /// </summary>
