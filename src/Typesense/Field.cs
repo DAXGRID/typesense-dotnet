@@ -28,6 +28,12 @@ public record Field
     [JsonPropertyName("infix")]
     public bool? Infix { get; init; }
 
+    // This constructor is made to handle inherited classes.
+    protected Field(string name)
+    {
+        Name = name;
+    }
+
     public Field(string name, FieldType type)
     {
         Name = name;

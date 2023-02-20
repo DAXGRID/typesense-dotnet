@@ -116,6 +116,9 @@ sealed class Program
         // Example delete search override
         await ExampleDeleteSearchOverride(typesenseClient);
 
+        // Example update collection
+        await ExampleUpdateCollection(typesenseClient);
+
         // Example delete collection
         await ExampleDeleteCollection(typesenseClient);
 
@@ -440,6 +443,23 @@ sealed class Program
     {
         var deleteCollectionResult = await typesenseClient.DeleteCollection("Addresses");
         Console.WriteLine($"Deleted collection: {JsonSerializer.Serialize(deleteCollectionResult)}");
+    }
+
+    private static async Task ExampleUpdateCollection(ITypesenseClient typesenseClient)
+    {
+        var updateSchema = new UpdateSchema(new List<UpdateSchemaField>
+        {
+            // Example deleting existing field.
+            new UpdateSchemaField("metadataNotes", drop: true),
+            // Example adding a new field.
+            new UpdateSchemaField("city", FieldType.String, facet: false, optional: true)
+        });
+
+        var updateCollectionResponse = await typesenseClient.UpdateCollection(
+            "Addresses",
+            updateSchema);
+
+        Console.WriteLine($"Updated collection: {JsonSerializer.Serialize(updateCollectionResponse)}");
     }
 
     private static async Task ExampleRetrieveMetrics(ITypesenseClient typesenseClient)
