@@ -19,58 +19,59 @@ public record UpdateSchemaField : Field
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet) : base(name, type, facet) { }
+        bool? facet = null) : base(name, type, facet) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional) : base(name, type, facet, optional) { }
+        bool? facet = null,
+        bool? optional = null) : base(name, type, facet, optional) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional,
-        bool? index) : base(name, type, facet, optional, index) { }
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null) : base(name, type, facet, optional, index) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional,
-        bool? index, bool? sort) : base(name, type, facet, optional, index, sort) { }
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null) : base(name, type, facet, optional, index, sort) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional,
-        bool? index,
-        bool? sort,
-        bool? infix) : base(name, type, facet, optional, index, sort, infix) { }
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null,
+        bool? infix = null) : base(name, type, facet, optional, index, sort, infix) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional,
-        bool? index,
-        bool? sort,
-        bool? infix,
-        string? locale) : base(name, type, facet, optional, index, sort, infix, locale) { }
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null,
+        bool? infix = null,
+        string? locale = null) : base(name, type, facet, optional, index, sort, infix, locale) { }
 
     [JsonConstructor]
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool? facet,
-        bool? optional,
-        bool? index,
-        bool? sort,
-        bool? infix,
-        string? locale,
-        bool? drop) : base(name, type, facet, optional, index, sort, infix, locale)
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null,
+        bool? infix = null,
+        string? locale = null,
+        bool? drop = null) : base(name, type, facet, optional, index, sort, infix, locale)
     {
         Drop = drop;
     }

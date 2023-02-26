@@ -240,12 +240,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new Field(
                     "name",
                     FieldType.String,
-                    false,
-                    true,
-                    null,
-                    null,
-                    null,
-                    "zh"),
+                    optional: true,
+                    locale: "zh"),
             });
 
         var response = await _client.CreateCollection(schema);

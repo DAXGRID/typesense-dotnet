@@ -43,14 +43,14 @@ public record Field
         Type = type;
     }
 
-    public Field(string name, FieldType type, bool? facet)
+    public Field(string name, FieldType type, bool? facet = null)
     {
         Name = name;
         Type = type;
         Facet = facet;
     }
 
-    public Field(string name, FieldType type, bool? facet, bool? optional)
+    public Field(string name, FieldType type, bool? facet = null, bool? optional = null)
     {
         Name = name;
         Type = type;
@@ -58,7 +58,7 @@ public record Field
         Optional = optional;
     }
 
-    public Field(string name, FieldType type, bool? facet, bool? optional, bool? index)
+    public Field(string name, FieldType type, bool? facet = null, bool? optional = null, bool? index = null)
     {
         Name = name;
         Type = type;
@@ -69,10 +69,10 @@ public record Field
 
     public Field(string name,
                  FieldType type,
-                 bool? facet,
-                 bool? optional,
-                 bool? index,
-                 bool? sort)
+                 bool? facet = null,
+                 bool? optional = null,
+                 bool? index = null,
+                 bool? sort = null)
     {
         Name = name;
         Type = type;
@@ -84,11 +84,11 @@ public record Field
 
     public Field(string name,
                  FieldType type,
-                 bool? facet,
-                 bool? optional,
-                 bool? index,
-                 bool? sort,
-                 bool? infix)
+                 bool? facet = null,
+                 bool? optional = null,
+                 bool? index = null,
+                 bool? sort = null,
+                 bool? infix = null)
     {
         Name = name;
         Type = type;
@@ -102,12 +102,12 @@ public record Field
     [JsonConstructor]
     public Field(string name,
                  FieldType type,
-                 bool? facet,
-                 bool? optional,
-                 bool? index,
-                 bool? sort,
-                 bool? infix,
-                 string? locale)
+                 bool? facet = null,
+                 bool? optional = null,
+                 bool? index = null,
+                 bool? sort = null,
+                 bool? infix = null,
+                 string? locale = null)
     {
         Name = name;
         Type = type;
