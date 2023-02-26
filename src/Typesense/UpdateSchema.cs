@@ -50,6 +50,16 @@ public record UpdateSchemaField : Field
         bool? sort,
         bool? infix) : base(name, type, facet, optional, index, sort, infix) { }
 
+    public UpdateSchemaField(
+        string name,
+        FieldType type,
+        bool? facet,
+        bool? optional,
+        bool? index,
+        bool? sort,
+        bool? infix,
+        string? locale) : base(name, type, facet, optional, index, sort, infix, locale) { }
+
     [JsonConstructor]
     public UpdateSchemaField(
         string name,
@@ -59,7 +69,8 @@ public record UpdateSchemaField : Field
         bool? index,
         bool? sort,
         bool? infix,
-        bool? drop) : base(name, type, facet, optional, index, sort, infix)
+        string? locale,
+        bool? drop) : base(name, type, facet, optional, index, sort, infix, locale)
     {
         Drop = drop;
     }
