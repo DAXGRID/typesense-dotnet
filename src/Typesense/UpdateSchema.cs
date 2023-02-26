@@ -19,32 +19,32 @@ public record UpdateSchemaField : Field
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet) : base(name, type, facet) { }
+        bool? facet) : base(name, type, facet) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet,
+        bool? facet,
         bool? optional) : base(name, type, facet, optional) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet,
+        bool? facet,
         bool? optional,
         bool? index) : base(name, type, facet, optional, index) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet,
+        bool? facet,
         bool? optional,
         bool? index, bool? sort) : base(name, type, facet, optional, index, sort) { }
 
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet,
+        bool? facet,
         bool? optional,
         bool? index,
         bool? sort,
@@ -54,7 +54,7 @@ public record UpdateSchemaField : Field
     public UpdateSchemaField(
         string name,
         FieldType type,
-        bool facet,
+        bool? facet,
         bool? optional,
         bool? index,
         bool? sort,
