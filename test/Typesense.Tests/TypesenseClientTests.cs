@@ -50,20 +50,24 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             0,
             new List<Field>
             {
-                new Field("company_name",
-                          type: FieldType.String,
-                          facet: false,
-                          optional: false,
-                          index: true,
-                          sort: false,
-                          infix: false),
-                new Field("num_employees",
-                          type: FieldType.Int32,
-                          facet: true,
-                          optional: false,
-                          index: true,
-                          sort: true,
-                          infix: false),
+                new Field(
+                    "company_name",
+                    type: FieldType.String,
+                    facet: false,
+                    optional: false,
+                    index: true,
+                    sort: false,
+                    infix: false,
+                    locale: ""),
+                new Field(
+                    "num_employees",
+                    type: FieldType.Int32,
+                    facet: true,
+                    optional: false,
+                    index: true,
+                    sort: true,
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "location",
                     type: FieldType.Object,
@@ -71,7 +75,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
             },
             "num_employees",
             new List<string>(),
@@ -111,7 +116,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "num_employees",
                     type: FieldType.Int32,
@@ -119,7 +125,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: true,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "location",
                     type: FieldType.Object,
@@ -127,7 +134,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
             },
             "num_employees",
             new List<string> { "-" },
@@ -174,7 +182,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: true,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
             },
             "",
             new List<string>(),
@@ -196,6 +205,57 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         await _client.DeleteCollection("wildcard-collection");
     }
 
+    // We test wildcard field individually,
+    // because it is a bit different than other types of fields.
+    [Fact, TestPriority(0)]
+    public async Task Create_schema_with_locale_on_field()
+    {
+        const string collectionName = "collection-with-locale";
+
+        var expected = new CollectionResponse(
+            collectionName,
+            0,
+            new List<Field>
+            {
+                new Field(
+                    name: "name",
+                    type: FieldType.String,
+                    facet: false,
+                    optional: true,
+                    index: true,
+                    sort: false,
+                    infix: false,
+                    locale: "zh"
+                ),
+            },
+            "",
+            new List<string>(),
+            new List<string>(),
+            false);
+
+        var schema = new Schema(
+            collectionName,
+            new List<Field>
+            {
+                new Field(
+                    "name",
+                    FieldType.String,
+                    false,
+                    true,
+                    null,
+                    null,
+                    null,
+                    "zh"),
+            });
+
+        var response = await _client.CreateCollection(schema);
+
+        response.Should().BeEquivalentTo(expected);
+
+        // Cleanup
+        await _client.DeleteCollection(collectionName);
+    }
+
     [Fact, TestPriority(1)]
     public async Task Retrieve_collection()
     {
@@ -211,7 +271,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "num_employees",
                     type: FieldType.Int32,
@@ -219,7 +280,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: true,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     "location",
                     type: FieldType.Object,
@@ -227,7 +289,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
             },
             "num_employees",
             new List<string>(),
@@ -256,7 +319,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         optional: false,
                         index: true,
                         sort: false,
-                        infix: false),
+                        infix: false,
+                        locale: ""),
                     new Field(
                         name: "num_employees",
                         type: FieldType.Int32,
@@ -264,7 +328,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         optional: false,
                         index: true,
                         sort: true,
-                        infix: false),
+                        infix: false,
+                        locale: ""),
                     new Field(
                         name: "location",
                         type: FieldType.Object,
@@ -272,7 +337,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         optional: false,
                         index: true,
                         sort: false,
-                        infix: false),
+                        infix: false,
+                        locale: ""),
                 },
                 "num_employees",
                 new List<string>(),
@@ -318,7 +384,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: true,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "location",
                     type: FieldType.Object,
@@ -326,7 +393,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: false,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
                 new Field(
                     name: "non_profit",
                     type: FieldType.Bool,
@@ -334,7 +402,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     optional: false,
                     index: true,
                     sort: true,
-                    infix: false),
+                    infix: false,
+                    locale: ""),
             },
             "num_employees",
             new List<string>(),

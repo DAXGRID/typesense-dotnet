@@ -28,6 +28,9 @@ public record Field
     [JsonPropertyName("infix")]
     public bool? Infix { get; init; }
 
+    [JsonPropertyName("locale")]
+    public string? Locale { get; init; }
+
     // This constructor is made to handle inherited classes.
     protected Field(string name)
     {
@@ -79,7 +82,6 @@ public record Field
         Sort = sort;
     }
 
-    [JsonConstructor]
     public Field(string name,
                  FieldType type,
                  bool facet,
@@ -95,6 +97,26 @@ public record Field
         Index = index;
         Sort = sort;
         Infix = infix;
+    }
+
+    [JsonConstructor]
+    public Field(string name,
+                 FieldType type,
+                 bool facet,
+                 bool? optional,
+                 bool? index,
+                 bool? sort,
+                 bool? infix,
+                 string? locale)
+    {
+        Name = name;
+        Type = type;
+        Facet = facet;
+        Optional = optional;
+        Index = index;
+        Sort = sort;
+        Infix = infix;
+        Locale = locale;
     }
 
     [Obsolete("A better choice going forward is using the constructor with 'FieldType' enum instead.")]
