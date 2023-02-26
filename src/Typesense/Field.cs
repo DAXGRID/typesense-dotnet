@@ -14,7 +14,7 @@ public record Field
     public FieldType Type { get; init; }
 
     [JsonPropertyName("facet")]
-    public bool Facet { get; init; }
+    public bool? Facet { get; init; }
 
     [JsonPropertyName("optional")]
     public bool? Optional { get; init; }
@@ -43,14 +43,14 @@ public record Field
         Type = type;
     }
 
-    public Field(string name, FieldType type, bool facet)
+    public Field(string name, FieldType type, bool? facet)
     {
         Name = name;
         Type = type;
         Facet = facet;
     }
 
-    public Field(string name, FieldType type, bool facet, bool? optional)
+    public Field(string name, FieldType type, bool? facet, bool? optional)
     {
         Name = name;
         Type = type;
@@ -58,7 +58,7 @@ public record Field
         Optional = optional;
     }
 
-    public Field(string name, FieldType type, bool facet, bool? optional, bool? index)
+    public Field(string name, FieldType type, bool? facet, bool? optional, bool? index)
     {
         Name = name;
         Type = type;
@@ -69,7 +69,7 @@ public record Field
 
     public Field(string name,
                  FieldType type,
-                 bool facet,
+                 bool? facet,
                  bool? optional,
                  bool? index,
                  bool? sort)
@@ -84,7 +84,7 @@ public record Field
 
     public Field(string name,
                  FieldType type,
-                 bool facet,
+                 bool? facet,
                  bool? optional,
                  bool? index,
                  bool? sort,
@@ -102,7 +102,7 @@ public record Field
     [JsonConstructor]
     public Field(string name,
                  FieldType type,
-                 bool facet,
+                 bool? facet,
                  bool? optional,
                  bool? index,
                  bool? sort,
@@ -120,7 +120,7 @@ public record Field
     }
 
     [Obsolete("A better choice going forward is using the constructor with 'FieldType' enum instead.")]
-    public Field(string name, string type, bool facet, bool optional = false, bool index = true)
+    public Field(string name, string type, bool? facet, bool optional = false, bool index = true)
     {
         Name = name;
         Type = MapFieldType(type);
