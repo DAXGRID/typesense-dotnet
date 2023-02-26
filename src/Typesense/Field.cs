@@ -50,7 +50,11 @@ public record Field
         Facet = facet;
     }
 
-    public Field(string name, FieldType type, bool? facet = null, bool? optional = null)
+    public Field(
+        string name,
+        FieldType type,
+        bool? facet = null,
+        bool? optional = null)
     {
         Name = name;
         Type = type;
@@ -58,7 +62,12 @@ public record Field
         Optional = optional;
     }
 
-    public Field(string name, FieldType type, bool? facet = null, bool? optional = null, bool? index = null)
+    public Field(
+        string name,
+        FieldType type,
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null)
     {
         Name = name;
         Type = type;
@@ -67,12 +76,13 @@ public record Field
         Index = index;
     }
 
-    public Field(string name,
-                 FieldType type,
-                 bool? facet = null,
-                 bool? optional = null,
-                 bool? index = null,
-                 bool? sort = null)
+    public Field(
+        string name,
+        FieldType type,
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null)
     {
         Name = name;
         Type = type;
@@ -82,13 +92,14 @@ public record Field
         Sort = sort;
     }
 
-    public Field(string name,
-                 FieldType type,
-                 bool? facet = null,
-                 bool? optional = null,
-                 bool? index = null,
-                 bool? sort = null,
-                 bool? infix = null)
+    public Field(
+        string name,
+        FieldType type,
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null,
+        bool? infix = null)
     {
         Name = name;
         Type = type;
@@ -100,14 +111,15 @@ public record Field
     }
 
     [JsonConstructor]
-    public Field(string name,
-                 FieldType type,
-                 bool? facet = null,
-                 bool? optional = null,
-                 bool? index = null,
-                 bool? sort = null,
-                 bool? infix = null,
-                 string? locale = null)
+    public Field(
+        string name,
+        FieldType type,
+        bool? facet = null,
+        bool? optional = null,
+        bool? index = null,
+        bool? sort = null,
+        bool? infix = null,
+        string? locale = null)
     {
         Name = name;
         Type = type;
