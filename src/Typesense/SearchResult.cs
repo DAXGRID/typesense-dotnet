@@ -53,13 +53,18 @@ public record Hit<T>
     public T Document { get; init; }
 
     [JsonPropertyName("text_match")]
-    public long TextMatch { get; init; }
+    public long? TextMatch { get; init; }
 
-    public Hit(IReadOnlyList<Highlight> highlights, T document, long textMatch)
+    [JsonPropertyName("vector_distance")]
+    public double? VectorDistance { get; init; }
+
+    [JsonConstructor]
+    public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance)
     {
         Highlights = highlights;
         Document = document;
         TextMatch = textMatch;
+        VectorDistance = vectorDistance;
     }
 }
 

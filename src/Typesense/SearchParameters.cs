@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using Typesense.Converter;
 
 namespace Typesense;
 
@@ -17,6 +18,11 @@ public record MultiSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("collection")]
     public string Collection { get; set; }
+
+    public MultiSearchParameters(string collection, string text) : base(text)
+    {
+        Collection = collection;
+    }
 
     public MultiSearchParameters(string collection, string text, string queryBy) : base(text, queryBy)
     {
@@ -42,7 +48,7 @@ public record SearchParameters
     /// A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
     /// </summary>
     [JsonPropertyName("query_by")]
-    public string QueryBy { get; set; }
+    public string? QueryBy { get; set; }
 
     /// <summary>
     /// Boolean field to indicate that the last word in the query should
@@ -354,11 +360,26 @@ public record SearchParameters
     [JsonPropertyName("cache_ttl")]
     public int? CacheTtl { get; set; }
 
+    // ---------------------------------------------------------------------------------------
+    // Vector Search - https://typesense.org/docs/0.24.1/api/vector-search.html#what-is-an-embedding
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Query-string for vector searches.
+    /// </summary>
+    [JsonConverter(typeof(VectorQueryJsonConverter)), JsonPropertyName("vector_query")]
+    public VectorQuery? VectorQuery { get; init; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
     {
         Text = string.Empty;
         QueryBy = string.Empty;
+    }
+
+    public SearchParameters(string text)
+    {
+        Text = text;
     }
 
     public SearchParameters(string text, string queryBy)
