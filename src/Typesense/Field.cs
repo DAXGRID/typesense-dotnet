@@ -31,6 +31,9 @@ public record Field
     [JsonPropertyName("locale")]
     public string? Locale { get; init; }
 
+    [JsonPropertyName("num_dim")]
+    public int? NumberOfDimensions { get; init; }
+
     // This constructor is made to handle inherited classes.
     protected Field(string name)
     {
@@ -41,6 +44,13 @@ public record Field
     {
         Name = name;
         Type = type;
+    }
+
+    public Field(string name, FieldType type, int numberOfDimensions)
+    {
+        Name = name;
+        Type = type;
+        NumberOfDimensions = numberOfDimensions;
     }
 
     public Field(string name, FieldType type, bool? facet = null)
