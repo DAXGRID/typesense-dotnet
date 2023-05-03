@@ -171,7 +171,7 @@ await _client.CreateDocument(
     new AddressVectorSearch()
     {
         Id = "0",
-            Vec = new float[] { 0.04F, 0.234F, 0.113F, 0.001F }
+        Vec = new float[] { 0.04F, 0.234F, 0.113F, 0.001F }
     });
 
 var query = new MultiSearchParameters(COLLECTION_NAME, "*")
