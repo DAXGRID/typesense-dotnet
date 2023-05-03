@@ -1080,6 +1080,89 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Multi_search_query_single_type_multiple_multi_search_parameters()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
+        };
+
+        var responses = await _client.MultiSearch<Company>(
+            new List<MultiSearchParameters>
+            {
+                // The same queries are executed multiple times
+                // because we do not care about the response,
+                // but that we can do many multi searches at once.
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("companies", "Stark", "company_name")
+            });
+
+        using (var scope = new AssertionScope())
+        {
+            responses.Count().Should().Be(6);
+            foreach (var response in responses)
+            {
+                response.Found.Should().Be(1);
+                response.Hits.First().Document.Should().BeEquivalentTo(expected);
+            }
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_single_type_multiple_multi_search_parameters_one_failed()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
+        };
+
+        var responses = await _client.MultiSearch<Company>(
+            new List<MultiSearchParameters>
+            {
+                // The same queries are executed multiple times
+                // because we do not care about the response,
+                // but that we can do many multi searches at once.
+                new MultiSearchParameters("companies", "Stark", "company_name"),
+                new MultiSearchParameters("this_collection_does_not_exist", "Stark", "company_name"),
+            });
+
+        using (var scope = new AssertionScope())
+        {
+            responses.Count().Should().Be(2);
+
+            // Validate that first has no errors.
+            responses[0].Found.Should().Be(1);
+            responses[0].Hits.First().Document.Should().BeEquivalentTo(expected);
+            responses[0].ErrorMessage.Should().BeNull();
+            responses[0].ErrorCode.Should().BeNull();
+
+            // Validate that second has errors.
+            responses[1].Found.Should().BeNull();
+            responses[1].Hits.Should().BeNull();
+            responses[1].ErrorMessage.Should().Be("Not found.");
+            responses[1].ErrorCode.Should().Be(404);
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Multi_search_query_single()
     {
         var expected = new Company
