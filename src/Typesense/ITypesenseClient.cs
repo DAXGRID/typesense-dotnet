@@ -116,6 +116,19 @@ public interface ITypesenseClient
     Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default);
 
     /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied list of search parameters.
+    /// </summary>
+    /// <param name="multiSearches">List of multi search parameters</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results collection.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<IEnumerable<SearchResult<T>>> MultiSearch<T>(IEnumerable<MultiSearchParameters> multiSearches, CancellationToken ctk = default);
+
+    /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
     /// </summary>
     /// <param name="s1">First search parameters.</param>

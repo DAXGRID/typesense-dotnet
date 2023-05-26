@@ -111,6 +111,17 @@ public class TypesenseClient : ITypesenseClient
     {
         return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
     }
+    
+    public async Task<IEnumerable<SearchResult<T>>> MultiSearch<T>(IEnumerable<MultiSearchParameters> multiSearches, CancellationToken ctk = default)
+    {
+        var searches = new { Searches = multiSearches };
+        var json = JsonSerializer.Serialize(searches, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post("/multi_search", json, ctk).ConfigureAwait(false);
+
+        return (JsonSerializer.Deserialize<JsonElement>(response).TryGetProperty("results", out var results))
+            ? HandleDeserializeMultiSearches<T>(results[0])
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
 
     public async Task<SearchResult<T>> MultiSearch<T>(MultiSearchParameters s1, CancellationToken ctk = default)
     {
@@ -668,4 +679,8 @@ public class TypesenseClient : ITypesenseClient
     private SearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
         => jsonElement.Deserialize<SearchResult<T>>(_jsonNameCaseInsentiveTrue)
         ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{jsonElement}'.");
+    
+    private IEnumerable<SearchResult<T>> HandleDeserializeMultiSearches<T>(JsonElement jsonElement)
+        => jsonElement.Deserialize<IEnumerable<SearchResult<T>>>(_jsonNameCaseInsentiveTrue)
+           ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{jsonElement}'.");
 }
