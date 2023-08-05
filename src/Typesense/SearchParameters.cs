@@ -19,6 +19,16 @@ public record MultiSearchParameters : SearchParameters
     [JsonPropertyName("collection")]
     public string Collection { get; set; }
 
+    // ---------------------------------------------------------------------------------------
+    // Vector Search - https://typesense.org/docs/0.24.1/api/vector-search.html#what-is-an-embedding
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Query-string for vector searches.
+    /// </summary>
+    [JsonConverter(typeof(VectorQueryJsonConverter)), JsonPropertyName("vector_query")]
+    public VectorQuery? VectorQuery { get; init; }
+
     public MultiSearchParameters(string collection, string text) : base(text)
     {
         Collection = collection;
@@ -359,16 +369,6 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("cache_ttl")]
     public int? CacheTtl { get; set; }
-
-    // ---------------------------------------------------------------------------------------
-    // Vector Search - https://typesense.org/docs/0.24.1/api/vector-search.html#what-is-an-embedding
-    // ---------------------------------------------------------------------------------------
-
-    /// <summary>
-    /// Query-string for vector searches.
-    /// </summary>
-    [JsonConverter(typeof(VectorQueryJsonConverter)), JsonPropertyName("vector_query")]
-    public VectorQuery? VectorQuery { get; init; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
