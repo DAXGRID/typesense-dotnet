@@ -418,8 +418,9 @@ dotnet test --filter Category=Unit
 dotnet test --filter Category=Integration
 ```
 
-To enable running integration tests you can run Typesense in a docker container using the command below.
+To run integration tests, you can execute Typesense in a docker container by using the command below. The process utilizes the `/tmp/data` folder however, if you prefer to place it in a different directory, you can modify the path accordingly.
+
 
 ```sh
-docker run -p 8108:8108 -v/tmp/data:/data typesense/typesense:0.24.0 --data-dir /data --api-key=key
+docker run -p 8108:8108 -v /tmp/data:/data typesense/typesense:0.24.0 --data-dir /data --api-key=key
 ```
