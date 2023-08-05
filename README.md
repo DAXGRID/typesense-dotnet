@@ -422,5 +422,5 @@ To run integration tests, you can execute Typesense in a docker container by usi
 
 
 ```sh
-docker run -p 8108:8108 -v /tmp/data:/data typesense/typesense:0.24.0 --data-dir /data --api-key=key
+docker run -p 8108:8108 -v /tmp/data:/data typesense/typesense:0.24.1 --data-dir /data --api-key=key
 ```

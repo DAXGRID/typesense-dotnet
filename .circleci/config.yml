@@ -13,7 +13,7 @@ executors:
       auth:
         username: $DOCKER_LOGIN
         password: $DOCKER_ACCESSTOKEN
-    - image: typesense/typesense:0.24.0 # For integration testing
+    - image: typesense/typesense:0.24.1 # For integration testing
       auth:
         username: $DOCKER_LOGIN
         password: $DOCKER_ACCESSTOKEN
