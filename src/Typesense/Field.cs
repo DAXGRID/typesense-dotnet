@@ -34,6 +34,9 @@ public record Field
     [JsonPropertyName("num_dim")]
     public int? NumberOfDimensions { get; init; }
 
+    [JsonPropertyName("embed")]
+    public AutoEmbeddingConfig? Embed { get; init; }
+
     // This constructor is made to handle inherited classes.
     protected Field(string name)
     {
@@ -51,6 +54,13 @@ public record Field
         Name = name;
         Type = type;
         NumberOfDimensions = numberOfDimensions;
+    }
+
+    public Field(string name, FieldType type, AutoEmbeddingConfig embed)
+    {
+        Name = name;
+        Type = type;
+        Embed = embed;
     }
 
     public Field(string name, FieldType type, bool? facet = null)
