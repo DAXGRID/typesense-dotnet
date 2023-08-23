@@ -370,6 +370,18 @@ public record SearchParameters
     [JsonPropertyName("cache_ttl")]
     public int? CacheTtl { get; set; }
 
+    /// <summary>
+    /// How long to wait until an API call to a remote embedding service is considered a timeout.
+    /// </summary>
+    [JsonPropertyName("remote_embedding_timeout_ms")]
+    public int? RemoteEmbeddingTimeoutMs { get; set; }
+
+    /// <summary>
+    /// The number of times to retry an API call to a remote embedding service on failure.
+    /// </summary>
+    [JsonPropertyName("remote_embedding_num_tries")]
+    public int? RemoteEmbeddingNumTries { get; set; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
     {
