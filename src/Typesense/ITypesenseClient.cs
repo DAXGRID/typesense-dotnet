@@ -320,6 +320,11 @@ public interface ITypesenseClient
     /// <param name="documents">A list of the documents to be imported. The whole string should be in JSON-newline format.</param>
     /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
     /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <param name="remoteEmbeddingBatchSize">
+    /// Max size of each batch that will be sent to remote APIs while importing multiple documents at once.
+    /// Using lower amount will lower timeout risk, but increase number of requests made.
+    /// If not specified, typesense server will default to 200.
+    /// </param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -329,7 +334,12 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(string collection, string documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection,
+        string documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null);
 
     /// <summary>
     /// Batch import documents.
@@ -338,6 +348,11 @@ public interface ITypesenseClient
     /// <param name="documents">A list of the documents to be imported. Each document should be in JSON format.</param>
     /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
     /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <param name="remoteEmbeddingBatchSize">
+    /// Max size of each batch that will be sent to remote APIs while importing multiple documents at once.
+    /// Using lower amount will lower timeout risk, but increase number of requests made.
+    /// If not specified, typesense server will default to 200.
+    /// </param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -347,7 +362,12 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(string collection, IEnumerable<string> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection,
+        IEnumerable<string> documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null);
 
     /// <summary>
     /// Batch import documents.
@@ -356,6 +376,11 @@ public interface ITypesenseClient
     /// <param name="documents">A list of the documents to be imported.</param>
     /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
     /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <param name="remoteEmbeddingBatchSize">
+    /// Max size of each batch that will be sent to remote APIs while importing multiple documents at once.
+    /// Using lower amount will lower timeout risk, but increase number of requests made.
+    /// If not specified, typesense server will default to 200.
+    /// </param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -365,7 +390,12 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(string collection, IEnumerable<T> documents, int batchSize = 40, ImportType importType = ImportType.Create);
+    Task<List<ImportResponse>> ImportDocuments<T>(
+        string collection,
+        IEnumerable<T> documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null);
 
     /// <summary>
     /// Export all documents in a given collection.

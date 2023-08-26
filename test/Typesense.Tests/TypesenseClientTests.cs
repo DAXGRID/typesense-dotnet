@@ -19,6 +19,16 @@ public record AddressVectorSearch
     public float[] Vec { get; init; }
 }
 
+// The `CourseSemanticSearch` type is created to test semantic search functionality in Typesense.
+public record CourseSemanticSearch
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
+}
+
 public record Location
 {
     [JsonPropertyName("country")]
@@ -1703,6 +1713,75 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             },
                             null,
                             0.19744956493377686));
+            }
+        }
+        finally
+        {
+            // Make sure that no matter what the collection is deleted.
+            try
+            {
+                _ = _client.DeleteCollection(COLLECTION_NAME);
+            }
+            catch (TypesenseApiNotFoundException)
+            {
+                //  Do nothing, it might have crashed before creating the collection.
+            }
+        }
+    }
+
+
+    [Fact, TestPriority(33)]
+    public async Task Can_do_semantic_search()
+    {
+        const string COLLECTION_NAME = "course_vector_search";
+
+        try
+        {
+            var schema = new Schema(
+                COLLECTION_NAME,
+                new List<Field>
+                {
+                    new Field("title", FieldType.String),
+                    new Field("embedding", FieldType.FloatArray, new AutoEmbeddingConfig(
+                        from: new() { "title" },
+                        modelConfig: new ModelConfig("ts/all-MiniLM-L12-v2"))
+                    ),
+                });
+
+            _ = await _client.CreateCollection(schema);
+
+            await _client.CreateDocument(
+                COLLECTION_NAME,
+                new CourseSemanticSearch
+                {
+                    Id = "CS101",
+                    Title = "Introduction to Programming",
+                });
+
+            // We want to make sure the query works using the query object `VectorQuery`
+            var queryUsingQueryObject = new MultiSearchParameters(COLLECTION_NAME, "coding", "embedding");
+
+            var queryObjectResponse = await _client.MultiSearch<CourseSemanticSearch>(queryUsingQueryObject);
+
+            using (var scope = new AssertionScope())
+            {
+                queryObjectResponse.Found.Should().Be(1);
+                queryObjectResponse.OutOf.Should().Be(1);
+                queryObjectResponse.Page.Should().Be(1);
+                queryObjectResponse.Hits.Count.Should().Be(1);
+                queryObjectResponse.Hits
+                    .First()
+                    .Should()
+                    .BeEquivalentTo(
+                        new Hit<CourseSemanticSearch>(
+                            new List<Highlight>().AsReadOnly(),
+                            new CourseSemanticSearch
+                            {
+                                Id = "CS101",
+                                Title = "Introduction to Programming",
+                            },
+                            null,
+                            0.4871443510055542));
             }
         }
         finally

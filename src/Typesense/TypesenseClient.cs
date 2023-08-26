@@ -288,7 +288,8 @@ public class TypesenseClient : ITypesenseClient
         string collection,
         string documents,
         int batchSize = 40,
-        ImportType importType = ImportType.Create)
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace", nameof(collection));
@@ -296,23 +297,18 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documents));
 
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
-        switch (importType)
+
+        if (remoteEmbeddingBatchSize.HasValue)
+            path += $"&remote_embedding_batch_size={remoteEmbeddingBatchSize.Value}";
+
+        path += importType switch
         {
-            case ImportType.Create:
-                path += "&action=create";
-                break;
-            case ImportType.Update:
-                path += "&action=update";
-                break;
-            case ImportType.Upsert:
-                path += "&action=upsert";
-                break;
-            case ImportType.Emplace:
-                path += "&action=emplace";
-                break;
-            default:
-                throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType));
-        }
+            ImportType.Create => "&action=create",
+            ImportType.Update => "&action=update",
+            ImportType.Upsert => "&action=upsert",
+            ImportType.Emplace => "&action=emplace",
+            _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType)),
+        };
 
         using var stringContent = GetTextPlainStringContent(documents);
         var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
@@ -328,26 +324,28 @@ public class TypesenseClient : ITypesenseClient
         string collection,
         IEnumerable<string> documents,
         int batchSize = 40,
-        ImportType importType = ImportType.Create)
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null)
     {
         if (documents is null)
             throw new ArgumentNullException(nameof(documents));
 
         var jsonNewlines = JsonNewLines(documents);
-        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
+        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
         string collection,
         IEnumerable<T> documents,
         int batchSize = 40,
-        ImportType importType = ImportType.Create)
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null)
     {
         if (documents is null)
             throw new ArgumentNullException(nameof(documents));
 
         var jsonNewlines = JsonNewLines(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType).ConfigureAwait(false);
+        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
     public async Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
