@@ -139,7 +139,9 @@ public record Field
         bool? index = null,
         bool? sort = null,
         bool? infix = null,
-        string? locale = null)
+        string? locale = null,
+        int? numberOfDimensions = null,
+        AutoEmbeddingConfig? embed = null)
     {
         Name = name;
         Type = type;
@@ -149,6 +151,8 @@ public record Field
         Sort = sort;
         Infix = infix;
         Locale = locale;
+        NumberOfDimensions = numberOfDimensions;
+        Embed = embed;
     }
 
     [Obsolete("A better choice going forward is using the constructor with 'FieldType' enum instead.")]
