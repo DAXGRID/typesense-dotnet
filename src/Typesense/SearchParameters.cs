@@ -184,6 +184,18 @@ public record SearchParameters
     public int? PerPage { get; set; }
 
     /// <summary>
+    /// Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
+    /// </summary>
+    [JsonPropertyName("offset")]
+    public int? Offset { get; set; }
+
+    /// <summary>
+    /// Number of hits to fetch. Can be used as an alternative to the per_page parameter. Default: 10.
+    /// </summary>
+    [JsonPropertyName("limit")]
+    public int? Limit { get; set; }
+
+    /// <summary>
     /// Maximum number of hits returned. Increasing this value might
     /// increase search latency. Default: 500. Use `all` to return all hits found.
     /// </summary>
