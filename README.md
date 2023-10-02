@@ -385,6 +385,14 @@ Get stats about API endpoints.
 var stats = await typesenseClient.RetrieveStats();
 ```
 
+## Health
+
+Get stats about API endpoints.
+
+```c#
+var health = await typesenseClient.RetrieveHealth();
+```
+
 ### Typesense API Errors
 
 Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.
