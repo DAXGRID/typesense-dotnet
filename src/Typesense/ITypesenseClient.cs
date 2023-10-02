@@ -677,4 +677,16 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<StatsResponse> RetrieveStats(CancellationToken ctk = default);
+
+
+     /// <summary>
+    /// Get health information about a Typesense node.
+    /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>
+    /// Returns the health information about a Typesense node.
+    /// </returns>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<HealthResponse> RetrieveHealth(CancellationToken ctk = default);
 }

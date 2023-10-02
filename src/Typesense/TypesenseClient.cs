@@ -558,6 +558,12 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<StatsResponse>(response);
     }
 
+    public async Task<HealthResponse> RetrieveHealth(CancellationToken ctk = default)
+    {
+        var response = await Get("/health", ctk).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<HealthResponse>(response);
+    }
+
     private static string CreateUrlParameters<T>(T queryParameters)
         where T : notnull
     {
