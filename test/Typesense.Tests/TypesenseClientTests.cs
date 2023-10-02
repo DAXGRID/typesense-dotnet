@@ -1798,6 +1798,17 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(34)]
+    public async Task Can_retrieve_health()
+    {
+        var response = await _client.RetrieveHealth();
+
+        using (var scope = new AssertionScope())
+        {
+            response.Ok.Should().BeTrue();
+        }
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(
