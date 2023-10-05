@@ -6,7 +6,15 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisMode>All</AnalysisMode>
     <Nullable>enable</Nullable>
+	<Description>.NET HTTP client for Typesense.</Description>
+	<RepositoryUrl>https://github.com/DAXGRID/typesense-dotnet</RepositoryUrl>
+	<PackageIcon>icon.png</PackageIcon>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+	<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
