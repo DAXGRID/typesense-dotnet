@@ -7,18 +7,18 @@
     <AnalysisMode>All</AnalysisMode>
     <Nullable>enable</Nullable>
 
-	<PackageId>Typesense</PackageId>
-	<Description>.NET HTTP client for Typesense.</Description>
-	<PackageTags>typesense;search;search-engnie;fuzzy-search;instant-search</PackageTags>
-	<PackageIcon>icon.png</PackageIcon>
-	<RepositoryType>git</RepositoryType>
-	<RepositoryUrl>https://github.com/DAXGRID/typesense-dotnet</RepositoryUrl>
-	<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>Typesense</PackageId>
+    <Description>.NET HTTP client for Typesense.</Description>
+    <PackageTags>typesense;search;search-engnie;fuzzy-search;instant-search</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/DAXGRID/typesense-dotnet</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-	<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
