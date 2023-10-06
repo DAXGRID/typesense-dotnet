@@ -91,8 +91,8 @@ public record SearchParameters
     // ---------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Filter conditions for refining your search results. Separate
-    /// multiple conditions with &&.
+    /// Filter conditions for refining your search results.
+    /// Separate multiple conditions with &amp;&amp;.
     /// </summary>
     [JsonPropertyName("filter_by")]
     public string? FilterBy { get; set; }
