@@ -39,6 +39,10 @@ dotnet_diagnostic.CA1308.severity = silent
 # CA2234: Pass System.Uri objects instead of strings
 dotnet_diagnostic.CA2234.severity = silent
 
+
+# CS1591: Ignored for now, until we decide to have comments on everything
+dotnet_diagnostic.CS1591.severity = silent
+
 [test/**.cs]
 # IDE0058 Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = silent

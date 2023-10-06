@@ -657,11 +657,11 @@ public interface ITypesenseClient
     Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym);
 
     /// <summary>
-    /// Get current RAM, CPU, Disk & Network usage metrics.
+    /// Get current RAM, CPU, Disk and Network usage metrics.
     /// </summary>
     /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>
-    /// Response containing current RAM, CPU, Disk & Network usage metrics.
+    /// Response containing current RAM, CPU, Disk and Network usage metrics.
     /// </returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
