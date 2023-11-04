@@ -110,6 +110,15 @@ public record SearchParameters
     public string? QueryByWeights { get; set; }
 
     /// <summary>
+    /// In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated.
+    /// This parameter can have 2 values:
+    /// max_score: the best text match score across all fields are used as the representative score of this record. Field weights are used as tie breakers when 2 records share the same text match score.
+    /// max_weight: the text match score of the highest weighted field is used as the representative text relevancy score of the record.
+    /// </summary>
+    [JsonPropertyName("text_match_type")]
+    public string? TextMatchType { get; set; }
+
+    /// <summary>
     /// A list of numerical fields and their corresponding sort orders
     /// that will be used for ordering your results.
     /// Up to 3 sort fields can be specified.
