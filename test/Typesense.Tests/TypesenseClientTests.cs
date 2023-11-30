@@ -887,6 +887,38 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_query_by_just_text_with_full_search_field()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
+        };
+
+        var query = new SearchParameters("Stark", "company_name")
+        {
+            HighlightFullFields = "company_name"
+        };
+
+        var response = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response.Found.Should().Be(1);
+            response.Hits.First().Document.Should().BeEquivalentTo(expected);
+            // It's important that value is returned in the highlights, it is the main
+            // reason to use 'HighlightFullFields'.
+            response.Hits.First().Highlights.First().Value.Should().NotBeNullOrEmpty();
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Search_query_by_just_text_with_split_join_tokens_set()
     {
         var expected = new Company
@@ -1711,7 +1743,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     "<mark>Stark</mark>",
                     "Mickey <mark>Stark</mark> Inc."
                 },
-                new List<int> { 0, 1 }
+                new List<int> { 0, 1 },
+                null
             );
 
             using (var scope = new AssertionScope())
