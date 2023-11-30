@@ -20,6 +20,9 @@ public record Highlight
     [JsonPropertyName("indices")]
     public IReadOnlyList<int>? Indices { get; init; }
 
+    [JsonPropertyName("value")]
+    public string? Value { get; init; }
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage
     ("Naming", "CA1721: Property names should not match get methods",
      Justification = "Required because of special case regarding matched tokens.")]
@@ -34,13 +37,15 @@ public record Highlight
         string? snippet,
         IReadOnlyList<object> matchedTokens,
         IReadOnlyList<string>? snippets,
-        IReadOnlyList<int>? indices)
+        IReadOnlyList<int>? indices,
+        string? value)
     {
         Field = field;
         Snippet = snippet;
         MatchedTokens = matchedTokens;
         Snippets = snippets;
         Indices = indices;
+        Value = value;
     }
 }
 
