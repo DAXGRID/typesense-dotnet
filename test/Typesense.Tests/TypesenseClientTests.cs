@@ -1025,80 +1025,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(32)]
-    public async Task Search_against_array_field()
-    {
-        // Give it a random name, to avoid name clashes.
-        var collection_name = $"companies-{Guid.NewGuid()}";
-
-        // Setup the schema with a `StringArray` field.
-        var schema = new Schema(
-            collection_name,
-            new List<Field>
-            {
-                new Field("company_name", FieldType.String, false),
-                new Field("aliases", FieldType.StringArray, false),
-                new Field("num_employees", FieldType.Int32, true),
-                new Field("location", FieldType.Object, true),
-            },
-            "num_employees")
-        {
-            EnableNestedFields = true
-        };
-
-        var company = new Company
-        {
-            Id = "124",
-            CompanyName = "Stark Industries",
-            NumEmployees = 5215,
-            Location = new Location
-            {
-                City = "Phoenix",
-                Country = "USA"
-            },
-            Aliases = new string[] { "Stark", "Mickey Stark Inc." }
-        };
-
-        try
-        {
-            _ = await _client.CreateCollection(schema);
-            _ = await _client.UpsertDocument(collection_name, company);
-
-            var query = new SearchParameters("Stark", "aliases");
-
-            var result = await _client.Search<Company>(collection_name, query);
-
-            var expectedHighlight = new Highlight(
-                "aliases",
-                null,
-                new List<List<string>>
-                {
-                    new List<string> { "Stark" },
-                        new List<string> { "Stark" }
-                },
-                new List<string>
-                {
-                    "<mark>Stark</mark>",
-                    "Mickey <mark>Stark</mark> Inc."
-                },
-                new List<int> { 0, 1 }
-            );
-
-            using (var scope = new AssertionScope())
-            {
-                // Only test for highlight, since it is the one that differs
-                result.Hits.First().Highlights.First()
-                    .Should()
-                    .BeEquivalentTo(expectedHighlight);
-            }
-        }
-        // Make sure that the collection is always cleaned up.
-        finally
-        {
-            await _client.DeleteCollection(collection_name);
-        }
-    }
-
     [Fact, TestPriority(11)]
     public async Task Multi_search_query_single_type_multiple_multi_search_parameters()
     {
@@ -1729,6 +1655,79 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(32)]
+    public async Task Search_against_array_field()
+    {
+        // Give it a random name, to avoid name clashes.
+        var collection_name = $"companies-{Guid.NewGuid()}";
+
+        // Setup the schema with a `StringArray` field.
+        var schema = new Schema(
+            collection_name,
+            new List<Field>
+            {
+                new Field("company_name", FieldType.String, false),
+                new Field("aliases", FieldType.StringArray, false),
+                new Field("num_employees", FieldType.Int32, true),
+                new Field("location", FieldType.Object, true),
+            },
+            "num_employees")
+        {
+            EnableNestedFields = true
+        };
+
+        var company = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 5215,
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
+            Aliases = new string[] { "Stark", "Mickey Stark Inc." }
+        };
+
+        try
+        {
+            _ = await _client.CreateCollection(schema);
+            _ = await _client.UpsertDocument(collection_name, company);
+
+            var query = new SearchParameters("Stark", "aliases");
+
+            var result = await _client.Search<Company>(collection_name, query);
+
+            var expectedHighlight = new Highlight(
+                "aliases",
+                null,
+                new List<List<string>>
+                {
+                    new List<string> { "Stark" },
+                        new List<string> { "Stark" }
+                },
+                new List<string>
+                {
+                    "<mark>Stark</mark>",
+                    "Mickey <mark>Stark</mark> Inc."
+                },
+                new List<int> { 0, 1 }
+            );
+
+            using (var scope = new AssertionScope())
+            {
+                // Only test for highlight, since it is the one that differs
+                result.Hits.First().Highlights.First()
+                    .Should()
+                    .BeEquivalentTo(expectedHighlight);
+            }
+        }
+        // Make sure that the collection is always cleaned up.
+        finally
+        {
+            await _client.DeleteCollection(collection_name);
+        }
+    }
 
     [Fact, TestPriority(33)]
     public async Task Can_do_semantic_search()
