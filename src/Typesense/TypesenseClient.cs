@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Typesense.Setup;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Typesense;
 
@@ -562,6 +563,28 @@ public class TypesenseClient : ITypesenseClient
     {
         var response = await Get("/health", ctk).ConfigureAwait(false);
         return HandleEmptyStringJsonSerialize<HealthResponse>(response);
+    }
+
+    public async Task<SnapshotResponse> CreateSnapshot(string snapshotPath, CancellationToken ctk = default)
+    {
+        if (string.IsNullOrWhiteSpace(snapshotPath))
+            throw new ArgumentException(
+                "The snapshot path must not be null, empty or consist of whitespace characters only.",
+                nameof(snapshotPath));
+
+        const string endpoint = "/operations/snapshot";
+        var queryParameters = new Dictionary<string, string> { { "snapshot_path", snapshotPath } };
+        var queryString = string.Join("&",
+            queryParameters.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
+        var requestUrl = $"{endpoint}?{queryString}";
+
+        var response = await _httpClient.PostAsync(requestUrl, null, ctk).ConfigureAwait(false);
+
+        if (response.IsSuccessStatusCode)
+            return HandleEmptyStringJsonSerialize<SnapshotResponse>(await response.Content.ReadAsStringAsync(ctk),
+                _jsonNameCaseInsentiveTrue);
+
+        throw GetException(response.StatusCode, await response.Content.ReadAsStringAsync(ctk));
     }
 
     private static string CreateUrlParameters<T>(T queryParameters)
