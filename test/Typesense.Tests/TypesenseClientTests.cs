@@ -1840,6 +1840,17 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(35)]
+    public async Task Can_create_snapshot()
+    {
+        var response = await _client.CreateSnapshot("/my_snapshot_path");
+
+        using (var scope = new AssertionScope())
+        {
+            response.Success.Should().BeTrue();
+        }
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(

@@ -564,6 +564,17 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<HealthResponse>(response);
     }
 
+    public async Task<SnapshotResponse> CreateSnapshot(string snapshotPath, CancellationToken ctk = default)
+    {
+        if (string.IsNullOrWhiteSpace(snapshotPath))
+            throw new ArgumentException(
+                "The snapshot path must not be null, empty or consist of whitespace characters only.",
+                nameof(snapshotPath));
+
+        var response = await Post($"/operations/snapshot?snapshot_path={Uri.EscapeDataString(snapshotPath)}", ctk).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<SnapshotResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
     private static string CreateUrlParameters<T>(T queryParameters)
         where T : notnull
     {
@@ -605,6 +616,19 @@ public class TypesenseClient : ITypesenseClient
     private async Task<string> Delete(string path, CancellationToken ctk = default)
     {
         var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path, ctk).ConfigureAwait(false);
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw GetException(response.StatusCode, responseString);
+    }
+
+    private async Task<string> Post(string path, CancellationToken ctk = default)
+    {
+        var postAsyncContentNull = async (string path, CancellationToken ctk) =>
+        {
+            return await _httpClient.PostAsync(path, null, ctk).ConfigureAwait(false);
+        };
+
+        var (response, responseString) = await HandleHttpResponse(postAsyncContentNull, path, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);

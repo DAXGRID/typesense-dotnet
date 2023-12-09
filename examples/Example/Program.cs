@@ -130,6 +130,9 @@ sealed class Program
 
         // Example retrieve health information
         await ExampleRetrieveHealth(typesenseClient);
+        
+        // Example create collection snapshot
+        await ExampleCreateSnapshot(typesenseClient);
     }
 
     private static async Task ExampleCreateCollection(ITypesenseClient typesenseClient)
@@ -481,5 +484,11 @@ sealed class Program
     {
         var health = await typesenseClient.RetrieveHealth();
         Console.WriteLine($"Retrieved stats: {JsonSerializer.Serialize(health)}");
+    }
+    
+    private static async Task ExampleCreateSnapshot(ITypesenseClient typesenseClient)
+    {
+        var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
+        Console.WriteLine($"Snapshot: {JsonSerializer.Serialize(snapshotResponse)}");
     }
 }
