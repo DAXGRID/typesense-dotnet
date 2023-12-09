@@ -571,19 +571,8 @@ public class TypesenseClient : ITypesenseClient
                 "The snapshot path must not be null, empty or consist of whitespace characters only.",
                 nameof(snapshotPath));
 
-        const string endpoint = "/operations/snapshot";
-        var queryParameters = new Dictionary<string, string> { { "snapshot_path", snapshotPath } };
-        var queryString = string.Join("&",
-            queryParameters.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
-        var requestUrl = $"{endpoint}?{queryString}";
-
-        var response = await _httpClient.PostAsync(requestUrl, null, ctk).ConfigureAwait(false);
-
-        if (response.IsSuccessStatusCode)
-            return HandleEmptyStringJsonSerialize<SnapshotResponse>(await response.Content.ReadAsStringAsync(ctk),
-                _jsonNameCaseInsentiveTrue);
-
-        throw GetException(response.StatusCode, await response.Content.ReadAsStringAsync(ctk));
+        var response = await Post($"/operations/snapshot?snapshot_path={Uri.EscapeDataString(snapshotPath)}", ctk).ConfigureAwait(false);
+        return HandleEmptyStringJsonSerialize<SnapshotResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     private static string CreateUrlParameters<T>(T queryParameters)
@@ -627,6 +616,19 @@ public class TypesenseClient : ITypesenseClient
     private async Task<string> Delete(string path, CancellationToken ctk = default)
     {
         var (response, responseString) = await HandleHttpResponse(_httpClient.DeleteAsync, path, ctk).ConfigureAwait(false);
+        return response.IsSuccessStatusCode
+            ? responseString
+            : throw GetException(response.StatusCode, responseString);
+    }
+
+    private async Task<string> Post(string path, CancellationToken ctk = default)
+    {
+        var postAsyncContentNull = async (string path, CancellationToken ctk) =>
+        {
+            return await _httpClient.PostAsync(path, null, ctk).ConfigureAwait(false);
+        };
+
+        var (response, responseString) = await HandleHttpResponse(postAsyncContentNull, path, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
             ? responseString
             : throw GetException(response.StatusCode, responseString);
