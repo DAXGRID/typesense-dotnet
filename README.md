@@ -393,6 +393,14 @@ Get stats about API endpoints.
 var health = await typesenseClient.RetrieveHealth();
 ```
 
+## Snapshot
+
+Asynchronously initiates a snapshot operation on the Typesense server.
+
+```c#
+var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
+```
+
 ### Typesense API Errors
 
 Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.
