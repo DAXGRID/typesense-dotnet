@@ -578,7 +578,6 @@ public class TypesenseClient : ITypesenseClient
     public async Task<CompactDiskResponse> CompactDisk(CancellationToken ctk = default)
     {
         var response = await Post("/operations/db/compact", ctk).ConfigureAwait(false);
-        
         return HandleEmptyStringJsonSerialize<CompactDiskResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 

@@ -1852,7 +1852,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
     
     [Fact, TestPriority(36)]
-    public async Task Can_Compact_Disk()
+    public async Task Can_compact_disk()
     {
         var response = await _client.CompactDisk();
 
@@ -1861,8 +1861,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             response.Success.Should().BeTrue();
         }
     }
-
-
+    
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(
