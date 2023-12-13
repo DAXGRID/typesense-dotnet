@@ -1850,6 +1850,18 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             response.Success.Should().BeTrue();
         }
     }
+    
+    [Fact, TestPriority(36)]
+    public async Task Can_Compact_Disk()
+    {
+        var response = await _client.CompactDisk();
+
+        using (var scope = new AssertionScope())
+        {
+            response.Success.Should().BeTrue();
+        }
+    }
+
 
     private async Task CreateCompanyCollection()
     {

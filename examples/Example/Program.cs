@@ -133,6 +133,9 @@ sealed class Program
         
         // Example create collection snapshot
         await ExampleCreateSnapshot(typesenseClient);
+        
+        // Example disk compaction
+        await ExampleCompactDisk(typesenseClient);
     }
 
     private static async Task ExampleCreateCollection(ITypesenseClient typesenseClient)
@@ -490,5 +493,11 @@ sealed class Program
     {
         var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
         Console.WriteLine($"Snapshot: {JsonSerializer.Serialize(snapshotResponse)}");
+    }
+    
+    private static async Task ExampleCompactDisk(ITypesenseClient typesenseClient)
+    {
+        var compactDiskResponse = await typesenseClient.CompactDisk();
+        Console.WriteLine($"Compact disk: {JsonSerializer.Serialize(compactDiskResponse)}");
     }
 }

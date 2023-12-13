@@ -575,6 +575,13 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<SnapshotResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<CompactDiskResponse> CompactDisk(CancellationToken ctk = default)
+    {
+        var response = await Post("/operations/db/compact", ctk).ConfigureAwait(false);
+        
+        return HandleEmptyStringJsonSerialize<CompactDiskResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
     private static string CreateUrlParameters<T>(T queryParameters)
         where T : notnull
     {
