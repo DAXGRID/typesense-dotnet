@@ -400,6 +400,13 @@ Asynchronously initiates a snapshot operation on the Typesense server.
 ```c#
 var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
 ```
+## Disk Compaction
+
+Asynchronously initiates the running of a compaction of the underlying RocksDB database.
+
+```c#
+var diskCompactionResponse = await typesenseClient.CompactDisk();
+```
 
 ### Typesense API Errors
 
