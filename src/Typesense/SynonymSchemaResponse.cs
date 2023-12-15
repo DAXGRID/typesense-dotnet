@@ -14,11 +14,18 @@ public record SynonymSchemaResponse
     [JsonPropertyName("root")]
     public string Root { get; init; }
 
+    [JsonPropertyName("symbols_to_index")]
+    public IReadOnlyCollection<string> SymbolsToIndex { get; init; }
+
     [JsonConstructor]
-    public SynonymSchemaResponse(string id, IReadOnlyCollection<string> synonyms, string root)
+    public SynonymSchemaResponse(string id,
+        IReadOnlyCollection<string> synonyms,
+        string root,
+        IReadOnlyCollection<string> symbolsToIndex)
     {
         Id = id;
         Synonyms = synonyms;
         Root = root;
+        SymbolsToIndex = symbolsToIndex;
     }
 }
