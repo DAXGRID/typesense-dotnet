@@ -11,6 +11,9 @@ public record SynonymSchema
     [JsonPropertyName("root")]
     public string? Root { get; init; }
 
+    [JsonPropertyName("symbols_to_index")]
+    public IEnumerable<string>? SymbolsToIndex { get; init; }
+
     public SynonymSchema(IEnumerable<string> synonyms)
     {
         Synonyms = synonyms;

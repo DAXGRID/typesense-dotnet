@@ -1488,9 +1488,15 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var expected = new SynonymSchemaResponse(
             "apple-synonyms",
             new List<string> { "appl", "aple", "apple" },
-            "apple");
+            "apple",
+            new List<string> { "+" });
 
-        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" }) { Root = "apple" };
+        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" })
+        {
+            Root = "apple",
+            SymbolsToIndex = new List<string> { "+" }
+        };
+
         var response = await _client.UpsertSynonym("companies", "apple-synonyms", schema);
 
         response.Should().BeEquivalentTo(expected);
@@ -1502,7 +1508,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         var expected = new SynonymSchemaResponse(
             "apple-synonyms",
             new List<string> { "appl", "aple", "apple" },
-            "apple");
+            "apple",
+            new List<string> { "+" });
 
         var response = await _client.RetrieveSynonym("companies", "apple-synonyms");
 
@@ -1518,7 +1525,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 new SynonymSchemaResponse(
                     "apple-synonyms",
                     new List<string> { "appl", "aple", "apple" },
-                    "apple")
+                    "apple",
+                    new List<string> { "+" })
             });
 
         var response = await _client.ListSynonyms("companies");
