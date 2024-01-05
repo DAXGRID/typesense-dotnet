@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json.Serialization;
-using Typesense.Converter;
 
 namespace Typesense;
 
@@ -10,7 +9,7 @@ public record Field
     public string Name { get; init; }
 
     [JsonPropertyName("type")]
-    [JsonConverter(typeof(JsonStringEnumConverter<FieldType>))]
+    [JsonConverter(typeof(Converter.JsonStringEnumConverter<FieldType>))]
     public FieldType Type { get; init; }
 
     [JsonPropertyName("facet")]
