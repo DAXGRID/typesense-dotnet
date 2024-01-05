@@ -71,8 +71,7 @@ public record VectorQuery
     /// <exception cref="ArgumentException"></exception>
     public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null)
     {
-        if (vector is null)
-            throw new ArgumentNullException(nameof(vector));
+        ArgumentNullException.ThrowIfNull(vector);
 
         if (vector.Length > 0 && id != null)
             throw new ArgumentException(

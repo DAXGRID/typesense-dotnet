@@ -19,11 +19,8 @@ public class VectorQueryJsonConverter : JsonConverter<VectorQuery>
 
     public override void Write(Utf8JsonWriter writer, VectorQuery value, JsonSerializerOptions options)
     {
-        if (writer is null)
-            throw new ArgumentNullException(nameof(writer));
-
-        if (value is null)
-            throw new ArgumentNullException(nameof(value));
+        ArgumentNullException.ThrowIfNull(writer);
+        ArgumentNullException.ThrowIfNull(value);
 
         writer.WriteStringValue(value.ToQuery());
     }
