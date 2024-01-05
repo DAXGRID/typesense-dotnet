@@ -24,6 +24,11 @@ public record VectorQuery
     public ReadOnlyCollection<float> Vector => new(_vector);
 
     /// <summary>
+    /// Vector field name.
+    /// </summary>
+    public string VectorFieldName { get; private set; }
+
+    /// <summary>
     /// Document Id.
     /// </summary>
     public string? Id { get; private set; }
@@ -50,6 +55,7 @@ public record VectorQuery
     public VectorQuery(string query)
     {
         ExtraParams = new();
+        VectorFieldName = "";
         ParseQuery(query);
     }
 
@@ -57,12 +63,13 @@ public record VectorQuery
     /// Initialize VectorQuery.
     /// </summary>
     /// <param name="vector">Document vector</param>
+    /// <param name="vectorFieldName">Vector field name to be searched against</param>
     /// <param name="id">String document id</param>
     /// <param name="k">Number of documents that are returned</param>
     /// <param name="flatSearchCutoff">If you wish to do brute-force vector search when a given query matches fewer than 20 documents, sending flat_search_cutoff=20 will bypass the HNSW index when the number of results found is less than 20</param>
     /// <param name="extraParams">Any extra parameters you wish to include as a key/value dictionary</param>
     /// <exception cref="ArgumentException"></exception>
-    public VectorQuery(float[] vector, string? id = null, int? k = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null)
+    public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null)
     {
         if (vector is null)
             throw new ArgumentNullException(nameof(vector));
@@ -74,7 +81,13 @@ public record VectorQuery
         if (vector.Length == 0 && id is null)
             throw new ArgumentException("When a vector query value is empty, an `id` parameter must be present.");
 
+        if (string.IsNullOrWhiteSpace(vectorFieldName))
+            throw new ArgumentException(
+                "The vector fieldname cannot be null or whitespace.",
+                nameof(vectorFieldName));
+
         _vector = vector;
+        VectorFieldName = vectorFieldName;
         Id = id;
         K = k;
         FlatSearchCutoff = flatSearchCutoff;
@@ -89,20 +102,26 @@ public record VectorQuery
     private void ParseQuery(string query)
     {
         // First parse the portion of the string inside the vec property - "vec:([0.96826, 0.94, 0.39557, 0.306488], k:100, flat_search_cutoff: 20)"
-        var pattern = @"vec:\((\[.*?\])(\s*,[^)]+)*\)";
+        var pattern = @"(.+):\((\[.*?\])(\s*,[^)]+)*\)";
 
         var match = Regex.Match(query, pattern);
         if (!match.Success)
             throw new ArgumentException("Malformed vector query string.");
 
-        // Since the first parameter MUST be the array of floats this is a quick check to see if it is well-formatted
-        var first = match.Groups[1].Value;
-        first = first.Substring(1, first.Length - 2);
+        var vectorFieldNameMatch = match.Groups[1].Value;
+        if (string.IsNullOrWhiteSpace(vectorFieldNameMatch))
+            throw new ArgumentException("Malformed vectory query string: it is missing the vector field name.");
 
-        if (!String.IsNullOrEmpty(first))
+        VectorFieldName = vectorFieldNameMatch;
+
+        // Since the first parameter MUST be the array of floats this is a quick check to see if it is well-formatted
+        var vectorMatch = match.Groups[2].Value;
+        vectorMatch = vectorMatch.Substring(1, vectorMatch.Length - 2);
+
+        if (!String.IsNullOrEmpty(vectorMatch))
         {
             // Get the float array query portion
-            _vector = first
+            _vector = vectorMatch
                 .Split(",")
                 .Select(x =>
                 {
@@ -115,7 +134,7 @@ public record VectorQuery
         }
 
         // Commas are always used as a delimiter inside the list of parameters
-        var qParams = match.Groups[2].Value
+        var qParams = match.Groups[3].Value
             .Split(",")
             .Select(x => x.Trim())
             .Where(x => !string.IsNullOrEmpty(x))
@@ -191,6 +210,6 @@ public record VectorQuery
         // need to surround string values with quotations
         var query = string.Join(",", qParams);
 
-        return $"vec:({query})";
+        return $"{VectorFieldName}:({query})";
     }
 }
