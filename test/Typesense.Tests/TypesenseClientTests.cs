@@ -1628,6 +1628,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 // vec:([0.96826, 0.94, 0.39557, 0.306488], k:100)
                 VectorQuery = new(
                     vector: new float[] { 0.96826F, 0.94F, 0.39557F, 0.306488F },
+                    vectorFieldName: "vec",
                     k: 100)
             };
 
