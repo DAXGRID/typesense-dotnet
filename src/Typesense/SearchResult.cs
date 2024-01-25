@@ -169,6 +169,9 @@ public abstract record SearchResultBase
     [JsonPropertyName("found")]
     public int Found { get; init; }
 
+    [JsonPropertyName("found_docs")]
+    public int? FoundDocs { get; init; }
+
     [JsonPropertyName("out_of")]
     public int OutOf { get; init; }
 
@@ -189,7 +192,8 @@ public abstract record SearchResultBase
         int outOf,
         int page,
         int searchTimeMs,
-        int? tookMs)
+        int? tookMs,
+        int? foundDocs = null)
     {
         FacetCounts = facetCounts;
         Found = found;
@@ -197,6 +201,7 @@ public abstract record SearchResultBase
         Page = page;
         SearchTimeMs = searchTimeMs;
         TookMs = tookMs;
+        FoundDocs = foundDocs;
     }
 }
 
