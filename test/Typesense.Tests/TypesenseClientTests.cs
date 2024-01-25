@@ -1050,6 +1050,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         using (var scope = new AssertionScope())
         {
+            response.Found.Should().Be(1);
+            response.FoundDocs.Value.Should().Be(1);
             response.GroupedHits.Should().NotBeEmpty();
             var firstHit = response.GroupedHits.First();
             firstHit.GroupKey.Should().BeEquivalentTo("USA");
