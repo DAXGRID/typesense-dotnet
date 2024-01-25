@@ -38,15 +38,8 @@ public class TypesenseClient : ITypesenseClient
         _httpClient = httpClient;
     }
 
-    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions serializerOptions)
+    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions serializerOptions) : this(config, httpClient)
     {
-        ArgumentNullException.ThrowIfNull(config);
-        ArgumentNullException.ThrowIfNull(httpClient);
-
-        var node = config.Value.Nodes.First();
-        httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
-        _httpClient = httpClient;
         _jsonOptionsCamelCaseIgnoreWritingNull = serializerOptions;
     }
 
