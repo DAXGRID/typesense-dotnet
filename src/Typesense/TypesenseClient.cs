@@ -38,6 +38,18 @@ public class TypesenseClient : ITypesenseClient
         _httpClient = httpClient;
     }
 
+    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions serializerOptions)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+        ArgumentNullException.ThrowIfNull(httpClient);
+
+        var node = config.Value.Nodes.First();
+        httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
+        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
+        _httpClient = httpClient;
+        _jsonOptionsCamelCaseIgnoreWritingNull = serializerOptions;
+    }
+
     public async Task<CollectionResponse> CreateCollection(Schema schema)
     {
         if (schema is null)
