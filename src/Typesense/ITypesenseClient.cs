@@ -679,7 +679,7 @@ public interface ITypesenseClient
     Task<StatsResponse> RetrieveStats(CancellationToken ctk = default);
 
 
-     /// <summary>
+    /// <summary>
     /// Get health information about a Typesense node.
     /// </summary>
     /// <param name="ctk">The optional cancellation token.</param>
@@ -690,32 +690,32 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<HealthResponse> RetrieveHealth(CancellationToken ctk = default);
 
-     /// <summary>
-     /// Asynchronously initiates a snapshot operation on the Typesense server.
-     /// </summary>
-     /// <param name="snapshotPath">The file system path on the Typesense server where the snapshot data will be written.</param>
-     /// <param name="ctk">The optional cancellation token.</param>
-     /// <returns>
-     /// A task that represents the asynchronous operation. The task result contains the outcome of the snapshot creation.
-     /// </returns>
-     /// <exception cref="ArgumentException"></exception>
-     /// <exception cref="TypesenseApiException"></exception>
-     /// <exception cref="TypesenseApiBadRequestException"></exception>
-     /// <exception cref="TypesenseApiNotFoundException"></exception>
-     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-     Task<SnapshotResponse> CreateSnapshot(string snapshotPath, CancellationToken ctk = default);
-     
-     /// <summary>
-     /// Asynchronously initiates the running of a compaction of the underlying RocksDB database.
-     /// Note: While the database will not block during this operation, we recommend running it during off-peak hours.
-     /// </summary>
-     /// <param name="ctk">The optional cancellation token.</param>
-     /// <returns>
-     /// A task that represents the asynchronous operation. The task result contains the outcome of the successful compaction.
-     /// </returns>
-     /// <exception cref="TypesenseApiException"></exception>
-     /// <exception cref="TypesenseApiBadRequestException"></exception>
-     /// <exception cref="TypesenseApiNotFoundException"></exception>
-     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-     Task<CompactDiskResponse> CompactDisk(CancellationToken ctk = default);
+    /// <summary>
+    /// Asynchronously initiates a snapshot operation on the Typesense server.
+    /// </summary>
+    /// <param name="snapshotPath">The file system path on the Typesense server where the snapshot data will be written.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the outcome of the snapshot creation.
+    /// </returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<SnapshotResponse> CreateSnapshot(string snapshotPath, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Asynchronously initiates the running of a compaction of the underlying RocksDB database.
+    /// Note: While the database will not block during this operation, we recommend running it during off-peak hours.
+    /// </summary>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the outcome of the successful compaction.
+    /// </returns>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<CompactDiskResponse> CompactDisk(CancellationToken ctk = default);
 }
