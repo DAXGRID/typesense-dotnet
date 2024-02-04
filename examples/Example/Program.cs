@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -130,10 +130,10 @@ sealed class Program
 
         // Example retrieve health information
         await ExampleRetrieveHealth(typesenseClient);
-        
+
         // Example create collection snapshot
         await ExampleCreateSnapshot(typesenseClient);
-        
+
         // Example disk compaction
         await ExampleCompactDisk(typesenseClient);
     }
@@ -488,13 +488,13 @@ sealed class Program
         var health = await typesenseClient.RetrieveHealth();
         Console.WriteLine($"Retrieved stats: {JsonSerializer.Serialize(health)}");
     }
-    
+
     private static async Task ExampleCreateSnapshot(ITypesenseClient typesenseClient)
     {
         var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
         Console.WriteLine($"Snapshot: {JsonSerializer.Serialize(snapshotResponse)}");
     }
-    
+
     private static async Task ExampleCompactDisk(ITypesenseClient typesenseClient)
     {
         var compactDiskResponse = await typesenseClient.CompactDisk();
