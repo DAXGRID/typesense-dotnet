@@ -9,7 +9,7 @@
 
     <PackageId>Typesense</PackageId>
     <Description>.NET HTTP client for Typesense.</Description>
-    <PackageTags>typesense;search;search-engnie;fuzzy-search;instant-search</PackageTags>
+    <PackageTags>typesense;search;search-engine;fuzzy-search;instant-search</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/DAXGRID/typesense-dotnet</RepositoryUrl>
