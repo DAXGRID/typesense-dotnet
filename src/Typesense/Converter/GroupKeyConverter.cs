@@ -34,7 +34,7 @@ public class GroupKeyConverter : JsonConverter<IReadOnlyList<string>>
 
         return elementValue;
     }
-    
+
     public override void Write(Utf8JsonWriter writer, IReadOnlyList<string> value, JsonSerializerOptions options)
     {
         JsonSerializer.Serialize(writer, value);
