@@ -164,39 +164,23 @@ public record Field
         Index = index;
     }
 
-    private static FieldType MapFieldType(string fieldType)
-    {
-        switch (fieldType)
+    private static FieldType MapFieldType(string fieldType) =>
+        fieldType switch
         {
-            case "string":
-                return FieldType.String;
-            case "int32":
-                return FieldType.Int32;
-            case "int64":
-                return FieldType.Int64;
-            case "float":
-                return FieldType.Float;
-            case "bool":
-                return FieldType.Bool;
-            case "geopoint":
-                return FieldType.GeoPoint;
-            case "string[]":
-                return FieldType.StringArray;
-            case "int32[]":
-                return FieldType.Int32Array;
-            case "int64[]":
-                return FieldType.Int64Array;
-            case "float[]":
-                return FieldType.FloatArray;
-            case "bool[]":
-                return FieldType.BoolArray;
-            case "geopoint[]":
-                return FieldType.GeoPointArray;
-            case "auto":
-                return FieldType.Auto;
-            case "string*":
-                return FieldType.AutoString;
-            default: throw new ArgumentException($"Could not map field type with value '{fieldType}'", nameof(fieldType));
-        }
-    }
+            "string" => FieldType.String,
+            "int32" => FieldType.Int32,
+            "int64" => FieldType.Int64,
+            "float" => FieldType.Float,
+            "bool" => FieldType.Bool,
+            "geopoint" => FieldType.GeoPoint,
+            "string[]" => FieldType.StringArray,
+            "int32[]" => FieldType.Int32Array,
+            "int64[]" => FieldType.Int64Array,
+            "float[]" => FieldType.FloatArray,
+            "bool[]" => FieldType.BoolArray,
+            "geopoint[]" => FieldType.GeoPointArray,
+            "auto" => FieldType.Auto,
+            "string*" => FieldType.AutoString,
+            _ => throw new ArgumentException($"Could not map field type with value '{fieldType}'", nameof(fieldType))
+        };
 }
