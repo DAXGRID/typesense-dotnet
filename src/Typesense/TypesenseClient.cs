@@ -620,10 +620,10 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<string> Post(string path, CancellationToken ctk = default)
     {
-        var postAsyncContentNull = async (string path, CancellationToken ctk) =>
+        async Task<HttpResponseMessage> postAsyncContentNull(string path, CancellationToken ctk)
         {
             return await _httpClient.PostAsync(path, null, ctk).ConfigureAwait(false);
-        };
+        }
 
         var (response, responseString) = await HandleHttpResponse(postAsyncContentNull, path, ctk).ConfigureAwait(false);
         return response.IsSuccessStatusCode
