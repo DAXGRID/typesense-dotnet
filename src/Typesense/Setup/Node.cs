@@ -33,8 +33,20 @@ public record Node
     /// <exception cref="ArgumentException"></exception>
     public Node(string host, string port, string protocol = "http")
     {
-        if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(protocol) || string.IsNullOrEmpty(port))
-            throw new ArgumentException($"{nameof(host)}, {nameof(protocol)} or {nameof(port)} cannot be null or empty");
+        if (string.IsNullOrEmpty(host))
+        {
+            throw new ArgumentException("Cannot be NULL or empty.", nameof(host));
+        }
+
+        if (string.IsNullOrEmpty(protocol))
+        {
+            throw new ArgumentException("Cannot be NULL or empty.", nameof(protocol));
+        }
+
+        if (string.IsNullOrEmpty(port))
+        {
+            throw new ArgumentException("Cannot be NULL or empty.", nameof(port));
+        }
 
         Host = host;
         Port = port;
