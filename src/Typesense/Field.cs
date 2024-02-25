@@ -36,6 +36,9 @@ public record Field
     [JsonPropertyName("embed")]
     public AutoEmbeddingConfig? Embed { get; init; }
 
+    [JsonPropertyName("reference")]
+    public string? Reference { get; init; }
+
     // This constructor is made to handle inherited classes.
     protected Field(string name)
     {
