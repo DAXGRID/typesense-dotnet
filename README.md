@@ -23,7 +23,6 @@ var provider = new ServiceCollection()
 ```
 
 After that you can get it from the `provider` instance or dependency inject it.
-
 ```c#
 var typesenseClient = provider.GetService<ITypesenseClient>();
 ```
@@ -32,7 +31,7 @@ var typesenseClient = provider.GetService<ITypesenseClient>();
 
 When you create the collection, you can specify each field with `name`, `type` and if it should be a `facet`, an `optional` or an `indexed` field.
 
-```c#
+``` c#
 var schema = new Schema(
     "Addresses",
     new List<Field>
@@ -131,6 +130,7 @@ var query = new MultiSearchParameters("companies", "Stark", "company_name");
 var response = await _client.MultiSearch<Company>(queryOne);
 ```
 
+
 Example of using a two queries in multi-search.
 
 ```c#
@@ -210,16 +210,16 @@ var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addres
 var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1");
 ```
 
-## Delete documents using filter
-
-```c#
-var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
-```
-
 ## Update documents using filter
 
 ```c#
 var updateResult = await typesenseClient.UpdateDocuments("Addresses", "houseNumber:=2", { "accessAddress": "Smedgade 25C" }, 100);
+```
+
+## Delete documents using filter
+
+```c#
+var deleteResult = await typesenseClient.DeleteDocuments("Addresses", "houseNumber:>=3", 100);
 ```
 
 ## Drop a collection on name
@@ -247,6 +247,7 @@ var addresses = await typesenseClient.ExportDocuments<Address>("Addresses");
 ```
 
 ## Api keys
+
 
 ### Create key
 
@@ -291,6 +292,7 @@ var scopedSearchKey = typesenseClient.GenerateScopedSearchKey("MainOrParentAPIKe
 While Typesense makes it really easy and intuitive to deliver great search results, sometimes you might want to promote certain documents over others. Or, you might want to exclude certain documents from a query's result set.
 
 Using overrides, you can include or exclude specific documents for a given query.
+
 
 ### Upsert
 
@@ -404,7 +406,6 @@ Asynchronously initiates a snapshot operation on the Typesense server.
 ```c#
 var snapshotResponse = await typesenseClient.CreateSnapshot("/my_snapshot_path");
 ```
-
 ## Disk Compaction
 
 Asynchronously initiates the running of a compaction of the underlying RocksDB database.
@@ -418,7 +419,7 @@ var diskCompactionResponse = await typesenseClient.CompactDisk();
 Typesense API exceptions in the [Typesense-api-errors](https://typesense.org/docs/0.23.0/api/api-errors.html) spec.
 
 | Type                                       | Description                                                                |
-| :----------------------------------------- | :------------------------------------------------------------------------- |
+|:-------------------------------------------|:---------------------------------------------------------------------------|
 | `TypesenseApiException`                    | Base exception type for Typesense api exceptions.                          |
 | `TypesenseApiBadRequestException`          | Bad Request - The request could not be understood due to malformed syntax. |
 | `TypesenseApiUnauthorizedException`        | Unauthorized - Your API key is wrong.                                      |
@@ -436,7 +437,6 @@ dotnet test
 ```
 
 ### Running only unit tests
-
 ```sh
 dotnet test --filter Category=Unit
 ```
@@ -448,6 +448,7 @@ dotnet test --filter Category=Integration
 ```
 
 To run integration tests, you can execute Typesense in a docker container by using the command below. The process utilizes the `/tmp/data` folder however, if you prefer to place it in a different directory, you can modify the path accordingly.
+
 
 ```sh
 docker run -p 8108:8108 -v /tmp/data:/data typesense/typesense:0.25.1 --data-dir /data --api-key=key
