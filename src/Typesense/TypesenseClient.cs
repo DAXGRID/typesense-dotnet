@@ -32,7 +32,7 @@ public class TypesenseClient : ITypesenseClient
 
         var node = config.Value.Nodes.First();
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
+        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", "Hu52dwsas2AdxdE");
         _httpClient = httpClient;
     }
 
@@ -276,6 +276,24 @@ public class TypesenseClient : ITypesenseClient
         return HandleEmptyStringJsonSerialize<UpdateCollectionResponse>(
             response,
             _jsonNameCaseInsentiveTrue);
+    }
+
+    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, int batchSize = 40)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
+        if (document == null)
+            throw new ArgumentNullException(nameof(document), "cannot be null");
+        if (string.IsNullOrWhiteSpace(filter))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(filter));
+        if (batchSize < 0)
+            throw new ArgumentException("has to be greater than 0", nameof(batchSize));
+    
+        var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
+    
+        var response = await Patch($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}&action=update", json).ConfigureAwait(false);
+
+        return HandleEmptyStringJsonSerialize<FilterUpdateResponse>(response, _jsonNameCaseInsentiveTrue);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
