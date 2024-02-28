@@ -32,7 +32,7 @@ public class TypesenseClient : ITypesenseClient
 
         var node = config.Value.Nodes.First();
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", "Hu52dwsas2AdxdE");
+        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
         _httpClient = httpClient;
     }
 
