@@ -319,14 +319,13 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="document">A documents of type T to update the filtered collection list with.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
-    /// <param name="batchSize">The number of documents that should updated at a time.</param>
     /// <returns>A response containing a count of the updated documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, int batchSize = 40);
+    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter);
     
     /// <summary>
     /// Batch import documents.
