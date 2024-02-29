@@ -1873,6 +1873,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(37)]
+    public async Task Update_document_by_query()
+    {
+        var document = new
+        {
+            CompanyName = "Dom Bomb Dot Com",
+        };
+        
+        var expected = new FilterUpdateResponse(1);
+        var response = await _client.UpdateDocuments("companies", document, "num_employees:>100");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+    
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(

@@ -278,6 +278,22 @@ public class TypesenseClient : ITypesenseClient
             _jsonNameCaseInsentiveTrue);
     }
 
+    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
+        if (document == null)
+            throw new ArgumentNullException(nameof(document), "cannot be null");
+        if (string.IsNullOrWhiteSpace(filter))
+            throw new ArgumentException("cannot be null empty or whitespace", nameof(filter));
+    
+        var json = JsonSerializer.Serialize(document, _jsonOptionsCamelCaseIgnoreWritingNull);
+    
+        var response = await Patch($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", json).ConfigureAwait(false);
+
+        return HandleEmptyStringJsonSerialize<FilterUpdateResponse>(response, _jsonNameCaseInsentiveTrue);
+    }
+
     public async Task<List<ImportResponse>> ImportDocuments<T>(
         string collection,
         string documents,

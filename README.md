@@ -210,6 +210,12 @@ var updateDocumentResult = await typesenseClient.UpdateDocument<Address>("Addres
 var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1");
 ```
 
+## Update documents using filter
+
+```c#
+var updateResult = await typesenseClient.UpdateDocuments("Addresses", "houseNumber:=2", { "accessAddress": "Smedgade 25C" });
+```
+
 ## Delete documents using filter
 
 ```c#
