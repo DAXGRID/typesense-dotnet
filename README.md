@@ -213,7 +213,7 @@ var deleteResult = await typesenseClient.DeleteDocument<Address>("Addresses", "1
 ## Update documents using filter
 
 ```c#
-var updateResult = await typesenseClient.UpdateDocuments("Addresses", "houseNumber:=2", { "accessAddress": "Smedgade 25C" }, 100);
+var updateResult = await typesenseClient.UpdateDocuments("Addresses", "houseNumber:=2", { "accessAddress": "Smedgade 25C" });
 ```
 
 ## Delete documents using filter
