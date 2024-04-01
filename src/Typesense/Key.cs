@@ -21,6 +21,9 @@ public record Key
     [JsonPropertyName("expires_at")]
     public long? ExpiresAt { get; init; }
 
+    [JsonPropertyName("autodelete")]
+    public bool? AutoDelete { get; set; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public Key()
     {
