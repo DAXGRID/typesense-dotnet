@@ -9,13 +9,14 @@ namespace Typesense.Converter;
 
 public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, System.Enum
 {
-    private readonly Dictionary<TEnum, string> _enumToString = new Dictionary<TEnum, string>();
+    private readonly Dictionary<TEnum, string> _enumToString;
     private readonly Dictionary<string, TEnum> _stringToEnum = new Dictionary<string, TEnum>();
 
     public JsonStringEnumConverter()
     {
         var type = typeof(TEnum);
         var values = System.Enum.GetValues<TEnum>();
+        _enumToString = new Dictionary<TEnum, string>(capacity: values.Length);
 
         foreach (var value in values)
         {
