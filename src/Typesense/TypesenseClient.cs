@@ -661,7 +661,7 @@ public class TypesenseClient : ITypesenseClient
 
     private static async Task GetException(HttpResponseMessage response, CancellationToken ctk)
     {
-        string message = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
+        var message = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
         throw GetException(response.StatusCode, message);
     }
 
