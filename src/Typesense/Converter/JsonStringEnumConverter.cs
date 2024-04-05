@@ -7,33 +7,36 @@ using System.Text.Json.Serialization;
 
 namespace Typesense.Converter;
 
-public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, System.Enum
+public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum : struct, Enum
 {
-    private readonly Dictionary<TEnum, string> _enumToString = new Dictionary<TEnum, string>();
-    private readonly Dictionary<string, TEnum> _stringToEnum = new Dictionary<string, TEnum>();
+    // These can be made FrozenDictionary when .NET 6 & 7 support is removed 
+    private static readonly Dictionary<TEnum, string> EnumToString;
+    private static readonly Dictionary<string, TEnum> StringToEnum = new();
 
-    public JsonStringEnumConverter()
+    static JsonStringEnumConverter()
     {
         var type = typeof(TEnum);
-        var values = System.Enum.GetValues<TEnum>();
+        var values = Enum.GetValues<TEnum>();
+        EnumToString = new Dictionary<TEnum, string>(capacity: values.Length);
 
         foreach (var value in values)
         {
-            var enumMember = type.GetMember(value.ToString())[0];
+            var stringValue = value.ToString();
+            var enumMember = type.GetMember(stringValue)[0];
             var attr = enumMember.GetCustomAttributes(typeof(EnumMemberAttribute), false)
               .Cast<EnumMemberAttribute>()
               .FirstOrDefault();
 
-            _stringToEnum.Add(value.ToString(), value);
+            StringToEnum.Add(stringValue, value);
 
             if (attr?.Value != null)
             {
-                _enumToString.Add(value, attr.Value);
-                _stringToEnum.Add(attr.Value, value);
+                EnumToString.Add(value, attr.Value);
+                StringToEnum.Add(attr.Value, value);
             }
             else
             {
-                _enumToString.Add(value, value.ToString());
+                EnumToString.Add(value, stringValue);
             }
         }
     }
@@ -44,16 +47,13 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
         if (stringValue is null)
             throw new InvalidOperationException($"Received null value from {nameof(reader)}.");
 
-        if (_stringToEnum.TryGetValue(stringValue, out var enumValue))
-            return enumValue;
-
-        return default;
+        return StringToEnum.GetValueOrDefault(stringValue);
     }
 
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
         ArgumentNullException.ThrowIfNull(writer);
 
-        writer.WriteStringValue(_enumToString[value]);
+        writer.WriteStringValue(EnumToString[value]);
     }
 }
