@@ -1629,7 +1629,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             {
                 // vec:([0.96826, 0.94, 0.39557, 0.306488], k:100)
                 VectorQuery = new(
-                    vector: new float[] { 0.96826F, 0.94F, 0.39557F, 0.306488F },
+                    vector: [0.96826F, 0.94F, 0.39557F, 0.306488F],
                     vectorFieldName: "vec",
                     k: 100)
             };
@@ -1638,7 +1638,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             var queryUsingQueryString = new MultiSearchParameters(COLLECTION_NAME, "*")
             {
                 // vec:([0.96826, 0.94, 0.39557, 0.306488], k:100)
-                VectorQuery = new("vec:([0.96826,0.94,0.39557,0.306488],k:100)")
+                VectorQuery = new("vec:([ 0.96826 , 0.94    ,   0.39557,0.306488],  k : 100 )")
             };
 
             var queryObjectResponse = await _client.MultiSearch<AddressVectorSearch>(queryUsingQueryObject);
