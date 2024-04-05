@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Typesense;
@@ -93,6 +95,7 @@ public record VectorQuery
         ExtraParams = extraParams ?? new();
     }
 
+    private static readonly Regex VectorQueryStringRegex = new(@"(.+):\((\[.*?\])(\s*,[^)]+)*\)", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
     /// <summary>
     /// Parses a query and initializes the related object members.
     /// </summary>
@@ -101,9 +104,7 @@ public record VectorQuery
     private void ParseQuery(string query)
     {
         // First parse the portion of the string inside the vec property - "vec:([0.96826, 0.94, 0.39557, 0.306488], k:100, flat_search_cutoff: 20)"
-        var pattern = @"(.+):\((\[.*?\])(\s*,[^)]+)*\)";
-
-        var match = Regex.Match(query, pattern);
+        var match = VectorQueryStringRegex.Match(query);
         if (!match.Success)
             throw new ArgumentException("Malformed vector query string.");
 
@@ -121,10 +122,10 @@ public record VectorQuery
         {
             // Get the float array query portion
             _vector = vectorMatch
-                .Split(",")
+                .Split(',', StringSplitOptions.TrimEntries)
                 .Select(x =>
                 {
-                    if (!float.TryParse(x.Trim(), out float result))
+                    if (!float.TryParse(x, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
                         throw new ArgumentException(
                             "Malformed vector query string: one of the vector values is not a float.");
 
@@ -134,14 +135,11 @@ public record VectorQuery
 
         // Commas are always used as a delimiter inside the list of parameters
         var qParams = match.Groups[3].Value
-            .Split(",")
-            .Select(x => x.Trim())
-            .Where(x => !string.IsNullOrEmpty(x))
-            .ToList();
+            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var param in qParams)
         {
-            var kvp = param.Split(':').Select(x => x.Trim()).ToArray();
+            var kvp = param.Split(':', StringSplitOptions.TrimEntries);
 
             if (kvp.Length != 2)
                 throw new ArgumentException($"Malformed vector query string at parameter '{param}'");
@@ -186,29 +184,34 @@ public record VectorQuery
     /// <returns>The vector-search query string.</returns>
     public virtual string ToQuery()
     {
-        var qParams = new List<string>();
-
+        StringBuilder queryStringBuilder = new(VectorFieldName);
+        queryStringBuilder.Append(":([");
         // Float vector is required, even if empty
-        var qry = string.Join(",", _vector);
-        qParams.Add($"[{qry}]");
+        for (var index = 0; index < _vector.Length; index++)
+        {
+            if (index != 0)
+                queryStringBuilder.Append(',');
+            queryStringBuilder.Append(_vector[index].ToString("R", CultureInfo.InvariantCulture));
+        }
+        queryStringBuilder.Append(']');
 
         // All other parameters are optional
+        // note that the only delimiter for all type/value pairs is a comma and there is no need to surround string values with quotations
         if (Id != null)
-            qParams.Add($"id:{Id}");
+            queryStringBuilder.Append(",id:").Append(Id);
 
         if (K != null)
-            qParams.Add($"k:{K}");
+            queryStringBuilder.Append(",k:").Append(K);
 
         if (FlatSearchCutoff != null)
-            qParams.Add($"flat_search_cutoff:{FlatSearchCutoff}");
+            queryStringBuilder.Append(",flat_search_cutoff:").Append(FlatSearchCutoff);
 
         // Allow for additional parameters if provided
-        qParams.AddRange(ExtraParams.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
+        foreach (var (key, value) in ExtraParams)
+            queryStringBuilder.Append(',').Append(key).Append(':').Append(value);
 
-        // Build the final query - note that the only delimiter for all type/value pairs is a comma and there is no
-        // need to surround string values with quotations
-        var query = string.Join(",", qParams);
+        queryStringBuilder.Append(')');
 
-        return $"{VectorFieldName}:({query})";
+        return queryStringBuilder.ToString();
     }
 }
