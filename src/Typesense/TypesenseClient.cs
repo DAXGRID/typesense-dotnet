@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -352,13 +354,16 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(exportParameters);
 
         var parameters = CreateUrlParameters(exportParameters);
-        var response = await Get($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
-
-        return response.Split('\n')
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select((x) => JsonSerializer.Deserialize<T>(x, JsonNameCaseInsensitiveTrue)
-                    ?? throw new ArgumentException("Null is not valid for documents"))
-            .ToList();
+        var lines = GetLines($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
+        List<T> documents = new();
+        await foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+            documents.Add(JsonSerializer.Deserialize<T>(line, JsonNameCaseInsensitiveTrue) ??
+                          throw new ArgumentException("Null is not valid for documents"));
+        }
+        return documents;
     }
 
     public Task<KeyResponse> CreateKey(Key key)
@@ -589,12 +594,22 @@ public class TypesenseClient : ITypesenseClient
         return await ReadJsonFromResponseMessage<T>(jsonSerializerOptions, response, ctk).ConfigureAwait(false);
     }
 
-    private async Task<string> Get(string path, CancellationToken ctk = default)
+    private async IAsyncEnumerable<string> GetLines(string path, [EnumeratorCancellation] CancellationToken ctk = default)
     {
-        var (response, responseString) = await HandleHttpResponse(_httpClient.GetAsync, path, ctk).ConfigureAwait(false);
-        return response.IsSuccessStatusCode
-            ? responseString
-            : throw GetException(response.StatusCode, responseString);
+        using var response = await _httpClient.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, ctk).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+            await GetException(response, ctk).ConfigureAwait(false);
+
+        await using var stream = await response.Content.ReadAsStreamAsync(ctk).ConfigureAwait(false);
+        using StreamReader streamReader = new(stream);
+
+        while (true)
+        {
+            var line = await streamReader.ReadLineAsync().ConfigureAwait(false);
+            if (line is null)
+                break;
+            yield return line;
+        }
     }
 
     private async Task<T> Delete<T>(string path, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
@@ -663,14 +678,6 @@ public class TypesenseClient : ITypesenseClient
             HttpStatusCode.ServiceUnavailable => new TypesenseApiUnprocessableEntityException(message),
             _ => throw new ArgumentException($"Could not convert statuscode {Enum.GetName(statusCode)}.")
         };
-
-    private static async Task<(HttpResponseMessage response, string responseString)> HandleHttpResponse(
-        Func<string, CancellationToken, Task<HttpResponseMessage>> f, string path, CancellationToken ctk)
-    {
-        var response = await f(path, ctk).ConfigureAwait(false);
-        var responseString = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
-        return (response, responseString);
-    }
 
     private static StringContent GetApplicationJsonStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "application/json");
