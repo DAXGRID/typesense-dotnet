@@ -13,6 +13,9 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
     private static readonly Dictionary<TEnum, string> EnumToString;
     private static readonly Dictionary<string, TEnum> StringToEnum = new();
 
+    // Disabled CA1810 so that EnumToString can be set to the correct capacity.
+    // Done outside of the static constructor won't result in any benefits.
+    #pragma warning disable CA1810
     static JsonStringEnumConverter()
     {
         var type = typeof(TEnum);
@@ -40,6 +43,7 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
             }
         }
     }
+    #pragma warning restore CA1810
 
     public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
