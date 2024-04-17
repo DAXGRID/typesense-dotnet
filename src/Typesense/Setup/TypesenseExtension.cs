@@ -7,6 +7,12 @@ namespace Typesense.Setup;
 
 public static class TypesenseExtension
 {
+    /// <param name="serviceCollection">
+    /// The collection of services to be configured for the Typesense client.
+    /// </param>
+    /// <param name="config">
+    /// The configuration for the Typesense client.
+    /// </param>
     /// <param name="enableHttpCompression">
     /// If set to true, HTTP compression is enabled, lowering response times & reducing traffic for externally hosted Typesense, like Typesense Cloud
     /// Set to false by default to mimic the old behavior, and not add compression processing overhead on locally hosted Typesense
