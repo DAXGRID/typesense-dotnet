@@ -14,7 +14,7 @@ public static class TypesenseExtension
     /// The configuration for the Typesense client.
     /// </param>
     /// <param name="enableHttpCompression">
-    /// If set to true, HTTP compression is enabled, lowering response times & reducing traffic for externally hosted Typesense, like Typesense Cloud
+    /// If set to true, HTTP compression is enabled, lowering response times and reducing traffic for externally hosted Typesense, like Typesense Cloud
     /// Set to false by default to mimic the old behavior, and not add compression processing overhead on locally hosted Typesense
     /// </param>
     /// <exception cref="ArgumentNullException"></exception>
