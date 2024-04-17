@@ -55,7 +55,7 @@ public class TypesenseFixture : IAsyncLifetime
                 {
                     new Node("localhost", "8108", "http")
                 };
-            }).BuildServiceProvider().GetService<ITypesenseClient>();
+            }, enableHttpCompression: true).BuildServiceProvider().GetService<ITypesenseClient>();
     }
 
     public Task DisposeAsync()
