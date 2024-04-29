@@ -348,7 +348,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(
+    Task<List<ImportResponse>> ImportDocuments(
         string collection,
         string documents,
         int batchSize = 40,
@@ -376,7 +376,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<List<ImportResponse>> ImportDocuments<T>(
+    Task<List<ImportResponse>> ImportDocuments(
         string collection,
         IEnumerable<string> documents,
         int batchSize = 40,

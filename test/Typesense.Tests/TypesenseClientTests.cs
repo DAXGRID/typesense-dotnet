@@ -3,6 +3,7 @@ using FluentAssertions.Execution;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
@@ -532,6 +533,21 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "companies", companies, 40, ImportType.Create);
 
         response.Should().BeEquivalentTo(expected);
+
+        foreach (var documentId in companies.Select(c => c.Id))
+        {
+            await _client.DeleteDocument<Company>("companies", documentId);
+        }
+        var companyLines = JsonLines(companies).ToList();
+        response = await _client.ImportDocuments("companies", companyLines, 40, ImportType.Create);
+        response.Should().BeEquivalentTo(expected);
+
+        foreach (var documentId in companies.Select(c => c.Id))
+        {
+            await _client.DeleteDocument<Company>("companies", documentId);
+        }
+        response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Create);
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(7)]
@@ -571,6 +587,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.ImportDocuments<Company>("companies", companies, 40, ImportType.Update);
 
+        response.Should().BeEquivalentTo(expected);
+
+        var companyLines = JsonLines(companies).ToList();
+        response = await _client.ImportDocuments("companies", companyLines, 40, ImportType.Update);
+        response.Should().BeEquivalentTo(expected);
+
+        response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Update);
         response.Should().BeEquivalentTo(expected);
     }
 
@@ -613,6 +636,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "companies", companies, 40, ImportType.Upsert);
 
         response.Should().BeEquivalentTo(expected);
+
+        var companyLines = JsonLines(companies).ToList();
+        response = await _client.ImportDocuments("companies", companyLines, 40, ImportType.Upsert);
+        response.Should().BeEquivalentTo(expected);
+
+        response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Upsert);
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(7)]
@@ -654,7 +684,21 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "companies", companies, 40, ImportType.Emplace);
 
         response.Should().BeEquivalentTo(expected);
+
+        var companyLines = JsonLines(companies).ToList();
+        response = await _client.ImportDocuments("companies", companyLines, 40, ImportType.Emplace);
+        response.Should().BeEquivalentTo(expected);
+
+        response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Emplace);
+        response.Should().BeEquivalentTo(expected);
     }
+    private static readonly JsonSerializerOptions JsonOptionsCamelCaseIgnoreWritingNull = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+    private static IEnumerable<string> JsonLines<T>(IEnumerable<T> documents)
+        => documents.Select(document => JsonSerializer.Serialize(document, JsonOptionsCamelCaseIgnoreWritingNull));
 
     [Fact, TestPriority(8)]
     public async Task Export_documents()
