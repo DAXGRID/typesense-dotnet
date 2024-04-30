@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Typesense.HttpContents;
 using Typesense.Setup;
 
 namespace Typesense;
@@ -111,14 +112,14 @@ public class TypesenseClient : ITypesenseClient
         return Get<TResult>($"/collections/{collection}/documents/search?{parameters}", JsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public async Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters, CancellationToken ctk = default)
+    public Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters, CancellationToken ctk = default)
     {
-        return await SearchInternal<SearchResult<T>>(collection, searchParameters, ctk);
+        return SearchInternal<SearchResult<T>>(collection, searchParameters, ctk);
     }
 
-    public async Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default)
+    public Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default)
     {
-        return await SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
+        return SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
     }
 
     public async Task<List<MultiSearchResult<T>>> MultiSearch<T>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, CancellationToken ctk = default)
@@ -299,17 +300,29 @@ public class TypesenseClient : ITypesenseClient
         return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
-    public async Task<List<ImportResponse>> ImportDocuments<T>(
+    public async Task<List<ImportResponse>> ImportDocuments(
         string collection,
         string documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null)
     {
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
         if (string.IsNullOrWhiteSpace(documents))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documents));
+        using var stringContent = GetTextPlainStringContent(documents);
+        return await ImportDocuments(collection, stringContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+    }
+
+    private async Task<List<ImportResponse>> ImportDocuments(
+        string collection,
+        HttpContent documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null)
+    {
+        ArgumentNullException.ThrowIfNull(documents);
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null or whitespace", nameof(collection));
 
         var path = $"/collections/{collection}/documents/import?batch_size={batchSize}";
 
@@ -325,17 +338,20 @@ public class TypesenseClient : ITypesenseClient
             _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType)),
         };
 
-        using var stringContent = GetTextPlainStringContent(documents);
-        var response = await _httpClient.PostAsync(path, stringContent).ConfigureAwait(false);
-        var responseString = Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false));
+        using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+            await GetException(response, default).ConfigureAwait(false);
 
-        return response.IsSuccessStatusCode
-            ? responseString.Split('\n').Select(
-                (x) => JsonSerializer.Deserialize<ImportResponse>(x) ?? throw new ArgumentException("Null is not valid for documents.")).ToList()
-            : throw new TypesenseApiException(responseString);
+        List<ImportResponse> result = new();
+        await foreach (var line in GetLines(response).ConfigureAwait(false))
+        {
+            var importResponse = JsonSerializer.Deserialize<ImportResponse>(line) ?? throw new ArgumentException("Null is not valid for documents.");
+            result.Add(importResponse);
+        }
+        return result;
     }
 
-    public async Task<List<ImportResponse>> ImportDocuments<T>(
+    public async Task<List<ImportResponse>> ImportDocuments(
         string collection,
         IEnumerable<string> documents,
         int batchSize = 40,
@@ -344,8 +360,8 @@ public class TypesenseClient : ITypesenseClient
     {
         ArgumentNullException.ThrowIfNull(documents);
 
-        var jsonNewlines = JsonNewLines(documents);
-        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        using var streamLinesContent = new StreamStringLinesHttpContent(documents);
+        return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
@@ -357,13 +373,13 @@ public class TypesenseClient : ITypesenseClient
     {
         ArgumentNullException.ThrowIfNull(documents);
 
-        var jsonNewlines = JsonNewLines(documents, JsonOptionsCamelCaseIgnoreWritingNull);
-        return await ImportDocuments<T>(collection, jsonNewlines, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, JsonOptionsCamelCaseIgnoreWritingNull);
+        return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
-    public async Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
+    public Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
     {
-        return await ExportDocuments<T>(collection, new ExportParameters(), ctk).ConfigureAwait(false);
+        return ExportDocuments<T>(collection, new ExportParameters(), ctk);
     }
 
     public async Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters, CancellationToken ctk = default)
@@ -620,6 +636,12 @@ public class TypesenseClient : ITypesenseClient
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
+        await foreach (var p in GetLines(response, ctk).ConfigureAwait(false))
+            yield return p;
+    }
+
+    private static async IAsyncEnumerable<string> GetLines(HttpResponseMessage response, [EnumeratorCancellation] CancellationToken ctk = default)
+    {
         await using var stream = await response.Content.ReadAsStreamAsync(ctk).ConfigureAwait(false);
         using StreamReader streamReader = new(stream);
 
@@ -696,12 +718,6 @@ public class TypesenseClient : ITypesenseClient
 
     private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
-
-    private static string JsonNewLines(IEnumerable<string> documents)
-        => String.Join('\n', documents);
-
-    private static string JsonNewLines<T>(IEnumerable<T> documents, JsonSerializerOptions jsonOptions)
-        => JsonNewLines(documents.Select(x => JsonSerializer.Serialize(x, jsonOptions)));
 
     private static MultiSearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
         => jsonElement.Deserialize<MultiSearchResult<T>>(JsonNameCaseInsensitiveTrue)
