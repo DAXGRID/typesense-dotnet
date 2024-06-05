@@ -26,6 +26,9 @@ public record ModelConfig
     [JsonPropertyName("api_key")]
     public string? ApiKey { get; init; }
 
+    [JsonPropertyName("url")]
+    public string? Url { get; init; }
+
     [JsonPropertyName("access_token")]
     public string? AccessToken { get; init; }
 
