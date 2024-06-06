@@ -49,6 +49,25 @@ public record Highlight
     }
 }
 
+public record GeoDistanceMeters<T>
+{
+    public T? Value { get; init; }
+
+    public double? this[string propertyName]
+    {
+        get
+        {
+            var property = GetType().GetProperty(propertyName) ?? throw new ArgumentException($"Property {propertyName} does not exist.");
+            return (double?)property.GetValue(this);
+        }
+        init
+        {
+            var property = GetType().GetProperty(propertyName) ?? throw new ArgumentException($"Property {propertyName} does not exist.");
+            property.SetValue(this, value);
+        }
+    }
+}
+
 public record Hit<T>
 {
     [JsonPropertyName("highlights")]
@@ -63,13 +82,17 @@ public record Hit<T>
     [JsonPropertyName("vector_distance")]
     public double? VectorDistance { get; init; }
 
+    [JsonPropertyName("geo_distance_meters")]
+    public IReadOnlyDictionary<string, int>? GeoDistanceMeters { get; init; }
+
     [JsonConstructor]
-    public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance)
+    public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance, IReadOnlyDictionary<string, int>? geoDistanceMeters)
     {
         Highlights = highlights;
         Document = document;
         TextMatch = textMatch;
         VectorDistance = vectorDistance;
+        GeoDistanceMeters = geoDistanceMeters;
     }
 }
 
