@@ -34,7 +34,7 @@ public class TypesenseClient : ITypesenseClient
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
+    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions? customJsonSerializerOptions = null)
     {
         ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(httpClient);
@@ -43,20 +43,19 @@ public class TypesenseClient : ITypesenseClient
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
         _httpClient = httpClient;
-    }
-
-    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions customJsonSerializerOptions) : this(config, httpClient)
-    {
-        _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(customJsonSerializerOptions)
+        if (customJsonSerializerOptions is not null)
         {
-            PropertyNameCaseInsensitive = true
-        };
+            _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(customJsonSerializerOptions)
+            {
+                PropertyNameCaseInsensitive = true
+            };
 
-        _jsonOptionsCamelCaseIgnoreWritingNull = new JsonSerializerOptions(customJsonSerializerOptions)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+            _jsonOptionsCamelCaseIgnoreWritingNull = new JsonSerializerOptions(customJsonSerializerOptions)
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+        }
     }
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)
