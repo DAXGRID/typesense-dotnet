@@ -25,49 +25,50 @@ public class TypesenseClient : ITypesenseClient
 {
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
     private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions? _customJsonSerializerOptionsCaseInsensitiveTrue;
-    private readonly JsonSerializerOptions? _customJsonSerializerCamelCaseIgnoreWritingNull;
-    private static readonly JsonSerializerOptions JsonNameCaseInsensitiveTrue = new() { PropertyNameCaseInsensitive = true };
-    private static readonly JsonSerializerOptions JsonOptionsCamelCaseIgnoreWritingNull = new()
+
+    private readonly JsonSerializerOptions _jsonNameCaseInsensitiveTrue = new() { PropertyNameCaseInsensitive = true };
+
+    private readonly JsonSerializerOptions _jsonOptionsCamelCaseIgnoreWritingNull = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
     public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
+        : this(config, httpClient, null)
     {
-        ArgumentNullException.ThrowIfNull(config);
-        ArgumentNullException.ThrowIfNull(httpClient);
-
-        var node = config.Value.Nodes.First();
-        httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
-        _httpClient = httpClient;
     }
 
-    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions customJsonSerializerOptions)
+    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions? customJsonSerializerOptions)
     {
         ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(httpClient);
-        ArgumentNullException.ThrowIfNull(customJsonSerializerOptions);
 
         var node = config.Value.Nodes.First();
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
         _httpClient = httpClient;
 
-        _customJsonSerializerOptionsCaseInsensitiveTrue = customJsonSerializerOptions;
-        _customJsonSerializerOptionsCaseInsensitiveTrue.PropertyNameCaseInsensitive = true;
-        _customJsonSerializerCamelCaseIgnoreWritingNull = customJsonSerializerOptions;
-        _customJsonSerializerCamelCaseIgnoreWritingNull.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        _customJsonSerializerCamelCaseIgnoreWritingNull.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        if (customJsonSerializerOptions != null)
+        {
+            _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(customJsonSerializerOptions)
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            _jsonOptionsCamelCaseIgnoreWritingNull = new JsonSerializerOptions(customJsonSerializerOptions)
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+        }
     }
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)
     {
         ArgumentNullException.ThrowIfNull(schema);
 
-        using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
     }
 
@@ -108,7 +109,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
 
-        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await PostDocuments<T>(collection, jsonContent, upsert).ConfigureAwait(false);
     }
 
@@ -117,7 +118,7 @@ public class TypesenseClient : ITypesenseClient
         var path = upsert
             ? $"/collections/{collection}/documents?action=upsert"
             : $"/collections/{collection}/documents";
-        return Post<T>(path, httpContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Post<T>(path, httpContent, _jsonNameCaseInsensitiveTrue);
     }
 
     private Task<TResult> SearchInternal<TResult>(string collection,
@@ -129,7 +130,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(searchParameters);
 
         var parameters = CreateUrlParameters(searchParameters);
-        return Get<TResult>($"/collections/{collection}/documents/search?{parameters}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<TResult>($"/collections/{collection}/documents/search?{parameters}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<SearchResult<T>> Search<T>(string collection, SearchParameters searchParameters, CancellationToken ctk = default)
@@ -145,7 +146,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<List<MultiSearchResult<T>>> MultiSearch<T>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, CancellationToken ctk = default)
     {
         var searches = new { Searches = s1 };
-        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
 
         var path = limitMultiSearches is null
             ? "/multi_search"
@@ -161,7 +162,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<MultiSearchResult<T>> MultiSearch<T>(MultiSearchParameters s1, CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1 } };
-        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
@@ -172,7 +173,7 @@ public class TypesenseClient : ITypesenseClient
     public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>)> MultiSearch<T1, T2>(MultiSearchParameters s1, MultiSearchParameters s2, CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2 } };
-        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
@@ -188,7 +189,7 @@ public class TypesenseClient : ITypesenseClient
         CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3 } };
-        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
@@ -206,7 +207,7 @@ public class TypesenseClient : ITypesenseClient
         CancellationToken ctk = default)
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } };
-        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return (response.TryGetProperty("results", out var results))
@@ -224,7 +225,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(id))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(id));
 
-        return Get<T>($"/collections/{collection}/documents/{id}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<T>($"/collections/{collection}/documents/{id}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public async Task<T> UpdateDocument<T>(string collection, string id, string document) where T : class
@@ -235,7 +236,7 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(document));
 
         using var stringContent = GetApplicationJsonStringContent(document);
-        return await Patch<T>($"collections/{collection}/documents/{id}", stringContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<T>($"collections/{collection}/documents/{id}", stringContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
@@ -244,8 +245,8 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
 
-        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
-        return await Patch<T>($"collections/{collection}/documents/{id}", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Patch<T>($"collections/{collection}/documents/{id}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<CollectionResponse> RetrieveCollection(string name, CancellationToken ctk = default)
@@ -268,7 +269,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(documentId))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documentId));
 
-        return Delete<T>($"/collections/{collection}/documents/{documentId}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<T>($"/collections/{collection}/documents/{documentId}", _jsonNameCaseInsensitiveTrue);
     }
 
     public Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40)
@@ -280,7 +281,7 @@ public class TypesenseClient : ITypesenseClient
         if (batchSize < 0)
             throw new ArgumentException("has to be greater than 0", nameof(batchSize));
 
-        return Delete<FilterDeleteResponse>($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<FilterDeleteResponse>($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}", _jsonNameCaseInsensitiveTrue);
     }
 
     public Task<CollectionResponse> DeleteCollection(string name)
@@ -288,7 +289,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
 
-        return Delete<CollectionResponse>($"/collections/{name}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<CollectionResponse>($"/collections/{name}", _jsonNameCaseInsensitiveTrue);
     }
 
     public async Task<UpdateCollectionResponse> UpdateCollection(
@@ -301,9 +302,9 @@ public class TypesenseClient : ITypesenseClient
         using var jsonContent = JsonContent.Create(
             updateSchema,
             JsonMediaTypeHeaderValue,
-            _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+             _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        return await Patch<UpdateCollectionResponse>($"/collections/{name}", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<UpdateCollectionResponse>($"/collections/{name}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter)
@@ -315,9 +316,9 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(filter))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(filter));
 
-        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments(
@@ -393,7 +394,7 @@ public class TypesenseClient : ITypesenseClient
     {
         ArgumentNullException.ThrowIfNull(documents);
 
-        using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
+        using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
@@ -416,7 +417,7 @@ public class TypesenseClient : ITypesenseClient
         {
             if (string.IsNullOrWhiteSpace(line))
                 continue;
-            documents.Add(JsonSerializer.Deserialize<T>(line, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue) ??
+            documents.Add(JsonSerializer.Deserialize<T>(line, _jsonNameCaseInsensitiveTrue) ??
                           throw new ArgumentException("Null is not valid for documents"));
         }
         return documents;
@@ -426,23 +427,23 @@ public class TypesenseClient : ITypesenseClient
     {
         ArgumentNullException.ThrowIfNull(key);
 
-        using var jsonContent = JsonContent.Create(key, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
-        return await Post<KeyResponse>("/keys", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        using var jsonContent = JsonContent.Create(key, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Post<KeyResponse>("/keys", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<KeyResponse> RetrieveKey(int id, CancellationToken ctk = default)
     {
-        return Get<KeyResponse>($"/keys/{id}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<KeyResponse>($"/keys/{id}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<DeleteKeyResponse> DeleteKey(int id)
     {
-        return Delete<DeleteKeyResponse>($"/keys/{id}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<DeleteKeyResponse>($"/keys/{id}", _jsonNameCaseInsensitiveTrue);
     }
 
     public Task<ListKeysResponse> ListKeys(CancellationToken ctk = default)
     {
-        return Get<ListKeysResponse>($"/keys", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<ListKeysResponse>($"/keys", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public string GenerateScopedSearchKey(string securityKey, string parameters)
@@ -474,8 +475,8 @@ public class TypesenseClient : ITypesenseClient
 
         ArgumentNullException.ThrowIfNull(searchOverride);
 
-        using var jsonContent = JsonContent.Create(searchOverride, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        using var jsonContent = JsonContent.Create(searchOverride, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Put<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default)
@@ -483,7 +484,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
 
-        return Get<ListSearchOverridesResponse>($"collections/{collection}/overrides", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<ListSearchOverridesResponse>($"collections/{collection}/overrides", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default)
@@ -493,7 +494,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
 
-        return Get<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<DeleteSearchOverrideResponse> DeleteSearchOverride(
@@ -504,7 +505,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
 
-        return Delete<DeleteSearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<DeleteSearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _jsonNameCaseInsensitiveTrue);
     }
 
     public async Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias)
@@ -514,8 +515,8 @@ public class TypesenseClient : ITypesenseClient
 
         ArgumentNullException.ThrowIfNull(collectionAlias);
 
-        using var jsonContent = JsonContent.Create(collectionAlias, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<CollectionAliasResponse>($"/aliases/{aliasName}", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        using var jsonContent = JsonContent.Create(collectionAlias, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Put<CollectionAliasResponse>($"/aliases/{aliasName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection, CancellationToken ctk = default)
@@ -523,12 +524,12 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
 
-        return Get<CollectionAliasResponse>($"/aliases/{collection}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<CollectionAliasResponse>($"/aliases/{collection}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<ListCollectionAliasesResponse> ListCollectionAliases(CancellationToken ctk = default)
     {
-        return Get<ListCollectionAliasesResponse>("/aliases", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<ListCollectionAliasesResponse>("/aliases", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName)
@@ -536,7 +537,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(aliasName));
 
-        return Delete<CollectionAliasResponse>($"/aliases/{aliasName}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<CollectionAliasResponse>($"/aliases/{aliasName}", _jsonNameCaseInsensitiveTrue);
     }
 
     public async Task<SynonymSchemaResponse> UpsertSynonym(
@@ -549,8 +550,8 @@ public class TypesenseClient : ITypesenseClient
 
         ArgumentNullException.ThrowIfNull(schema);
 
-        using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _customJsonSerializerCamelCaseIgnoreWritingNull ?? JsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", jsonContent, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Put<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default)
@@ -560,7 +561,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
-        return Get<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default)
@@ -568,7 +569,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
-        return Get<ListSynonymsResponse>($"/collections/{collection}/synonyms", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Get<ListSynonymsResponse>($"/collections/{collection}/synonyms", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym)
@@ -578,7 +579,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
-        return Delete<DeleteSynonymResponse>($"/collections/{collection}/synonyms/{synonym}", _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue);
+        return Delete<DeleteSynonymResponse>($"/collections/{collection}/synonyms/{synonym}", _jsonNameCaseInsensitiveTrue);
     }
 
     public Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default)
@@ -603,12 +604,12 @@ public class TypesenseClient : ITypesenseClient
                 "The snapshot path must not be null, empty or consist of whitespace characters only.",
                 nameof(snapshotPath));
 
-        return Post<SnapshotResponse>($"/operations/snapshot?snapshot_path={Uri.EscapeDataString(snapshotPath)}", httpContent: null, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Post<SnapshotResponse>($"/operations/snapshot?snapshot_path={Uri.EscapeDataString(snapshotPath)}", httpContent: null, _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<CompactDiskResponse> CompactDisk(CancellationToken ctk = default)
     {
-        return Post<CompactDiskResponse>("/operations/db/compact", httpContent: null, _customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue, ctk);
+        return Post<CompactDiskResponse>("/operations/db/compact", httpContent: null, _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     private static string CreateUrlParameters<T>(T queryParameters)
@@ -740,6 +741,6 @@ public class TypesenseClient : ITypesenseClient
         => new(jsonString, Encoding.UTF8, "text/plain");
 
     private MultiSearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
-        => jsonElement.Deserialize<MultiSearchResult<T>>(_customJsonSerializerOptionsCaseInsensitiveTrue ?? JsonNameCaseInsensitiveTrue)
+        => jsonElement.Deserialize<MultiSearchResult<T>>(_jsonNameCaseInsensitiveTrue)
         ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{jsonElement}'.");
 }
