@@ -21,6 +21,9 @@ public record Field
     [JsonPropertyName("index")]
     public bool? Index { get; init; }
 
+    [JsonPropertyName("store")]
+    public bool? Store { get; init; }
+
     [JsonPropertyName("sort")]
     public bool? Sort { get; init; }
 
