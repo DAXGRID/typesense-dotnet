@@ -49,25 +49,6 @@ public record Highlight
     }
 }
 
-public record GeoDistanceMeters<T>
-{
-    public T? Value { get; init; }
-
-    public double? this[string propertyName]
-    {
-        get
-        {
-            var property = GetType().GetProperty(propertyName) ?? throw new ArgumentException($"Property {propertyName} does not exist.");
-            return (double?)property.GetValue(this);
-        }
-        init
-        {
-            var property = GetType().GetProperty(propertyName) ?? throw new ArgumentException($"Property {propertyName} does not exist.");
-            property.SetValue(this, value);
-        }
-    }
-}
-
 public record Hit<T>
 {
     [JsonPropertyName("highlights")]
