@@ -710,7 +710,8 @@ public class TypesenseClient : ITypesenseClient
             HttpStatusCode.Conflict => new TypesenseApiConflictException(message),
             HttpStatusCode.UnprocessableEntity => new TypesenseApiUnprocessableEntityException(message),
             HttpStatusCode.ServiceUnavailable => new TypesenseApiUnprocessableEntityException(message),
-            _ => throw new ArgumentException($"Could not convert statuscode {Enum.GetName(statusCode)}.")
+            // If we receive a status code that has not been documented, we throw TypesenseApiException.
+            _ => throw new TypesenseApiException($"Received an unspecified status-code: '{Enum.GetName(statusCode)}' from Typesense, with message: '{message}'.")
         };
 
     private static StringContent GetApplicationJsonStringContent(string jsonString)
