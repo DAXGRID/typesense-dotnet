@@ -1927,14 +1927,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         {
             CompanyName = "Dom Bomb Dot Com",
         };
-
+        
 
         var expected = new FilterUpdateResponse(1);
         var response = await _client.UpdateDocuments("companies", document, "num_employees:>100");
 
         response.Should().BeEquivalentTo(expected);
     }
-
+    
 
     private async Task CreateCompanyCollection()
     {
