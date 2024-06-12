@@ -1706,7 +1706,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                                 Vec = new float[] { 0.04F, 0.234F, 0.113F, 0.001F }
                             },
                             null,
-                            0.19744956493377686));
+                            0.19744956493377686,
+                            null));
 
                 queryStringResponse.Found.Should().Be(1);
                 queryStringResponse.OutOf.Should().Be(1);
@@ -1724,7 +1725,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                                 Vec = new float[] { 0.04F, 0.234F, 0.113F, 0.001F }
                             },
                             null,
-                            0.19744956493377686));
+                            0.19744956493377686,
+                            null));
             }
         }
         finally
@@ -1867,7 +1869,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                                 Title = "Introduction to Programming",
                             },
                             null,
-                            0.4871443510055542));
+                            0.4871443510055542,
+                            null));
             }
         }
         finally
