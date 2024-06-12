@@ -34,7 +34,7 @@ public class TypesenseClient : ITypesenseClient
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public TypesenseClient(IOptions<Config> config, HttpClient httpClient, JsonSerializerOptions? customJsonSerializerOptions = null)
+    public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
     {
         ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(httpClient);
@@ -43,14 +43,14 @@ public class TypesenseClient : ITypesenseClient
         httpClient.BaseAddress = new Uri($"{node.Protocol}://{node.Host}:{node.Port}");
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
         _httpClient = httpClient;
-        if (customJsonSerializerOptions is not null)
+        if (config.Value.JsonSerializerOptions is not null)
         {
-            _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(customJsonSerializerOptions)
+            _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(config.Value.JsonSerializerOptions)
             {
                 PropertyNameCaseInsensitive = true
             };
 
-            _jsonOptionsCamelCaseIgnoreWritingNull = new JsonSerializerOptions(customJsonSerializerOptions)
+            _jsonOptionsCamelCaseIgnoreWritingNull = new JsonSerializerOptions(config.Value.JsonSerializerOptions)
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull

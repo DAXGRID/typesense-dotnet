@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 
 namespace Typesense.Setup;
 
@@ -16,6 +17,9 @@ public static class TypesenseExtension
     /// <param name="enableHttpCompression">
     /// If set to true, HTTP compression is enabled, lowering response times and reducing traffic for externally hosted Typesense, like Typesense Cloud
     /// Set to false by default to mimic the old behavior, and not add compression processing overhead on locally hosted Typesense
+    /// </param>
+    /// <param name="jsonSerializerOptions">
+    /// Custom JsonSerializerOptions for the Typesense client.
     /// </param>
     /// <exception cref="ArgumentNullException"></exception>
     public static IServiceCollection AddTypesenseClient(this IServiceCollection serviceCollection, Action<Config> config, bool enableHttpCompression = false)
