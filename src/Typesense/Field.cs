@@ -45,6 +45,12 @@ public record Field
     [JsonPropertyName("stem")]
     public bool? Stem { get; init; }
 
+    [JsonPropertyName("vec_dist")]
+    public string? VecDist { get; init; }
+
+    [JsonPropertyName("range_index")]
+    public bool? RangeIndex { get; init; }
+
     // This constructor is made to handle inherited classes.
     protected Field(string name)
     {
