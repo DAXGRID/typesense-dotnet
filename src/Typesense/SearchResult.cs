@@ -60,6 +60,9 @@ public record Hit<T>
     [JsonPropertyName("text_match")]
     public long? TextMatch { get; init; }
 
+    [JsonPropertyName("text_match_info")]
+    public TextMatchInfo? TextMatchInfo { get; init; }
+
     [JsonPropertyName("vector_distance")]
     public double? VectorDistance { get; init; }
 
@@ -75,6 +78,30 @@ public record Hit<T>
         VectorDistance = vectorDistance;
         GeoDistanceMeters = geoDistanceMeters;
     }
+}
+
+public record TextMatchInfo
+{
+    [JsonPropertyName("best_field_score")]
+    public string BestFieldScore { get; set; }
+
+    [JsonPropertyName("best_field_weight")]
+    public int BestFieldWeight { get; set; }
+
+    [JsonPropertyName("fields_matched")]
+    public int FieldsMatched { get; set; }
+
+    [JsonPropertyName("num_tokens_dropped")]
+    public int NumTokensDropped { get; set; }
+
+    [JsonPropertyName("score")]
+    public string Score { get; set; }
+
+    [JsonPropertyName("tokens_matched")]
+    public int TokensMatched { get; set; }
+
+    [JsonPropertyName("typo_prefix_score")]
+    public int TypoPrefixScore { get; set; }
 }
 
 public record FacetCount
