@@ -80,8 +80,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     "num_employees",
@@ -93,8 +92,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "location",
@@ -106,8 +104,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "num_employees",
@@ -155,8 +152,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "num_employees",
@@ -168,8 +164,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "location",
@@ -181,8 +176,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "num_employees",
@@ -237,8 +231,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "",
@@ -287,8 +280,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "zh")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "",
@@ -337,8 +329,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "num_employees",
@@ -350,8 +341,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     "location",
@@ -363,8 +353,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "num_employees",
@@ -401,8 +390,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false,
-                        Store = true
+                        Stem = false
                     },
                     new Field(
                         name: "num_employees",
@@ -414,8 +402,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false,
-                        Store = true
+                        Stem = false
                     },
                     new Field(
                         name: "location",
@@ -427,8 +414,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false,
-                        Store = true
+                        Stem = false
                     }
                 },
                 "num_employees",
@@ -484,8 +470,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "location",
@@ -497,8 +482,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
                 new Field(
                     name: "non_profit",
@@ -510,8 +494,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false,
-                    Store = true
+                    Stem = false
                 },
             },
             "num_employees",
