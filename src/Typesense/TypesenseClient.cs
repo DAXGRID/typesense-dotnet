@@ -729,10 +729,10 @@ public class TypesenseClient : ITypesenseClient
             _ => throw new TypesenseApiException($"Received an unspecified status-code: '{Enum.GetName(statusCode)}' from Typesense, with message: '{message}'.")
         };
 
-    private StringContent GetApplicationJsonStringContent(string jsonString)
+    private static StringContent GetApplicationJsonStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-    private StringContent GetTextPlainStringContent(string jsonString)
+    private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
 
     private MultiSearchResult<T> HandleDeserializeMultiSearch<T>(JsonElement jsonElement)
