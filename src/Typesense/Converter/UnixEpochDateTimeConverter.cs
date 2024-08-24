@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 
 namespace Typesense.Converter;
+
 public class UnixEpochDateTimeConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
