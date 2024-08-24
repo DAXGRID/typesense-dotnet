@@ -203,7 +203,7 @@ public record Field
         };
 }
 
-public class HnswParams
+public record HnswParams
 {
     [JsonPropertyName("M")]
     public int M { get; init; }
