@@ -207,6 +207,7 @@ public record HnswParams
 {
     [JsonPropertyName("M")]
     public int M { get; init; }
+
     [JsonPropertyName("ef_construction")]
     public int EfConstruction { get; init; }
 }
