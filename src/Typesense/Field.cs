@@ -48,6 +48,9 @@ public record Field
     [JsonPropertyName("vec_dist")]
     public string? VecDist { get; init; }
 
+    [JsonPropertyName("hnsw_params")]
+    public HnswParams? HnswParams { get; init; }
+
     [JsonPropertyName("range_index")]
     public bool? RangeIndex { get; init; }
 
@@ -198,4 +201,12 @@ public record Field
             "string*" => FieldType.AutoString,
             _ => throw new ArgumentException($"Could not map field type with value '{fieldType}'", nameof(fieldType))
         };
+}
+
+public class HnswParams
+{
+    [JsonPropertyName("M")]
+    public int M { get; init; }
+    [JsonPropertyName("ef_construction")]
+    public int EfConstruction { get; init; }
 }

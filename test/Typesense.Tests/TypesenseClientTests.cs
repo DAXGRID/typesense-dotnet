@@ -127,6 +127,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.CreateCollection(schema);
 
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
         response.Should().BeEquivalentTo(expected);
     }
 
@@ -197,6 +201,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.CreateCollection(schema);
 
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
         response.Should().BeEquivalentTo(expected);
 
         // Cleanup
@@ -239,6 +247,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             });
 
         var response = await _client.CreateCollection(schema);
+
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
 
         response.Should().BeEquivalentTo(expected);
 
@@ -288,6 +300,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             });
 
         var response = await _client.CreateCollection(schema);
+
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
 
         response.Should().BeEquivalentTo(expected);
 
@@ -347,6 +363,10 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.RetrieveCollection("companies");
 
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
         response.Should().BeEquivalentTo(expected);
     }
 
@@ -404,6 +424,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         };
 
         var response = await _client.RetrieveCollections();
+
+        response.Should().HaveCount(1);
+        // CreatedAt cannot be deterministic
+        response[0].CreatedAt.Should().NotBe(default);
+        expected[0] = expected[0] with { CreatedAt = response[0].CreatedAt };
+
         response.Should().BeEquivalentTo(expected);
     }
 
@@ -476,9 +502,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<string>(),
             true);
 
-        var result = await _client.DeleteCollection("companies");
+        var response = await _client.DeleteCollection("companies");
 
-        result.Should().BeEquivalentTo(expected);
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(4)]
@@ -1977,13 +2007,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         {
             CompanyName = "Dom Bomb Dot Com",
         };
-        
+
         var expected = new FilterUpdateResponse(1);
         var response = await _client.UpdateDocuments("companies", document, "num_employees:>100");
 
         response.Should().BeEquivalentTo(expected);
     }
-    
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(

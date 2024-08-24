@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Typesense.Converter;
 
 namespace Typesense;
 
@@ -25,6 +27,9 @@ public record CollectionResponse
 
     [JsonPropertyName("enable_nested_fields")]
     public bool EnableNestedFields { get; init; }
+
+    [JsonPropertyName("created_at"), JsonConverter(typeof(UnixEpochDateTimeConverter))]
+    public DateTime CreatedAt { get; init; }
 
     [JsonConstructor]
     public CollectionResponse(
