@@ -244,6 +244,9 @@ public record SearchParameters
     [JsonPropertyName("facet_query_num_typos")]
     public int? FacetQueryNumberTypos { get; set; }
 
+    [JsonPropertyName("facet_return_parent")]
+    public string? FacetReturnParent { get; set; }
+
     // ---------------------------------------------------------------------------------------
     // Results parameters - https://typesense.org/docs/latest/api/search.html#results-parameters
     // ---------------------------------------------------------------------------------------

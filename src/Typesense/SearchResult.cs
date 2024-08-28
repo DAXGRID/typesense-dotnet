@@ -107,11 +107,15 @@ public record FacetCountHit
     [JsonPropertyName("value")]
     public string Value { get; init; }
 
-    public FacetCountHit(string value, int count, string highlighted)
+    [JsonPropertyName("parent")]
+    public Dictionary<string, dynamic>? Parent { get; init; }
+
+    public FacetCountHit(string value, int count, string highlighted, Dictionary<string, dynamic>? parent = null)
     {
         Value = value;
         Count = count;
         Highlighted = highlighted;
+        Parent = parent;
     }
 }
 
