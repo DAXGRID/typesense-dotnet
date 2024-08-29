@@ -270,6 +270,12 @@ public record SearchParameters
     public string? HighlightFullFields { get; set; }
 
     /// <summary>
+    /// List of fields which should be highlighted with snippetting.
+    /// </summary>
+    [JsonPropertyName("highlight_fields")]
+    public string? HighlightFields { get; set; }
+
+    /// <summary>
     /// The number of tokens that should surround the highlighted text on each side.
     /// </summary>
     [JsonPropertyName("highlight_affix_num_tokens")]
