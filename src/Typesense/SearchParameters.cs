@@ -270,7 +270,9 @@ public record SearchParameters
     public string? HighlightFullFields { get; set; }
 
     /// <summary>
-    /// List of fields which should be highlighted with snippetting.
+    /// Comma separated list of fields that should be highlighted with snippetting.
+    /// Default: all queried fields will be highlighted.
+    /// Set to none to disable snippetting fully.
     /// </summary>
     [JsonPropertyName("highlight_fields")]
     public string? HighlightFields { get; set; }
