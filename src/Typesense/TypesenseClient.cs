@@ -26,6 +26,8 @@ public class TypesenseClient : ITypesenseClient
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
     private readonly HttpClient _httpClient;
 
+    private readonly JsonSerializerOptions _jsonSerializerDefault = new();
+
     private readonly JsonSerializerOptions _jsonNameCaseInsensitiveTrue = new() { PropertyNameCaseInsensitive = true };
 
     private readonly JsonSerializerOptions _jsonOptionsCamelCaseIgnoreWritingNull = new()
@@ -301,7 +303,7 @@ public class TypesenseClient : ITypesenseClient
         return await Patch<UpdateCollectionResponse>($"/collections/{name}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
-    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter)
+    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -310,7 +312,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(filter))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(filter));
 
-        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, fullUpdate ? _jsonSerializerDefault : _jsonOptionsCamelCaseIgnoreWritingNull);
 
         return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }

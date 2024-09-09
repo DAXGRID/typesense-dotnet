@@ -315,17 +315,20 @@ public interface ITypesenseClient
 
     /// <summary>
     /// Updates documents in a collection using the supplied filter.
+    /// Partial update by default. Set full update to include everything in the update, also NULL values.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">A documents of type T to update the filtered collection list with.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
+    /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
+    /// <param name="fullUpdate">Includes everything in the document, including NULL values.</param>
     /// <returns>A response containing a count of the updated documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter);
+    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false);
     
     /// <summary>
     /// Batch import documents.
