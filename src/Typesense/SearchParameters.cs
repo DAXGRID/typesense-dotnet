@@ -170,6 +170,12 @@ public record SearchParameters
     public string? HiddenHits { get; set; }
 
     /// <summary>
+    /// Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.).
+    /// </summary>
+    [JsonPropertyName("filter_curated_hits")]
+    public bool? FilterCuratedHits { get; set; }
+
+    /// <summary>
     /// If you have some overrides defined but want to disable all of them during
     /// query time, you can do that by setting this parameter to false
     /// </summary>
