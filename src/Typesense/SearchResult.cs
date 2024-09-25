@@ -288,6 +288,9 @@ public record MultiSearchResult<T>
 
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>>? Hits { get; init; }
+    
+    [JsonPropertyName("grouped_hits")]
+    public IReadOnlyList<GroupedHit<T>> GroupedHits { get; init; }
 
     [JsonPropertyName("out_of")]
     public int? OutOf { get; init; }
