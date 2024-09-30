@@ -28,6 +28,15 @@ public record MultiSearchParameters : SearchParameters
     /// </summary>
     [JsonConverter(typeof(VectorQueryJsonConverter)), JsonPropertyName("vector_query")]
     public VectorQuery? VectorQuery { get; init; }
+    
+    [JsonPropertyName("group_by")]
+    public string GroupBy { get; set; }
+
+    [JsonPropertyName("group_limit")]
+    public int? GroupLimit { get; set; }
+    
+    [JsonPropertyName("group_missing_values")]
+    public bool? GroupMissingValues { get; set; }
 
     public MultiSearchParameters(string collection, string text) : base(text)
     {
@@ -459,6 +468,15 @@ public record GroupedSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("group_limit")]
     public int? GroupLimit { get; set; }
+    
+    /// <summary>
+    /// Setting this parameter to true will place all documents that have a null value in the group_by field,
+    /// into a single group. Setting this parameter to false, will cause each document with a null value
+    /// in the group_by field to not be grouped with other documents.
+    /// Default: true
+    /// </summary>
+    [JsonPropertyName("group_missing_values")]
+    public bool? GroupMissingValues { get; set; }
 
     public GroupedSearchParameters(
         string text,

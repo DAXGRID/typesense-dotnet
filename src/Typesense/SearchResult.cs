@@ -286,8 +286,14 @@ public record MultiSearchResult<T>
     [JsonPropertyName("found")]
     public int? Found { get; init; }
 
+    [JsonPropertyName("found_docs")]
+    public int? FoundDocs { get; init; }
+
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>>? Hits { get; init; }
+    
+    [JsonPropertyName("grouped_hits")]
+    public IReadOnlyList<GroupedHit<T>> GroupedHits { get; init; }
 
     [JsonPropertyName("out_of")]
     public int? OutOf { get; init; }
