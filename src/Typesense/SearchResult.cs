@@ -92,7 +92,7 @@ public record TextMatchInfo
     public int FieldsMatched { get; set; }
 
     [JsonPropertyName("num_tokens_dropped")]
-    public long NumTokensDropped { get; set; }
+    public ulong NumTokensDropped { get; set; }
 
     [JsonPropertyName("score")]
     public string Score { get; set; }
