@@ -1949,7 +1949,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                                 Title = "Introduction to Programming",
                             },
                             null,
-                            0.4871443510055542,
+                            0.4871441721916199,
                             null));
             }
         }

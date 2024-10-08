@@ -45,6 +45,9 @@ public enum FieldType
 
     [EnumMember(Value = "object[]")]
     ObjectArray,
+    
+    [EnumMember(Value = "image")]
+    Image,
 
     [EnumMember(Value = "string*")]
     AutoString,
