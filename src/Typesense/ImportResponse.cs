@@ -13,11 +13,15 @@ public record ImportResponse
     [JsonPropertyName("document")]
     public string? Document { get; init; }
 
+    [JsonPropertyName("id")]
+    public string? Id { get; init; }
+
     [JsonConstructor]
-    public ImportResponse(bool success, string? error = null, string? document = null)
+    public ImportResponse(bool success, string? error = null, string? document = null, string? id = null)
     {
         Success = success;
         Error = error;
         Document = document;
+        Id = id;
     }
 }

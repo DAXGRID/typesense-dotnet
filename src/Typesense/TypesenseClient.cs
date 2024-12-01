@@ -322,12 +322,13 @@ public class TypesenseClient : ITypesenseClient
         string documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null)
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null)
     {
         if (string.IsNullOrWhiteSpace(documents))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documents));
         using var stringContent = GetTextPlainStringContent(documents);
-        return await ImportDocuments(collection, stringContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        return await ImportDocuments(collection, stringContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
     }
 
     private async Task<List<ImportResponse>> ImportDocuments(
@@ -335,7 +336,8 @@ public class TypesenseClient : ITypesenseClient
         HttpContent documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null)
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null)
     {
         ArgumentNullException.ThrowIfNull(documents);
         if (string.IsNullOrWhiteSpace(collection))
@@ -355,6 +357,11 @@ public class TypesenseClient : ITypesenseClient
             _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType)),
         };
 
+        if (returnId is not null)
+        {
+            path += $"&return_id={returnId}";
+        }
+
         using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, default).ConfigureAwait(false);
@@ -373,7 +380,8 @@ public class TypesenseClient : ITypesenseClient
         IEnumerable<string> documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null)
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null)
     {
         ArgumentNullException.ThrowIfNull(documents);
 
@@ -386,7 +394,8 @@ public class TypesenseClient : ITypesenseClient
         IEnumerable<T> documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null)
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null)
     {
         ArgumentNullException.ThrowIfNull(documents);
 

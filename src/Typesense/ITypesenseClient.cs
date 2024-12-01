@@ -342,6 +342,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
+    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -356,7 +357,8 @@ public interface ITypesenseClient
         string documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null);
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null);
 
     /// <summary>
     /// Batch import documents.
@@ -370,6 +372,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
+    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -384,7 +387,8 @@ public interface ITypesenseClient
         IEnumerable<string> documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null);
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null);
 
     /// <summary>
     /// Batch import documents.
@@ -398,6 +402,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
+    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -412,7 +417,8 @@ public interface ITypesenseClient
         IEnumerable<T> documents,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
-        int? remoteEmbeddingBatchSize = null);
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null);
 
     /// <summary>
     /// Export all documents in a given collection.
