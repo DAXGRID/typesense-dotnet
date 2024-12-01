@@ -67,10 +67,10 @@ public record Hit<T>
     public double? VectorDistance { get; init; }
 
     [JsonPropertyName("geo_distance_meters")]
-    public IReadOnlyDictionary<string, int>? GeoDistanceMeters { get; init; }
+    public IReadOnlyDictionary<string, double>? GeoDistanceMeters { get; init; }
 
     [JsonConstructor]
-    public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance, IReadOnlyDictionary<string, int>? geoDistanceMeters)
+    public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance, IReadOnlyDictionary<string, double>? geoDistanceMeters)
     {
         Highlights = highlights;
         Document = document;
