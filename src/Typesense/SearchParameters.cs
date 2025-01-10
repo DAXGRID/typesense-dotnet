@@ -101,7 +101,6 @@ public record SearchParameters
     [JsonPropertyName("preset")]
     public bool? Preset { get; set; }
     
-    
     /// <summary>
     /// Set this parameter to true if you wish to split the search query into space separated words yourself.
     /// When set to true, we will only split the search query by space,
