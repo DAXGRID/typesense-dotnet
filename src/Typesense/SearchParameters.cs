@@ -37,6 +37,13 @@ public record MultiSearchParameters : SearchParameters
     
     [JsonPropertyName("group_missing_values")]
     public bool? GroupMissingValues { get; set; }
+    
+    /// <summary>
+    /// Set this parameter to the value of a preset that has been created in typesense.
+    /// The query parameters of the preset will then be used in your search.
+    /// </summary>
+    [JsonPropertyName("preset")]
+    public bool? Preset { get; set; }
 
     public MultiSearchParameters(string collection, string text) : base(text)
     {
@@ -87,6 +94,13 @@ public record SearchParameters
     [JsonPropertyName("infix")]
     public string? Infix { get; set; }
 
+    /// <summary>
+    /// Set this parameter to the value of a preset that has been created in typesense.
+    /// The query parameters of the preset will then be used in your search.
+    /// </summary>
+    [JsonPropertyName("preset")]
+    public bool? Preset { get; set; }
+    
     /// <summary>
     /// Set this parameter to true if you wish to split the search query into space separated words yourself.
     /// When set to true, we will only split the search query by space,
