@@ -43,7 +43,7 @@ public record MultiSearchParameters : SearchParameters
     /// The query parameters of the preset will then be used in your search.
     /// </summary>
     [JsonPropertyName("preset")]
-    public bool? Preset { get; set; }
+    public string? Preset { get; set; }
 
     public MultiSearchParameters(string collection, string text) : base(text)
     {
@@ -99,7 +99,7 @@ public record SearchParameters
     /// The query parameters of the preset will then be used in your search.
     /// </summary>
     [JsonPropertyName("preset")]
-    public bool? Preset { get; set; }
+    public string? Preset { get; set; }
     
     /// <summary>
     /// Set this parameter to true if you wish to split the search query into space separated words yourself.
