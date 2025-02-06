@@ -353,7 +353,7 @@ public record SearchParameters
     /// Default: 4 (or 10000 if exhaustive_search is enabled).
     /// </summary>
     [JsonPropertyName("max_candidates")]
-    public int? MaxCandiates { get; set; }
+    public int? MaxCandidates { get; set; }
 
     /// <summary>
     /// Whether all variations of prefixes and typo corrections should be considered,
