@@ -214,6 +214,131 @@ public class TypesenseClient : ITypesenseClient
             : throw new InvalidOperationException("Could not get results from multi-search result.");
     }
 
+    public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>)> MultiSearch<T1, T2, T3, T4, T5>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4,
+        MultiSearchParameters s5,
+        CancellationToken ctk = default)
+    {
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5 } };
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.TryGetProperty("results", out var results)
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]),
+               HandleDeserializeMultiSearch<T5>(results[4]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>)> MultiSearch<T1, T2, T3, T4, T5, T6>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4,
+        MultiSearchParameters s5,
+        MultiSearchParameters s6,
+        CancellationToken ctk = default)
+    {
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6 } };
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.TryGetProperty("results", out var results)
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]),
+               HandleDeserializeMultiSearch<T5>(results[4]),
+               HandleDeserializeMultiSearch<T6>(results[5]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4,
+        MultiSearchParameters s5,
+        MultiSearchParameters s6,
+        MultiSearchParameters s7,
+        CancellationToken ctk = default)
+    {
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7 } };
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.TryGetProperty("results", out var results)
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]),
+               HandleDeserializeMultiSearch<T5>(results[4]),
+               HandleDeserializeMultiSearch<T6>(results[5]),
+               HandleDeserializeMultiSearch<T7>(results[6]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>, MultiSearchResult<T8>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7, T8>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4,
+        MultiSearchParameters s5,
+        MultiSearchParameters s6,
+        MultiSearchParameters s7,
+        MultiSearchParameters s8,
+        CancellationToken ctk = default)
+    {
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7, s8 } };
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.TryGetProperty("results", out var results)
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]),
+               HandleDeserializeMultiSearch<T5>(results[4]),
+               HandleDeserializeMultiSearch<T6>(results[5]),
+               HandleDeserializeMultiSearch<T7>(results[6]),
+               HandleDeserializeMultiSearch<T8>(results[7]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
+    public async Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>, MultiSearchResult<T8>, MultiSearchResult<T9>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+        MultiSearchParameters s1,
+        MultiSearchParameters s2,
+        MultiSearchParameters s3,
+        MultiSearchParameters s4,
+        MultiSearchParameters s5,
+        MultiSearchParameters s6,
+        MultiSearchParameters s7,
+        MultiSearchParameters s8,
+        MultiSearchParameters s9,
+        CancellationToken ctk = default)
+    {
+        var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7, s8, s9 } };
+        using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.TryGetProperty("results", out var results)
+            ? (HandleDeserializeMultiSearch<T1>(results[0]),
+               HandleDeserializeMultiSearch<T2>(results[1]),
+               HandleDeserializeMultiSearch<T3>(results[2]),
+               HandleDeserializeMultiSearch<T4>(results[3]),
+               HandleDeserializeMultiSearch<T5>(results[4]),
+               HandleDeserializeMultiSearch<T6>(results[5]),
+               HandleDeserializeMultiSearch<T7>(results[6]),
+               HandleDeserializeMultiSearch<T8>(results[7]),
+               HandleDeserializeMultiSearch<T9>(results[8]))
+            : throw new InvalidOperationException("Could not get results from multi-search result.");
+    }
+
     public Task<T> RetrieveDocument<T>(string collection, string id, CancellationToken ctk = default) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))

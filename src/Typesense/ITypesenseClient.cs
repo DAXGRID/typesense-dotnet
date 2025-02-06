@@ -178,7 +178,7 @@ public interface ITypesenseClient
     /// <param name="s1">First multi-search parameters.</param>
     /// <param name="s2">Second multi-search parameters.</param>
     /// <param name="s3">Third multi-search parameters.</param>
-    /// <param name="s4">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
     /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The search results.</returns>
     /// <exception cref="InvalidOperationException"></exception>
@@ -188,6 +188,106 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>)> MultiSearch<T1, T2, T3, T4>
         (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi-search parameters.</param>
+    /// <param name="s2">Second multi-search parameters.</param>
+    /// <param name="s3">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
+    /// <param name="s5">Fifth multi-search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>)> MultiSearch<T1, T2, T3, T4, T5>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, MultiSearchParameters s5, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi-search parameters.</param>
+    /// <param name="s2">Second multi-search parameters.</param>
+    /// <param name="s3">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
+    /// <param name="s5">Fifth multi-search parameters.</param>
+    /// <param name="s6">Sixth multi-search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>)> MultiSearch<T1, T2, T3, T4, T5, T6>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, MultiSearchParameters s5, MultiSearchParameters s6, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi-search parameters.</param>
+    /// <param name="s2">Second multi-search parameters.</param>
+    /// <param name="s3">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
+    /// <param name="s5">Fifth multi-search parameters.</param>
+    /// <param name="s6">Sixth multi-search parameters.</param>
+    /// <param name="s7">Seventh multi-search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, MultiSearchParameters s5, MultiSearchParameters s6, MultiSearchParameters s7, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi-search parameters.</param>
+    /// <param name="s2">Second multi-search parameters.</param>
+    /// <param name="s3">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
+    /// <param name="s5">Fifth multi-search parameters.</param>
+    /// <param name="s6">Sixth multi-search parameters.</param>
+    /// <param name="s7">Seventh multi-search parameters.</param>
+    /// <param name="s8">Eighth multi-search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>, MultiSearchResult<T8>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7, T8>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, MultiSearchParameters s5, MultiSearchParameters s6, MultiSearchParameters s7, MultiSearchParameters s8, CancellationToken ctk = default);
+
+    /// <summary>
+    /// Multiple Searches for documents in the specified collections using the supplied search parameters.
+    /// </summary>
+    /// <param name="s1">First multi-search parameters.</param>
+    /// <param name="s2">Second multi-search parameters.</param>
+    /// <param name="s3">Third multi-search parameters.</param>
+    /// <param name="s4">Fourth multi-search parameters.</param>
+    /// <param name="s5">Fifth multi-search parameters.</param>
+    /// <param name="s6">Sixth multi-search parameters.</param>
+    /// <param name="s7">Seventh multi-search parameters.</param>
+    /// <param name="s8">Eighth multi-search parameters.</param>
+    /// <param name="s9">Ninth multi-search parameters.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<(MultiSearchResult<T1>, MultiSearchResult<T2>, MultiSearchResult<T3>, MultiSearchResult<T4>, MultiSearchResult<T5>, MultiSearchResult<T6>, MultiSearchResult<T7>, MultiSearchResult<T8>, MultiSearchResult<T9>)> MultiSearch<T1, T2, T3, T4, T5, T6, T7, T8, T9>
+        (MultiSearchParameters s1, MultiSearchParameters s2, MultiSearchParameters s3, MultiSearchParameters s4, MultiSearchParameters s5, MultiSearchParameters s6, MultiSearchParameters s7, MultiSearchParameters s8, MultiSearchParameters s9, CancellationToken ctk = default);
 
     /// <summary>
     /// Gets the document in the specified collection on id.
