@@ -1392,6 +1392,59 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_nine()
+    {
+        var expected = new Company
+        {
+            Id = "124",
+            CompanyName = "Stark Industries",
+            NumEmployees = 6000,
+            Location = new Location
+            {
+                City = "Phoenix",
+                Country = "USA"
+            },
+        };
+
+        var query = new MultiSearchParameters("companies", "Stark", "company_name");
+
+        // We just use the same for queries for simplicity.
+        // We mainly care about multiple queries being returned with the correct types of <T>.
+        var (r1, r2, r3, r4, r5, r6, r7, r8, r9) = await _client.MultiSearch<Company, Company, Company, Company, Company, Company, Company, Company, Company>(
+            query, query, query, query, query, query, query, query, query);
+
+        using (var scope = new AssertionScope())
+        {
+            r1.Found.Should().Be(1);
+            r1.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r2.Found.Should().Be(1);
+            r2.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r3.Found.Should().Be(1);
+            r3.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r4.Found.Should().Be(1);
+            r4.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r5.Found.Should().Be(1);
+            r5.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r6.Found.Should().Be(1);
+            r6.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r7.Found.Should().Be(1);
+            r7.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r8.Found.Should().Be(1);
+            r8.Hits.First().Document.Should().BeEquivalentTo(expected);
+
+            r9.Found.Should().Be(1);
+            r9.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
     [Fact, TestPriority(12)]
     public async Task Delete_document_by_id()
     {
