@@ -391,13 +391,14 @@ public interface ITypesenseClient
     /// Deletes documents in a collection using the supplied filter.
     /// </summary>
     /// <param name="name">The collection name.</param>
+    /// <param name="compactStore">Disable compaction to improve the performance of the drop operation. See also <see cref="CompactDisk"/></param>
     /// <returns>A response with the collection deleted.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionResponse> DeleteCollection(string name);
+    Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true);
 
 
     /// <summary>
@@ -419,7 +420,6 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">A documents of type T to update the filtered collection list with.</param>
-    /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
     /// <param name="fullUpdate">Includes everything in the document, including NULL values.</param>
     /// <returns>A response containing a count of the updated documents.</returns>
