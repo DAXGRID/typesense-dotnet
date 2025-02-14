@@ -511,6 +511,81 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(3)]
+    public async Task Delete_collection_without_compact_store()
+    {
+        const string collectionName = "companiesToDelete";
+        var schema = new Schema(
+            collectionName,
+            new List<Field>
+            {
+                new Field("num_employees", FieldType.Int32, true),
+                new Field("location", FieldType.Object, true),
+                new Field("non_profit", FieldType.Bool, false),
+            },
+            "num_employees")
+        {
+            EnableNestedFields = true
+        };
+
+        _ = await _client.CreateCollection(schema);
+        
+        var expected = new CollectionResponse(
+            collectionName,
+            0,
+            new List<Field>
+            {
+                new Field(
+                    name: "num_employees",
+                    type: FieldType.Int32,
+                    facet: true,
+                    optional: false,
+                    index: true,
+                    sort: true,
+                    infix: false,
+                    locale: "")
+                {
+                    Stem = false
+                },
+                new Field(
+                    name: "location",
+                    type: FieldType.Object,
+                    facet: true,
+                    optional: false,
+                    index: true,
+                    sort: false,
+                    infix: false,
+                    locale: "")
+                {
+                    Stem = false
+                },
+                new Field(
+                    name: "non_profit",
+                    type: FieldType.Bool,
+                    facet: false,
+                    optional: false,
+                    index: true,
+                    sort: true,
+                    infix: false,
+                    locale: "")
+                {
+                    Stem = false
+                },
+            },
+            "num_employees",
+            new List<string>(),
+            new List<string>(),
+            true);
+
+        var response = await _client.DeleteCollection(collectionName, false);
+
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
     [Fact, TestPriority(4)]
     public async Task Index_document()
     {

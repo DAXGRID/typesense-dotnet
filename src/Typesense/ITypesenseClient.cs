@@ -391,13 +391,14 @@ public interface ITypesenseClient
     /// Deletes documents in a collection using the supplied filter.
     /// </summary>
     /// <param name="name">The collection name.</param>
+    /// <param name="compactStore">Disable compaction to improve the performance of the drop operation. See also <see cref="CompactDisk"/></param>
     /// <returns>A response with the collection deleted.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionResponse> DeleteCollection(string name);
+    Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true);
 
 
     /// <summary>

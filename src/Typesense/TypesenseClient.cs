@@ -405,12 +405,15 @@ public class TypesenseClient : ITypesenseClient
         return Delete<FilterDeleteResponse>($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}", _jsonNameCaseInsensitiveTrue);
     }
 
-    public Task<CollectionResponse> DeleteCollection(string name)
+    public Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
+        
+        // add compact_store query parameter only on false since it is true by default
+        var compactStoreQuery = compactStore ? string.Empty : "?compact_store=false";
 
-        return Delete<CollectionResponse>($"/collections/{name}", _jsonNameCaseInsensitiveTrue);
+        return Delete<CollectionResponse>($"/collections/{name}{compactStoreQuery}", _jsonNameCaseInsensitiveTrue);
     }
 
     public async Task<UpdateCollectionResponse> UpdateCollection(
