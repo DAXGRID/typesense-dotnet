@@ -28,7 +28,7 @@ public sealed class StreamStringLinesHttpContent : System.Net.Http.HttpContent
     // which in turn are used to copy the content to the NetworkStream.
     protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
     {
-        return SerializeToStreamAsync(stream, context, cancellationToken: default);
+        return SerializeToStreamAsync(stream, context, cancellationToken: CancellationToken.None);
     }
 
     // Override SerializeToStreamAsync overload with CancellationToken
@@ -55,7 +55,7 @@ public sealed class StreamStringLinesHttpContent : System.Net.Http.HttpContent
     // They are for content receiving and HttpClient uses its own internal implementation for an HTTP response content.
     protected override Task<Stream> CreateContentReadStreamAsync()
     {
-        return CreateContentReadStreamAsync(cancellationToken: default);
+        return CreateContentReadStreamAsync(cancellationToken: CancellationToken.None);
     }
 
     // Override CreateContentReadStreamAsync overload with CancellationToken

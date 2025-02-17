@@ -421,7 +421,6 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="document">A documents of type T to update the filtered collection list with.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
-    /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
     /// <param name="fullUpdate">Includes everything in the document, including NULL values.</param>
     /// <returns>A response containing a count of the updated documents.</returns>
     /// <exception cref="ArgumentException"></exception>

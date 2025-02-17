@@ -151,7 +151,7 @@ public class TypesenseClient : ITypesenseClient
         var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
-            ? results.EnumerateArray().Select(searchResponse => HandleDeserializeMultiSearch<T>(searchResponse)).ToList()
+            ? results.EnumerateArray().Select(HandleDeserializeMultiSearch<T>).ToList()
             : throw new InvalidOperationException("Could not get 'results' property from multi-search response.");
     }
 
@@ -492,7 +492,7 @@ public class TypesenseClient : ITypesenseClient
 
         using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
-            await GetException(response, default).ConfigureAwait(false);
+            await GetException(response, CancellationToken.None).ConfigureAwait(false);
 
         List<ImportResponse> result = new();
         await foreach (var line in GetLines(response).ConfigureAwait(false))
@@ -772,7 +772,7 @@ public class TypesenseClient : ITypesenseClient
             })
             .Where(parameter => parameter.Value != null && parameter.Key != null);
 
-        return string.Join("", parameters.Select(_ => $"&{Uri.EscapeDataString(_.Key!)}={Uri.EscapeDataString(_.Value!)}"));
+        return string.Join("", parameters.Select(p => $"&{Uri.EscapeDataString(p.Key!)}={Uri.EscapeDataString(p.Value!)}"));
     }
 
     private async Task<T> Get<T>(string path, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
