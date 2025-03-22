@@ -80,7 +80,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     "num_employees",
@@ -92,7 +93,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "location",
@@ -104,7 +106,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "num_employees",
@@ -152,7 +155,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "num_employees",
@@ -164,7 +168,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "location",
@@ -176,7 +181,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "num_employees",
@@ -231,7 +237,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "",
@@ -280,7 +287,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "zh")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "",
@@ -329,7 +337,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "num_employees",
@@ -341,7 +350,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     "location",
@@ -353,7 +363,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "num_employees",
@@ -390,7 +401,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false
+                        Stem = false,
+                        Store = true
                     },
                     new Field(
                         name: "num_employees",
@@ -402,7 +414,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false
+                        Stem = false,
+                        Store = true
                     },
                     new Field(
                         name: "location",
@@ -414,7 +427,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                         infix: false,
                         locale: "")
                     {
-                        Stem = false
+                        Stem = false,
+                        Store = true
                     }
                 },
                 "num_employees",
@@ -470,7 +484,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "location",
@@ -482,7 +497,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "non_profit",
@@ -494,7 +510,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "num_employees",
@@ -529,7 +546,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         };
 
         _ = await _client.CreateCollection(schema);
-        
+
         var expected = new CollectionResponse(
             collectionName,
             0,
@@ -545,7 +562,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
                 new Field(
                     name: "location",
@@ -557,7 +575,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
+
                 },
                 new Field(
                     name: "non_profit",
@@ -569,7 +589,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     infix: false,
                     locale: "")
                 {
-                    Stem = false
+                    Stem = false,
+                    Store = true
                 },
             },
             "num_employees",
@@ -1936,8 +1957,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.19744956493377686,
                             null));
             }
-        }
-        finally
+        } finally
         {
             // Make sure that no matter what the collection is deleted.
             try
@@ -2080,8 +2100,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.4871443510055542,
                             null));
             }
-        }
-        finally
+        } finally
         {
             // Make sure that no matter what the collection is deleted.
             try
