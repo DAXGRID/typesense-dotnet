@@ -28,6 +28,9 @@ public record CollectionResponse
     [JsonPropertyName("enable_nested_fields")]
     public bool EnableNestedFields { get; init; }
 
+    [JsonPropertyName("metadata")]
+    public IDictionary<string, object>? Metadata { get; init; }
+
     [JsonPropertyName("created_at"), JsonConverter(typeof(UnixEpochDateTimeConverter))]
     public DateTime CreatedAt { get; init; }
 
@@ -39,7 +42,8 @@ public record CollectionResponse
         string defaultSortingField,
         IReadOnlyCollection<string> tokenSeparators,
         IReadOnlyCollection<string> symbolsToIndex,
-        bool enableNestedFields)
+        bool enableNestedFields,
+        IDictionary<string, object>? metadata = null)
     {
         Name = name;
         NumberOfDocuments = numberOfDocuments;
@@ -48,5 +52,6 @@ public record CollectionResponse
         TokenSeparators = tokenSeparators;
         SymbolsToIndex = symbolsToIndex;
         EnableNestedFields = enableNestedFields;
+        Metadata = metadata;
     }
 }

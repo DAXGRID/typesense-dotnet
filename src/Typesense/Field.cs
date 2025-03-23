@@ -42,6 +42,9 @@ public record Field
     [JsonPropertyName("reference")]
     public string? Reference { get; init; }
 
+    [JsonPropertyName("async_reference")]
+    public bool? AsyncReference { get; init; }
+
     [JsonPropertyName("stem")]
     public bool? Stem { get; init; }
 
