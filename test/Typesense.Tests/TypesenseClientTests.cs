@@ -319,6 +319,96 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         await _client.DeleteCollection(collectionName);
     }
 
+    // We test metadata individually,
+    // because we don't want to impact tests that depend on shared collection/schema.
+    [Fact, TestPriority(1)]
+    public async Task Create_schema_with_metadata_and_reference()
+    {
+        const string collectionName = "collection-with-metadata";
+
+        var expected = new CollectionResponse(
+            collectionName,
+            0,
+            new List<Field>
+            {
+                new Field(
+                    name: "name",
+                    type: FieldType.String,
+                    facet: false,
+                    optional: false,
+                    index: true,
+                    sort: false,
+                    infix: false,
+                    locale: "")
+                {
+                    Stem = false,
+                    Store = true
+                },
+                new Field(
+                    name: "company_name",
+                    type: FieldType.String,
+                    facet: false,
+                    optional: false,
+                    index: true,
+                    sort: false,
+                    infix: false,
+                    locale: "")
+                {
+                    Stem = false,
+                    Store = true,
+                    Reference = "companies.company_name",
+                    AsyncReference = true
+                },
+            },
+            "",
+            new List<string>(),
+            new List<string>(),
+            false,
+            new Dictionary<string, object>
+            {
+                ["version"] = JsonSerializer.SerializeToElement(1.2f),
+                ["null"] = null
+            });
+
+        var schema = new Schema(
+            collectionName,
+            new List<Field>
+            {
+                new Field(
+                    "name",
+                    FieldType.String),
+                new Field(
+                    "company_name",
+                    FieldType.String)
+                {
+                    Reference = "companies.company_name",
+                    AsyncReference = true
+                }
+            })
+        {
+            Metadata = new Dictionary<string, object>
+            {
+                ["version"] = 1.2f,
+                ["null"] = null
+            }
+        };
+
+        var response = await _client.CreateCollection(schema);
+
+        // CreatedAt cannot be deterministic
+        response.CreatedAt.Should().NotBe(default);
+        expected = expected with { CreatedAt = response.CreatedAt };
+
+        response.Should().BeEquivalentTo(expected, options => options.Excluding(response => response.Metadata));
+
+        // FluentAssertions doesn't support JsonElements, so we need to check it separately.
+        response.Metadata.Should().NotBeEmpty();
+        response.Metadata["version"].As<JsonElement>().GetSingle().Should().Be(1.2f);
+
+        // Cleanup
+        await _client.DeleteCollection(collectionName);
+    }
+
     [Fact, TestPriority(1)]
     public async Task Retrieve_collection()
     {
@@ -1957,7 +2047,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.19744956493377686,
                             null));
             }
-        } finally
+        }
+        finally
         {
             // Make sure that no matter what the collection is deleted.
             try
@@ -2100,7 +2191,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.4871443510055542,
                             null));
             }
-        } finally
+        }
+        finally
         {
             // Make sure that no matter what the collection is deleted.
             try
