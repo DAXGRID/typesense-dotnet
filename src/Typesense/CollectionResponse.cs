@@ -29,7 +29,7 @@ public record CollectionResponse
     public bool EnableNestedFields { get; init; }
 
     [JsonPropertyName("metadata")]
-    public IDictionary<string, object>? Metadata { get; init; }
+    public IDictionary<string, object?>? Metadata { get; init; }
 
     [JsonPropertyName("created_at"), JsonConverter(typeof(UnixEpochDateTimeConverter))]
     public DateTime CreatedAt { get; init; }

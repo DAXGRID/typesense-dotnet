@@ -366,7 +366,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             false,
             new Dictionary<string, object>
             {
-                ["version"] = JsonSerializer.SerializeToElement(1.2f)
+                ["version"] = JsonSerializer.SerializeToElement(1.2f),
+                ["null"] = null
             });
 
         var schema = new Schema(
@@ -387,7 +388,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         {
             Metadata = new Dictionary<string, object>
             {
-                ["version"] = 1.2f
+                ["version"] = 1.2f,
+                ["null"] = null
             }
         };
 
@@ -2045,7 +2047,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.19744956493377686,
                             null));
             }
-        } finally
+        }
+        finally
         {
             // Make sure that no matter what the collection is deleted.
             try
@@ -2188,7 +2191,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                             0.4871443510055542,
                             null));
             }
-        } finally
+        }
+        finally
         {
             // Make sure that no matter what the collection is deleted.
             try

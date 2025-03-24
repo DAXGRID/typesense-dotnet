@@ -25,7 +25,7 @@ public record Schema
     public bool? EnableNestedFields { get; init; }
 
     [JsonPropertyName("metadata")]
-    public IDictionary<string, object>? Metadata { get; init; }
+    public IDictionary<string, object?>? Metadata { get; init; }
 
     [Obsolete("Use multi-arity constructor instead.")]
     public Schema()
