@@ -51,4 +51,7 @@ public enum FieldType
 
     [EnumMember(Value = "auto")]
     Auto,
+
+    [EnumMember(Value = "image")]
+    Image,
 }

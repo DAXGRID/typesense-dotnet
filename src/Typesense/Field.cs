@@ -199,6 +199,7 @@ public record Field
             "geopoint[]" => FieldType.GeoPointArray,
             "auto" => FieldType.Auto,
             "string*" => FieldType.AutoString,
+            "image" => FieldType.Image,
             _ => throw new ArgumentException($"Could not map field type with value '{fieldType}'", nameof(fieldType))
         };
 }
