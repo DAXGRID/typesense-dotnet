@@ -2161,6 +2161,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
+    [Fact, TestPriority(38)]
+    public async Task Can_truncate_collection()
+    {
+        var response = await _client.TruncateCollection("companies");
+        response.NumDeleted.Should().BeGreaterThan(0);
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(
