@@ -68,6 +68,12 @@ public class TypesenseClient : ITypesenseClient
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
     }
 
+    public async Task<TruncateCollectionResponse> TruncateCollection(string collection)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        return await Delete<TruncateCollectionResponse>($"/collections/{collection}/documents?truncate=true", _jsonNameCaseInsensitiveTrue);
+    }
+
     public Task<T> CreateDocument<T>(string collection, string document) where T : class
     {
         return PostDocument<T>(collection, document, upsert: false);

@@ -22,6 +22,20 @@ public interface ITypesenseClient
     Task<CollectionResponse> CreateCollection(Schema schema);
 
     /// <summary>
+    /// Rmove all documents from a collection but keeps the collection and schema intact.
+    /// </summary>
+    /// <param name="collection">The name of the collection to truncate.</param>
+    /// <returns>The response object includes the number of documents that were deleted. For an empty collection, this value will be 0.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<TruncateCollectionResponse> TruncateCollection(string collection);
+
+    /// <summary>
     /// Creates the document in the speicfied collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
