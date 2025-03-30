@@ -68,6 +68,13 @@ public class TypesenseClient : ITypesenseClient
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
     }
 
+    public async Task<TruncateCollectionResponse> TruncateCollection(string collection)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        // The filter_by is a hack because there is a bug in version v28.0 https://github.com/typesense/typesense/pull/2218
+        return await Delete<TruncateCollectionResponse>($"/collections/{collection}/documents?truncate=true&filter_by=", _jsonNameCaseInsensitiveTrue);
+    }
+
     public Task<T> CreateDocument<T>(string collection, string document) where T : class
     {
         return PostDocument<T>(collection, document, upsert: false);
