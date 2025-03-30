@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace Typesense;
 
@@ -56,6 +57,12 @@ public record Field
 
     [JsonPropertyName("range_index")]
     public bool? RangeIndex { get; init; }
+
+    [JsonPropertyName("token_separators")]
+    public IEnumerable<string>? TokenSeparators { get; init; }
+
+    [JsonPropertyName("symbols_to_index")]
+    public IEnumerable<string>? SymbolsToIndex { get; init; }
 
     // This constructor is made to handle inherited classes.
     protected Field(string name)
