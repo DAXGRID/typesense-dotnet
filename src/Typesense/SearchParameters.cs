@@ -28,16 +28,16 @@ public record MultiSearchParameters : SearchParameters
     /// </summary>
     [JsonConverter(typeof(VectorQueryJsonConverter)), JsonPropertyName("vector_query")]
     public VectorQuery? VectorQuery { get; init; }
-    
+
     [JsonPropertyName("group_by")]
     public string GroupBy { get; set; }
 
     [JsonPropertyName("group_limit")]
     public int? GroupLimit { get; set; }
-    
+
     [JsonPropertyName("group_missing_values")]
     public bool? GroupMissingValues { get; set; }
-    
+
     /// <summary>
     /// Set this parameter to the value of a preset that has been created in typesense.
     /// The query parameters of the preset will then be used in your search.
@@ -100,7 +100,7 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("preset")]
     public string? Preset { get; set; }
-    
+
     /// <summary>
     /// Set this parameter to true if you wish to split the search query into space separated words yourself.
     /// When set to true, we will only split the search query by space,
@@ -108,6 +108,20 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("pre_segmented_query")]
     public bool? PreSegmentedQuery { get; set; }
+
+    /// <summary>
+    /// A comma separated list of words to be dropped from the search query while searching.
+    /// </summary>
+    [JsonPropertyName("stopwords")]
+    public string? Stopwords { get; set; }
+
+    /// <summary>
+    /// Controls whether Typesense should validate if the fields exist in the schema. 
+    /// When set to false, Typesense will not throw an error if a field is missing.
+    /// This is useful for programmatic grouping where not all fields may exist.
+    /// </summary>
+    [JsonPropertyName("validate_field_names")]
+    public bool? ValidateFieldNames { get; set; }
 
     // ---------------------------------------------------------------------------------------
     // Filter parameters - https://typesense.org/docs/latest/api/search.html#filter-parameters
@@ -119,6 +133,22 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("filter_by")]
     public string? FilterBy { get; set; }
+
+    /// <summary>
+    /// Applies the filtering operation incrementally / lazily. 
+    /// Set this to true when you are potentially filtering on large values but the tokens in the query are expected to match very few documents. 
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("enable_lazy_filter")]
+    public bool? EnableLazyFilter { get; set; }
+
+    /// <summary>
+    /// Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. 
+    /// Useful for controlling prefix matches like company_name:Acm*. 
+    /// Default: 4
+    /// </summary>
+    [JsonPropertyName("max_filter_by_candidates")]
+    public int? MaxFilterByCandidates { get; set; }
 
     // ---------------------------------------------------------------------------------------
     // Ranking and Sorting parameters - https://typesense.org/docs/latest/api/search.html#ranking-and-sorting-parameters
@@ -168,6 +198,13 @@ public record SearchParameters
     public bool? PrioritizeTokenPosition { get; set; }
 
     /// <summary>
+    /// Make Typesense prioritize documents where the query words appear in more number of fields.
+    /// Default: true
+    /// </summary>
+    [JsonPropertyName("prioritize_num_matching_fields")]
+    public bool? PrioritizeNumberMatchingFields { get; set; }
+
+    /// <summary>
     /// A list of records to unconditionally include in the search results
     /// at specific positions. An example use case would be to feature or promote
     /// certain items on the top of search results.
@@ -204,6 +241,26 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("enable_overrides")]
     public bool? EnableOverrides { get; set; }
+
+    /// <summary>
+    /// You can trigger particular override rules that you've tagged using their tag name(s) in this search parameter.
+    /// </summary>
+    [JsonPropertyName("override_tags")]
+    public string? OverrideTags { get; set; }
+
+    /// <summary>
+    /// If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false.
+    /// Default: true
+    /// </summary>
+    [JsonPropertyName("enable_synonyms")]
+    public bool? EnableSynonyms { get; set; }
+
+    /// <summary>
+    /// Allow synonym resolution on word prefixes in the query.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("synonym_prefix")]
+    public bool? SynonymPrefix { get; set; }
 
     // ---------------------------------------------------------------------------------------
     // Pagination parameters - https://typesense.org/docs/latest/api/search.html#pagination-parameters
@@ -253,6 +310,14 @@ public record SearchParameters
     public string? FacetBy { get; set; }
 
     /// <summary>
+    /// Typesense supports two strategies for efficient faceting, and has some built-in heuristics to pick the right strategy for you. 
+    /// The valid values for this parameter are exhaustive, top_values and automatic (default).
+    /// Read more: https://typesense.org/docs/latest/api/search.html#faceting-parameters
+    /// </summary>
+    [JsonPropertyName("facet_strategy")]
+    public string? FacetStrategy { get; set; }
+
+    /// <summary>
     /// Maximum number of facet values to be returned.
     /// </summary>
     [JsonPropertyName("max_facet_values")]
@@ -275,6 +340,20 @@ public record SearchParameters
 
     [JsonPropertyName("facet_return_parent")]
     public string? FacetReturnParent { get; set; }
+
+    /// <summary>
+    /// Facet sampling is helpful to improve facet computation speed for large datasets, where the exact count is not required in the UI.
+    /// Default: 100 (sampling is disabled by default)
+    /// </summary>
+    [JsonPropertyName("facet_sample_percent")]
+    public int? FacetSamplePercent { get; set; }
+
+    /// <summary>
+    /// Facet sampling is helpful to improve facet computation speed for large datasets, where the exact count is not required in the UI.
+    /// Default: 0
+    /// </summary>
+    [JsonPropertyName("facet_sample_threshold")]
+    public int? FacetSampleThreshold { get; set; }
 
     // ---------------------------------------------------------------------------------------
     // Results parameters - https://typesense.org/docs/latest/api/search.html#results-parameters
@@ -412,6 +491,35 @@ public record SearchParameters
     [JsonPropertyName("drop_tokens_threshold")]
     public int? DropTokensThreshold { get; set; }
 
+    /// <summary>
+    /// Dictates the direction in which the words in the query must be dropped when the original words in the query do not appear in any document.
+    /// 
+    /// Values: right_to_left (default), left_to_right, both_sides:3 
+    /// A note on both_sides:3 - for queries upto 3 tokens (words) in length, this mode will drop tokens from both sides and exhaustively rank all matching results. 
+    /// If query length is greater than 3 words, Typesense will just fallback to default behavior of right_to_left
+    /// </summary>
+    [JsonPropertyName("drop_tokens_mode")]
+    public string? DropTokensMode { get; set; }
+
+    /// <summary>
+    /// Set this parameter to false to disable typos on numerical query tokens. Default: true
+    /// </summary>
+    [JsonPropertyName("enable_typos_for_numerical_tokens")]
+    public bool? EnableTyposForNumericalTokens { get; set; }
+
+    /// <summary>
+    /// Set this parameter to false to disable typos on alphanumerical query tokens. Default: true
+    /// </summary>
+    [JsonPropertyName("enable_typos_for_alpha_numerical_tokens")]
+    public bool? EnableTyposForAlphaNumericalTokens { get; set; }
+
+    /// <summary>
+    /// Allow synonym resolution on typo-corrected words in the query.
+    /// Default: 0
+    /// </summary>
+    [JsonPropertyName("synonym_num_typos")]
+    public int? SynonymNumberTypos { get; set; }
+
     // ---------------------------------------------------------------------------------------
     // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
     // ---------------------------------------------------------------------------------------
@@ -482,7 +590,7 @@ public record GroupedSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("group_limit")]
     public int? GroupLimit { get; set; }
-    
+
     /// <summary>
     /// Setting this parameter to true will place all documents that have a null value in the group_by field,
     /// into a single group. Setting this parameter to false, will cause each document with a null value
