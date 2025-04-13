@@ -39,20 +39,28 @@ public record Include
 public record Rule
 {
     [JsonPropertyName("query")]
-    public string Query { get; init; }
+    public string? Query { get; init; }
 
     [JsonPropertyName("match")]
-    public string Match { get; init; }
+    public string? Match { get; init; }
+
+    [JsonPropertyName("filter_by")]
+    public string? FilterBy { get; init; }
+
+    [JsonPropertyName("tags")]
+    public IEnumerable<string>? Tags { get; init; }
 
     [JsonConstructor]
-    public Rule(string query, string match)
+    public Rule(
+        string? query = null,
+        string? match = null,
+        string? filterBy = null,
+        IEnumerable<string>? tags = null)
     {
-        if (string.IsNullOrWhiteSpace(query))
-            throw new ArgumentException("cannot be null or whitespace.", nameof(query));
-        if (string.IsNullOrWhiteSpace(match))
-            throw new ArgumentException("cannot be null or whitespace.", nameof(match));
         Match = match;
         Query = query;
+        FilterBy = filterBy;
+        Tags = tags;
     }
 }
 
