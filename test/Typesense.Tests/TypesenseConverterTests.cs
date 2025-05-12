@@ -57,6 +57,7 @@ public class TypesenseConverterTests
     {
         var json = @"
         {
+          ""found"": 36,
           ""group_key"": [""USA"", 12, 4.2, [""foo"", ""bar""], [42, 4.5]],
           ""Hits"": []
         }
@@ -67,6 +68,7 @@ public class TypesenseConverterTests
         using (new AssertionScope())
         {
             groupedHit.Should().NotBeNull();
+            groupedHit.Found.Should().Be(36);
 
             var key = groupedHit.GroupKey;
             key.Count.Should().Be(5);

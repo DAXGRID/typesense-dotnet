@@ -188,11 +188,18 @@ public record GroupedHit<T>
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>> Hits { get; init; }
 
+    [JsonPropertyName("found")]
+    public int Found { get; init; }
+
     [JsonConstructor]
-    public GroupedHit(IReadOnlyList<string> groupKey, IReadOnlyList<Hit<T>> hits)
+    public GroupedHit(
+        IReadOnlyList<string> groupKey,
+        IReadOnlyList<Hit<T>> hits,
+        int found)
     {
         GroupKey = groupKey;
         Hits = hits;
+        Found = found;
     }
 }
 
