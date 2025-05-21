@@ -538,6 +538,20 @@ public class TypesenseClient : ITypesenseClient
         return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
     }
 
+    public async Task<List<ImportResponse>> ImportDocuments(
+        string collection,
+        Stream stream,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        using var streamContent = new StreamContent(stream);
+        return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+    }
+
     public Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
     {
         return ExportDocuments<T>(collection, new ExportParameters(), ctk);

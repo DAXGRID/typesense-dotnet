@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -814,6 +815,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
         response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Create);
         response.Should().BeEquivalentTo(expected);
+        foreach (var documentId in companies.Select(c => c.Id))
+        {
+            await _client.DeleteDocument<Company>("companies", documentId);
+        }
+
+        using var memoryStream = new MemoryStream();
+        await using (var writer = new StreamWriter(memoryStream))
+        {
+            foreach (var line in companyLines)
+            {
+                await writer.WriteLineAsync(line);
+            }
+            await writer.FlushAsync();
+            memoryStream.Position = 0;
+
+            response = await _client.ImportDocuments("companies", memoryStream, 40, ImportType.Create);
+        }
+        response.Should().BeEquivalentTo(expected);
+        foreach (var documentId in companies.Select(c => c.Id))
+        {
+            await _client.DeleteDocument<Company>("companies", documentId);
+        }
     }
 
     [Fact, TestPriority(7)]
@@ -860,6 +883,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
 
         response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Update);
+        response.Should().BeEquivalentTo(expected);
+
+        using var memoryStream = new MemoryStream();
+        await using (var writer = new StreamWriter(memoryStream))
+        {
+            foreach (var line in companyLines)
+            {
+                await writer.WriteLineAsync(line);
+            }
+            await writer.FlushAsync();
+            memoryStream.Position = 0;
+
+            response = await _client.ImportDocuments("companies", memoryStream, 40, ImportType.Update);
+        }
         response.Should().BeEquivalentTo(expected);
     }
 
@@ -909,6 +946,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Upsert);
         response.Should().BeEquivalentTo(expected);
+
+        using var memoryStream = new MemoryStream();
+        await using (var writer = new StreamWriter(memoryStream))
+        {
+            foreach (var line in companyLines)
+            {
+                await writer.WriteLineAsync(line);
+            }
+            await writer.FlushAsync();
+            memoryStream.Position = 0;
+
+            response = await _client.ImportDocuments("companies", memoryStream, 40, ImportType.Upsert);
+        }
+        response.Should().BeEquivalentTo(expected);
     }
 
     [Fact, TestPriority(7)]
@@ -956,6 +1007,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
 
         response = await _client.ImportDocuments("companies", string.Join('\n', companyLines), 40, ImportType.Emplace);
+        response.Should().BeEquivalentTo(expected);
+
+        using var memoryStream = new MemoryStream();
+        await using (var writer = new StreamWriter(memoryStream))
+        {
+            foreach (var line in companyLines)
+            {
+                await writer.WriteLineAsync(line);
+            }
+            await writer.FlushAsync();
+            memoryStream.Position = 0;
+
+            response = await _client.ImportDocuments("companies", memoryStream, 40, ImportType.Emplace);
+        }
         response.Should().BeEquivalentTo(expected);
     }
     private static readonly JsonSerializerOptions JsonOptionsCamelCaseIgnoreWritingNull = new()

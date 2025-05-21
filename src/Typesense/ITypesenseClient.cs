@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -529,6 +530,36 @@ public interface ITypesenseClient
     Task<List<ImportResponse>> ImportDocuments<T>(
         string collection,
         IEnumerable<T> documents,
+        int batchSize = 40,
+        ImportType importType = ImportType.Create,
+        int? remoteEmbeddingBatchSize = null,
+        bool? returnId = null);
+
+    /// <summary>
+    /// Batch import documents.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="stream">A stream of the documents to be imported.</param>
+    /// <param name="batchSize">The number of documents that should be imported - defaults to 40.</param>
+    /// <param name="importType">The import type, can either be Create, Update or Upsert - defaults to Create.</param>
+    /// <param name="remoteEmbeddingBatchSize">
+    /// Max size of each batch that will be sent to remote APIs while importing multiple documents at once.
+    /// Using lower amount will lower timeout risk, but increase number of requests made.
+    /// If not specified, typesense server will default to 200.
+    /// </param>
+    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
+    /// <returns>A collection of import responses.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiConflictException"></exception>
+    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<List<ImportResponse>> ImportDocuments(
+        string collection,
+        Stream stream,
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
