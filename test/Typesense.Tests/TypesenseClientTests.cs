@@ -1983,7 +1983,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(19)]
-    public async Task Retrive_search_override()
+    public async Task Retrieve_search_override()
     {
         var searchOverrides = await _client.ListSearchOverrides("companies");
 
@@ -2025,7 +2025,20 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 {
                     first.Id.Should().Be("customize-apple");
                     first.Includes.Should().BeEquivalentTo(expected.Includes);
-                    first.Rule.Should().BeEquivalentTo(expected.Rule);
+                    first.Metadata.Should().BeEquivalentTo(expected.Metadata);
+                    first.FilterBy.Should().BeEquivalentTo(expected.FilterBy);
+                    first.SortBy.Should().BeEquivalentTo(expected.SortBy);
+                    first.ReplaceQuery.Should().BeEquivalentTo(expected.ReplaceQuery);
+                    first.RemoveMatchedTokens.Should().BeTrue();
+                    first.FilterCuratedHits.Should().BeFalse();
+                    first.StopProcessing.Should().BeFalse();
+                    first.EffectiveFromTs.Should().HaveYear(2018);
+                    first.EffectiveFromTs.Should().HaveMonth(1);
+                    first.EffectiveFromTs.Should().HaveDay(1);
+					first.EffectiveToTs.Should().HaveYear(2040);
+					first.EffectiveToTs.Should().HaveMonth(12);
+					first.EffectiveToTs.Should().HaveDay(31);
+					first.Rule.Should().BeEquivalentTo(expected.Rule);
                 });
     }
 
