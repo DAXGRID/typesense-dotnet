@@ -1967,7 +1967,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     new Include("422", 1),
                     new Include("54", 2)
                 },
-        };
+            FilterBy = "NOT description:=[pink lady 1]",
+			Metadata = "{'apple_color': 'green'}",
+			SortBy = "color:asc",
+			ReplaceQuery = "replacement query",
+			RemoveMatchedTokens = true,
+			FilterCuratedHits = false,
+			StopProcessing = false,
+			EffectiveFromTs = new DateTime(2018, 1, 1),
+            EffectiveToTs = new DateTime(2040, 12, 31),
+		};
 
         var response = await _client.UpsertSearchOverride(
             "companies", "customize-apple", searchOverride);
@@ -1996,7 +2005,16 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     new Include("422", 1),
                     new Include("54", 2)
                 },
-        };
+			Metadata = "{'apple_color': 'green'}",
+			FilterBy = "NOT description:=[pink lady 1]",
+			SortBy = "color:asc",
+			ReplaceQuery = "replacement query",
+            RemoveMatchedTokens = true,
+            FilterCuratedHits = false,
+            StopProcessing = false,
+			EffectiveFromTs = new DateTime(2018, 1, 1),
+			EffectiveToTs = new DateTime(2040, 12, 31),
+		};
 
         var response = await _client.ListSearchOverrides("companies");
 
