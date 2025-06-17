@@ -74,7 +74,7 @@ public record SearchOverride
     public IEnumerable<Include>? Includes { get; init; }
 
 	[JsonPropertyName("metadata")]
-	public string? Metadata { get; init; }
+	public IDictionary<string, object>? Metadata { get; init; }
 
 	[JsonPropertyName("filter_by")]
 	public string? FilterBy { get; init; }

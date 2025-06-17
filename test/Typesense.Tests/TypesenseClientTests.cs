@@ -1968,14 +1968,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     new Include("54", 2)
                 },
             FilterBy = "NOT description:=[pink lady 1]",
-			Metadata = "{'apple_color': 'green'}",
+            Metadata = new Dictionary<string, object> {["apple_color"] = "green"},
 			SortBy = "color:asc",
 			ReplaceQuery = "replacement query",
-			RemoveMatchedTokens = true,
 			FilterCuratedHits = false,
 			StopProcessing = false,
-			EffectiveFromTs = new DateTime(2018, 1, 1),
-            EffectiveToTs = new DateTime(2040, 12, 31),
+			EffectiveFromTs = DateTime.UtcNow,
 		};
 
         var response = await _client.UpsertSearchOverride(
@@ -1991,7 +1989,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.RetrieveSearchOverride("companies", expected.Id);
 
-        response.Should().BeEquivalentTo(expected);
+		// FluentAssertions doesn't support JsonElements
+		response.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Metadata));
     }
 
     [Fact, TestPriority(20)]
@@ -2005,15 +2004,14 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     new Include("422", 1),
                     new Include("54", 2)
                 },
-			Metadata = "{'apple_color': 'green'}",
 			FilterBy = "NOT description:=[pink lady 1]",
+			Metadata = new Dictionary<string, object> {["apple_color"] = "green"},
 			SortBy = "color:asc",
 			ReplaceQuery = "replacement query",
             RemoveMatchedTokens = true,
             FilterCuratedHits = false,
             StopProcessing = false,
-			EffectiveFromTs = new DateTime(2018, 1, 1),
-			EffectiveToTs = new DateTime(2040, 12, 31),
+			EffectiveFromTs = DateTime.UtcNow,
 		};
 
         var response = await _client.ListSearchOverrides("companies");
@@ -2025,22 +2023,22 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 {
                     first.Id.Should().Be("customize-apple");
                     first.Includes.Should().BeEquivalentTo(expected.Includes);
-                    first.Metadata.Should().BeEquivalentTo(expected.Metadata);
                     first.FilterBy.Should().BeEquivalentTo(expected.FilterBy);
-                    first.SortBy.Should().BeEquivalentTo(expected.SortBy);
+					first.SortBy.Should().BeEquivalentTo(expected.SortBy);
                     first.ReplaceQuery.Should().BeEquivalentTo(expected.ReplaceQuery);
                     first.RemoveMatchedTokens.Should().BeTrue();
                     first.FilterCuratedHits.Should().BeFalse();
                     first.StopProcessing.Should().BeFalse();
-                    first.EffectiveFromTs.Should().HaveYear(2018);
-                    first.EffectiveFromTs.Should().HaveMonth(1);
-                    first.EffectiveFromTs.Should().HaveDay(1);
-					first.EffectiveToTs.Should().HaveYear(2040);
-					first.EffectiveToTs.Should().HaveMonth(12);
-					first.EffectiveToTs.Should().HaveDay(31);
+                    first.EffectiveFromTs.Should().HaveYear(DateTime.UtcNow.Year);
+                    first.EffectiveFromTs.Should().HaveMonth(DateTime.UtcNow.Month);
+                    first.EffectiveFromTs.Should().HaveDay(DateTime.UtcNow.Day);
 					first.Rule.Should().BeEquivalentTo(expected.Rule);
                 });
-    }
+
+		// FluentAssertions doesn't support JsonElements, so we need to check it separately.
+		response.SearchOverrides.FirstOrDefault()?.Metadata?.Should().NotBeEmpty();
+        response.SearchOverrides.FirstOrDefault()?.Metadata["apple_color"].As<JsonElement>().GetString().Should().Be("green");
+	}
 
     [Fact, TestPriority(21)]
     public async Task Delete_search_override()

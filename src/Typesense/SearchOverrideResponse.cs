@@ -17,7 +17,7 @@ public record SearchOverrideResponse
     public IEnumerable<Include> Includes { get; init; }
 
 	[JsonPropertyName("metadata")]
-	public string Metadata { get; init; }
+	public IDictionary<string, object> Metadata { get; init; }
 
 	[JsonPropertyName("filter_by")]
 	public string FilterBy { get; init; }
@@ -48,7 +48,7 @@ public record SearchOverrideResponse
 
     [JsonConstructor]
     public SearchOverrideResponse(IEnumerable<Exclude> excludes, IEnumerable<Include> includes, 
-		string metadata, string filterBy, string sortBy, string replaceQuery, bool removeMatchedTokens, 
+		IDictionary<string, object> metadata, string filterBy, string sortBy, string replaceQuery, bool removeMatchedTokens, 
 		bool filterCuratedHits, bool stopProcessing, DateTime effectiveFromTs, DateTime effectiveToTs,
 		Rule rule, string id)
     {
