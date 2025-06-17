@@ -7,14 +7,14 @@ namespace Typesense;
 
 public record SearchOverrideResponse
 {
-    [JsonPropertyName("id")]
-    public string Id { get; init; }
+	[JsonPropertyName("id")]
+	public string Id { get; init; }
 
-    [JsonPropertyName("excludes")]
-    public IEnumerable<Exclude> Excludes { get; init; }
+	[JsonPropertyName("excludes")]
+	public IEnumerable<Exclude> Excludes { get; init; }
 
-    [JsonPropertyName("includes")]
-    public IEnumerable<Include> Includes { get; init; }
+	[JsonPropertyName("includes")]
+	public IEnumerable<Include> Includes { get; init; }
 
 	[JsonPropertyName("metadata")]
 	public IDictionary<string, object> Metadata { get; init; }
@@ -44,16 +44,16 @@ public record SearchOverrideResponse
 	public DateTime EffectiveToTs { get; init; }
 
 	[JsonPropertyName("rule")]
-    public Rule Rule { get; init; }
+	public Rule Rule { get; init; }
 
-    [JsonConstructor]
-    public SearchOverrideResponse(IEnumerable<Exclude> excludes, IEnumerable<Include> includes, 
-		IDictionary<string, object> metadata, string filterBy, string sortBy, string replaceQuery, bool removeMatchedTokens, 
+	[JsonConstructor]
+	public SearchOverrideResponse(IEnumerable<Exclude> excludes, IEnumerable<Include> includes,
+		IDictionary<string, object> metadata, string filterBy, string sortBy, string replaceQuery, bool removeMatchedTokens,
 		bool filterCuratedHits, bool stopProcessing, DateTime effectiveFromTs, DateTime effectiveToTs,
 		Rule rule, string id)
-    {
-        Excludes = excludes;
-        Includes = includes;
+	{
+		Excludes = excludes;
+		Includes = includes;
 		Metadata = metadata;
 		FilterBy = filterBy;
 		SortBy = sortBy;
@@ -63,7 +63,7 @@ public record SearchOverrideResponse
 		StopProcessing = stopProcessing;
 		EffectiveFromTs = effectiveFromTs;
 		EffectiveToTs = effectiveToTs;
-        Rule = rule;
-        Id = id;
-    }
+		Rule = rule;
+		Id = id;
+	}
 }
