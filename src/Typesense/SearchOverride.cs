@@ -108,10 +108,10 @@ public record SearchOverride
     [JsonPropertyName("stop_processing")]
     public bool? StopProcessing { get; init; }
 
-    [JsonPropertyName("effective_from_ts"), JsonConverter(typeof(UnixEpochDateTimeConverter))]
+    [JsonPropertyName("effective_from_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
     public DateTime? EffectiveFromTs { get; init; }
 
-    [JsonPropertyName("effective_to_ts"), JsonConverter(typeof(UnixEpochDateTimeConverter))]
+    [JsonPropertyName("effective_to_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
     public DateTime? EffectiveToTs { get; init; }
 
     [JsonPropertyName("rule")]
