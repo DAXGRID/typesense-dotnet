@@ -73,6 +73,20 @@ public record SearchOverride
     [JsonPropertyName("includes")]
     public IEnumerable<Include>? Includes { get; init; }
 
+    /// <summary>
+    /// Custom metadata for the search override.
+    /// </summary>
+    /// <remarks>
+    /// Example metadata JSON:
+    /// <code>
+    /// {
+    ///   "metadata": {
+    ///     "createdBy": "admin",
+    ///     "tags": ["featured", "promotion"]
+    ///   }
+    /// }
+    /// </code>
+    /// </remarks>
     [JsonPropertyName("metadata")]
     public IDictionary<string, object>? Metadata { get; init; }
 
