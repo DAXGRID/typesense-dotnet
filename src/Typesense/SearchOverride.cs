@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Typesense.Converter;
 
 namespace Typesense;
 
@@ -71,6 +72,47 @@ public record SearchOverride
 
     [JsonPropertyName("includes")]
     public IEnumerable<Include>? Includes { get; init; }
+
+    /// <summary>
+    /// Custom metadata for the search override.
+    /// </summary>
+    /// <remarks>
+    /// Example metadata JSON:
+    /// <code>
+    /// {
+    ///   "metadata": {
+    ///     "createdBy": "admin",
+    ///     "tags": ["featured", "promotion"]
+    ///   }
+    /// }
+    /// </code>
+    /// </remarks>
+    [JsonPropertyName("metadata")]
+    public IDictionary<string, object>? Metadata { get; init; }
+
+    [JsonPropertyName("filter_by")]
+    public string? FilterBy { get; init; }
+
+    [JsonPropertyName("sort_by")]
+    public string? SortBy { get; init; }
+
+    [JsonPropertyName("replace_query")]
+    public string? ReplaceQuery { get; init; }
+
+    [JsonPropertyName("remove_matched_tokens")]
+    public bool? RemoveMatchedTokens { get; init; }
+
+    [JsonPropertyName("filter_curated_hits")]
+    public bool? FilterCuratedHits { get; init; }
+
+    [JsonPropertyName("stop_processing")]
+    public bool? StopProcessing { get; init; }
+
+    [JsonPropertyName("effective_from_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
+    public DateTime? EffectiveFromTs { get; init; }
+
+    [JsonPropertyName("effective_to_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
+    public DateTime? EffectiveToTs { get; init; }
 
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }

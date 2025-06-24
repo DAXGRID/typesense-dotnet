@@ -1,11 +1,13 @@
-﻿using System;
-using System.Globalization;
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Typesense.Converter;
 
-public class UnixEpochDateTimeConverter : JsonConverter<DateTime>
+/// <summary>
+/// Converts between nullable DateTime and Unix epoch seconds as a long integer value.
+/// </summary>
+public class UnixEpochDateTimeLongConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -15,6 +17,6 @@ public class UnixEpochDateTimeConverter : JsonConverter<DateTime>
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
         ArgumentNullException.ThrowIfNull(writer);
-        writer.WriteStringValue((value - DateTime.UnixEpoch).TotalSeconds.ToString(CultureInfo.InvariantCulture));
+        writer.WriteNumberValue(Convert.ToInt64((value - DateTime.UnixEpoch).TotalSeconds));
     }
 }
