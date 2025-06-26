@@ -2032,6 +2032,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     first.EffectiveFromTs.Should().HaveYear(DateTime.UtcNow.Year);
                     first.EffectiveFromTs.Should().HaveMonth(DateTime.UtcNow.Month);
                     first.EffectiveFromTs.Should().HaveDay(DateTime.UtcNow.Day);
+                    first.EffectiveToTs.Should().BeNull();
                     first.Rule.Should().BeEquivalentTo(expected.Rule);
                 });
 

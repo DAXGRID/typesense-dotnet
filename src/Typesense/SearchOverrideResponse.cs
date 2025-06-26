@@ -38,10 +38,10 @@ public record SearchOverrideResponse
     public bool StopProcessing { get; init; }
 
     [JsonPropertyName("effective_from_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
-    public DateTime EffectiveFromTs { get; init; }
+    public DateTime? EffectiveFromTs { get; init; }
 
     [JsonPropertyName("effective_to_ts"), JsonConverter(typeof(UnixEpochDateTimeLongConverter))]
-    public DateTime EffectiveToTs { get; init; }
+    public DateTime? EffectiveToTs { get; init; }
 
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
@@ -49,7 +49,7 @@ public record SearchOverrideResponse
     [JsonConstructor]
     public SearchOverrideResponse(IEnumerable<Exclude> excludes, IEnumerable<Include> includes,
         IDictionary<string, object> metadata, string filterBy, string sortBy, string replaceQuery, bool removeMatchedTokens,
-        bool filterCuratedHits, bool stopProcessing, DateTime effectiveFromTs, DateTime effectiveToTs,
+        bool filterCuratedHits, bool stopProcessing, DateTime? effectiveFromTs, DateTime? effectiveToTs,
         Rule rule, string id)
     {
         Excludes = excludes;
