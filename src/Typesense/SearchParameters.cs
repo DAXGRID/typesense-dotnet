@@ -544,6 +544,9 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("remote_embedding_timeout_ms")]
     public int? RemoteEmbeddingTimeoutMs { get; set; }
+    
+    [JsonPropertyName("rerank_hybrid_matches")]
+    public bool? RerankHybridMatches { get; set; }
 
     /// <summary>
     /// The number of times to retry an API call to a remote embedding service on failure.

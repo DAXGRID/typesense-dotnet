@@ -7,7 +7,7 @@
     <AnalysisMode>All</AnalysisMode>
     <Nullable>enable</Nullable>
 
-    <PackageId>Typesense</PackageId>
+    <PackageId>Typesense-Hybrid</PackageId>
     <Description>.NET HTTP client for Typesense.</Description>
     <PackageTags>typesense;search;search-engine;fuzzy-search;instant-search</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
@@ -15,6 +15,7 @@
     <RepositoryUrl>https://github.com/DAXGRID/typesense-dotnet</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
