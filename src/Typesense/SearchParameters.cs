@@ -546,8 +546,8 @@ public record SearchParameters
     public int? RemoteEmbeddingTimeoutMs { get; set; }
     
     /// <summary>
-    /// Provides more comprehensive ranking of results by computing both scores (distance and text match) for all matches,
-    /// at the cost of additional computation time.
+    /// When set to true, enables both text match and vector distance scores to be computed for all hybrid search results,
+    /// improving the ranking by combining both score types for documents found only by keyword or vector search
     /// Default: false
     /// </summary>
     [JsonPropertyName("rerank_hybrid_matches")]
