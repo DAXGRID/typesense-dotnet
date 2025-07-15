@@ -75,7 +75,7 @@ public record VectorQuery
     /// <param name="k">Number of documents that are returned</param>
     /// <param name="flatSearchCutoff">If you wish to do brute-force vector search when a given query matches fewer than 20 documents, sending flat_search_cutoff=20 will bypass the HNSW index when the number of results found is less than 20</param>
     /// <param name="extraParams">Any extra parameters you wish to include as a key/value dictionary</param>
-    /// <param name="distanceThreshold">Any extra parameters you wish to include as a key/value dictionary</param>
+    /// <param name="distanceThreshold">Maximum vector distance threshold for results of semantic search and hybrid search</param>
     /// <exception cref="ArgumentException"></exception>
     public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null, decimal? distanceThreshold = null)
     {

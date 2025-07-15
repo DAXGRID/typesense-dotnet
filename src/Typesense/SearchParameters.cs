@@ -545,6 +545,11 @@ public record SearchParameters
     [JsonPropertyName("remote_embedding_timeout_ms")]
     public int? RemoteEmbeddingTimeoutMs { get; set; }
     
+    /// <summary>
+    /// Provides more comprehensive ranking of results by computing both scores (distance and text match) for all matches,
+    /// at the cost of additional computation time.
+    /// Default: false
+    /// </summary>
     [JsonPropertyName("rerank_hybrid_matches")]
     public bool? RerankHybridMatches { get; set; }
 
