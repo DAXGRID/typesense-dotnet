@@ -544,6 +544,14 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("remote_embedding_timeout_ms")]
     public int? RemoteEmbeddingTimeoutMs { get; set; }
+    
+    /// <summary>
+    /// When set to true, enables both text match and vector distance scores to be computed for all hybrid search results,
+    /// improving the ranking by combining both score types for documents found only by keyword or vector search
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("rerank_hybrid_matches")]
+    public bool? RerankHybridMatches { get; set; }
 
     /// <summary>
     /// The number of times to retry an API call to a remote embedding service on failure.
