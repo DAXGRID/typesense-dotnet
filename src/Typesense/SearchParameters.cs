@@ -450,7 +450,7 @@ public record SearchParameters
     /// The number of typographical errors (1 or 2) that would be tolerated.
     /// </summary>
     [JsonPropertyName("num_typos")]
-    public int? NumberOfTypos { get; set; }
+    public string? NumberOfTypos { get; set; }
 
     /// <summary>
     /// Minimum word length for 1-typo correction to be applied. The value
