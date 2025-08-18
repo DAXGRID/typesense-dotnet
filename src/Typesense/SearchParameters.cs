@@ -83,6 +83,7 @@ public record SearchParameters
     /// autocomplete and instant search interfaces. Defaults to true.
     /// </summary>
     /// <remarks>Backwards compatible implementation for existing clients.</remarks>
+    [JsonPropertyName("_prefix")]
     public bool? Prefix
     {
         get => PrefixList == null ? null : PrefixList.Count > 0 ? PrefixList[0] : null;
