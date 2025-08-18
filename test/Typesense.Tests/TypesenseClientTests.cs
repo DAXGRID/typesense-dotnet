@@ -1500,6 +1500,62 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+        [Fact, TestPriority(11)]
+        public async Task Search_query_with_prefix_true_should_work()
+        {
+            var expected = new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries",
+                NumEmployees = 6000,
+                Location = new Location
+                {
+                    City = "Phoenix",
+                    Country = "USA"
+                },
+            };
+
+            var query = new SearchParameters("Stark", "company_name")
+            {
+                Prefix = true
+            };
+            var response = await _client.Search<Company>("companies", query);
+
+            using (var scope = new AssertionScope())
+            {
+                response.Found.Should().Be(1);
+                response.Hits.First().Document.Should().BeEquivalentTo(expected);
+            }
+        }
+
+        [Fact, TestPriority(11)]
+        public async Task Search_query_with_prefix_list_should_work()
+        {
+            var expected = new Company
+            {
+                Id = "124",
+                CompanyName = "Stark Industries",
+                NumEmployees = 6000,
+                Location = new Location
+                {
+                    City = "Phoenix",
+                    Country = "USA"
+                },
+            };
+
+            var query = new SearchParameters("Stark", "company_name,location.country")
+            {
+                PrefixList = new List<bool> { true, false }
+            };
+            var response = await _client.Search<Company>("companies", query);
+
+            using (var scope = new AssertionScope())
+            {
+                response.Found.Should().Be(1);
+                response.Hits.First().Document.Should().BeEquivalentTo(expected);
+            }
+        }
+
     [Fact, TestPriority(11)]
     public async Task Search_facet_by_country()
     {
