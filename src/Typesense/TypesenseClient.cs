@@ -799,7 +799,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Get<T>(string path, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
-        using var response = await _httpClient.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.GetAsync(path.TrimStart('/'), HttpCompletionOption.ResponseHeadersRead, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
@@ -808,7 +808,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async IAsyncEnumerable<string> GetLines(string path, [EnumeratorCancellation] CancellationToken ctk = default)
     {
-        using var response = await _httpClient.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.GetAsync(path.TrimStart('/'), HttpCompletionOption.ResponseHeadersRead, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
