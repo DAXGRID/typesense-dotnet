@@ -832,7 +832,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Delete<T>(string path, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
-        using var response = await _httpClient.DeleteAsync(path, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.DeleteAsync(path.TrimStart('/'), ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
@@ -841,7 +841,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Post<T>(string path, HttpContent? httpContent, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
-        using var response = await _httpClient.PostAsync(path, httpContent, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.PostAsync(path.TrimStart('/'), httpContent, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
@@ -850,7 +850,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Patch<T>(string path, HttpContent? httpContent, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
-        using var response = await _httpClient.PatchAsync(path, httpContent, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.PatchAsync(path.TrimStart('/'), httpContent, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
@@ -859,7 +859,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Put<T>(string path, HttpContent? httpContent, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
-        using var response = await _httpClient.PutAsync(path, httpContent, ctk).ConfigureAwait(false);
+        using var response = await _httpClient.PutAsync(path.TrimStart('/'), httpContent, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
