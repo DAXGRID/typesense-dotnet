@@ -495,7 +495,7 @@ public class TypesenseClient : ITypesenseClient
 
         if (returnId is not null)
         {
-            path += $"&return_id={returnId}";
+            path += $"&return_id={((bool)returnId ? "true" : "false")}";
         }
 
         using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
