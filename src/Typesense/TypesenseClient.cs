@@ -589,7 +589,9 @@ public class TypesenseClient : ITypesenseClient
         {
             if (string.IsNullOrWhiteSpace(line))
                 continue;
-            
+
+            ctk.ThrowIfCancellationRequested();
+
             yield return JsonSerializer.Deserialize<T>(line, _jsonNameCaseInsensitiveTrue) ??
                          throw new ArgumentException("Null is not valid for documents");
         }
