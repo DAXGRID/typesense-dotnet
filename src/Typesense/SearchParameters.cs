@@ -559,6 +559,12 @@ public record SearchParameters
     [JsonPropertyName("remote_embedding_num_tries")]
     public int? RemoteEmbeddingNumTries { get; set; }
 
+    /// <<summary>
+    /// When set to false, it will ignore any analityc roles
+    /// </summary>
+    [JsonPropertyName("enable_analytics")]
+    public Bool? EnableAnalytics { get; set; }
+
     [Obsolete("Use multi-arity constructor instead.")]
     public SearchParameters()
     {
