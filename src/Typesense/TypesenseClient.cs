@@ -565,17 +565,36 @@ public class TypesenseClient : ITypesenseClient
 
         ArgumentNullException.ThrowIfNull(exportParameters);
 
+        var docs = ExportDocumentsAsStream<T>(collection, exportParameters, ctk).ConfigureAwait(false);
+        
+        List<T> documents = new();
+        await foreach (var doc in docs)
+        {
+            documents.Add(doc);
+        }
+        return documents;
+    }
+
+    public async IAsyncEnumerable<T> ExportDocumentsAsStream<T>(string collection, ExportParameters exportParameters, [EnumeratorCancellation] CancellationToken ctk = default)
+    {
+        if (string.IsNullOrWhiteSpace(collection))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
+
+        ArgumentNullException.ThrowIfNull(exportParameters);
+
         var parameters = CreateUrlParameters(exportParameters);
         var lines = GetLines($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
-        List<T> documents = new();
+
         await foreach (var line in lines)
         {
             if (string.IsNullOrWhiteSpace(line))
                 continue;
-            documents.Add(JsonSerializer.Deserialize<T>(line, _jsonNameCaseInsensitiveTrue) ??
-                          throw new ArgumentException("Null is not valid for documents"));
+
+            ctk.ThrowIfCancellationRequested();
+
+            yield return JsonSerializer.Deserialize<T>(line, _jsonNameCaseInsensitiveTrue) ??
+                         throw new ArgumentException("Null is not valid for documents");
         }
-        return documents;
     }
 
     public async Task<KeyResponse> CreateKey(Key key)
