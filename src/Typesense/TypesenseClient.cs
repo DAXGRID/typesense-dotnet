@@ -493,9 +493,9 @@ public class TypesenseClient : ITypesenseClient
             _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType)),
         };
 
-        if (returnId is not null)
+        if (returnId == true)
         {
-            path += $"&return_id={returnId}";
+            path += "&return_id=true";
         }
 
         using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
