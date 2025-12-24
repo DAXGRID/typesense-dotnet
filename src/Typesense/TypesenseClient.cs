@@ -801,6 +801,12 @@ public class TypesenseClient : ITypesenseClient
                     null => null,
                     true => "true",
                     false => "false",
+                    List<bool> list => string.Join(",", 
+                        list.Select(v => v switch
+                        {
+                            true => "true",
+                            false => "false"
+                        })),
                     Enum e => e.ToString().ToLowerInvariant(),
                     _ => value.ToString(),
                 };

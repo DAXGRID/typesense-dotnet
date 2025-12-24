@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Typesense.Converter;
 
@@ -81,8 +82,41 @@ public record SearchParameters
     /// be treated as a prefix, and not as a whole word. This is used for building
     /// autocomplete and instant search interfaces. Defaults to true.
     /// </summary>
+    /// <remarks>Backwards compatible implementation for existing clients.</remarks>
+    [JsonPropertyName("_prefix")]
+    public bool? Prefix
+    {
+        get => PrefixList == null ? null : PrefixList.Count > 0 ? PrefixList[0] : null;
+        set
+        {
+            if (value != null) 
+            {
+                if (PrefixList == null)
+                {
+                    PrefixList = new List<bool>();
+                }
+                if(PrefixList.Count == 0)
+                {
+                    PrefixList.Add(value.Value);
+                }
+                else
+                {
+                    PrefixList[0] = value.Value!;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// List of boolean fields to indicate that the last word in the query should
+    /// be treated as a prefix, and not as a whole word. This is used for building
+    /// autocomplete and instant search interfaces. 
+    /// For example, if you are querying 3 fields and want to enable prefix searching only on the first field
+    /// you can set the prefix property to [true, false, false].
+    /// Defaults to true.
+    /// </summary>
     [JsonPropertyName("prefix")]
-    public bool? Prefix { get; set; }
+    public List<bool> PrefixList { get; set; }
 
     /// <summary>
     /// If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query.
