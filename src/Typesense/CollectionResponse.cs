@@ -28,6 +28,12 @@ public record CollectionResponse
     [JsonPropertyName("enable_nested_fields")]
     public bool EnableNestedFields { get; init; }
 
+    [JsonPropertyName("synonym_sets")]
+    public IReadOnlyCollection<string> SynonymSets { get; init; }
+
+    [JsonPropertyName("curation_sets")]
+    public IReadOnlyCollection<string> CurationSets { get; init; }
+
     [JsonPropertyName("metadata")]
     public IDictionary<string, object?>? Metadata { get; init; }
 
@@ -43,7 +49,9 @@ public record CollectionResponse
         IReadOnlyCollection<string> tokenSeparators,
         IReadOnlyCollection<string> symbolsToIndex,
         bool enableNestedFields,
-        IDictionary<string, object>? metadata = null)
+        IReadOnlyCollection<string>? synonymSets = null,
+        IReadOnlyCollection<string>? curationSets = null,
+        IDictionary<string, object?>? metadata = null)
     {
         Name = name;
         NumberOfDocuments = numberOfDocuments;
@@ -52,6 +60,9 @@ public record CollectionResponse
         TokenSeparators = tokenSeparators;
         SymbolsToIndex = symbolsToIndex;
         EnableNestedFields = enableNestedFields;
+        // Always initialize so it's the same behavior for versions before 30.0.
+        SynonymSets = synonymSets ?? Array.Empty<string>(); 
+        CurationSets = curationSets ?? Array.Empty<string>();
         Metadata = metadata;
     }
 }

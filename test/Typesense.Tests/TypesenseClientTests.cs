@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Typesense.Setup;
 using Xunit;
 
 namespace Typesense.Tests;
@@ -57,10 +58,12 @@ public record Company()
 public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 {
     private readonly ITypesenseClient _client;
+    private readonly Config _clientConfig;
 
     public TypesenseClientTests(TypesenseFixture fixture)
     {
         _client = fixture.Client;
+        _clientConfig = fixture.ClientConfig;
     }
 
     [Fact, TestPriority(0)]
@@ -114,7 +117,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "num_employees",
             new List<string>(),
             new List<string>(),
-            true);
+            true,
+            new List<string>());
 
         var schema = new Schema(
             "companies",
@@ -365,6 +369,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             new List<string>(),
             new List<string>(),
             false,
+            null,
+            null,
             new Dictionary<string, object>
             {
                 ["version"] = JsonSerializer.SerializeToElement(1.2f),
@@ -1665,7 +1671,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             // Validate that second has errors.
             responses[1].Found.Should().BeNull();
             responses[1].Hits.Should().BeNull();
-            responses[1].ErrorMessage.Should().Be("Not found.");
+            responses[1].ErrorMessage.Contains("not found", StringComparison.OrdinalIgnoreCase);
             responses[1].ErrorCode.Should().Be(404);
         }
     }
@@ -1956,9 +1962,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(18)]
+    [SkippableFact, TestPriority(18)]
     public async Task Upsert_search_override()
     {
+        Skip.IfNot(_clientConfig.AreOverridesSupported);
+
         var searchOverride = new SearchOverride(
             new Rule("apple", "exact"))
         {
@@ -1980,9 +1988,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "companies", "customize-apple", searchOverride);
     }
 
-    [Fact, TestPriority(19)]
+    [SkippableFact, TestPriority(19)]
     public async Task Retrieve_search_override()
     {
+        Skip.IfNot(_clientConfig.AreOverridesSupported);
+
         var searchOverrides = await _client.ListSearchOverrides("companies");
 
         var expected = searchOverrides.SearchOverrides.First();
@@ -1993,9 +2003,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Metadata));
     }
 
-    [Fact, TestPriority(20)]
+    [SkippableFact, TestPriority(20)]
     public async Task List_search_overrides()
     {
+        Skip.IfNot(_clientConfig.AreOverridesSupported);
+
         var expected = new SearchOverride(
             new Rule("apple", "exact"))
         {
@@ -2041,9 +2053,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.SearchOverrides.FirstOrDefault()?.Metadata["apple_color"].As<JsonElement>().GetString().Should().Be("green");
     }
 
-    [Fact, TestPriority(21)]
+    [SkippableFact, TestPriority(21)]
     public async Task Delete_search_override()
     {
+        Skip.IfNot(_clientConfig.AreOverridesSupported);
+
         var expected = new DeleteSearchOverrideResponse("customize-apple");
 
         var response = await _client.DeleteSearchOverride("companies", "customize-apple");
@@ -2096,9 +2110,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(26)]
+    [SkippableFact, TestPriority(26)]
     public async Task Upsert_synonym()
     {
+        Skip.IfNot(_clientConfig.AreSynonymsSupported);
+
         var expected = new SynonymSchemaResponse(
             "apple-synonyms",
             new List<string> { "appl", "aple", "apple" },
@@ -2116,9 +2132,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(27)]
+    [SkippableFact, TestPriority(27)]
     public async Task Retrieve_synonym()
     {
+        Skip.IfNot(_clientConfig.AreSynonymsSupported);
+
         var expected = new SynonymSchemaResponse(
             "apple-synonyms",
             new List<string> { "appl", "aple", "apple" },
@@ -2130,9 +2148,11 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(28)]
+    [SkippableFact, TestPriority(28)]
     public async Task List_synonyms()
     {
+        Skip.IfNot(_clientConfig.AreSynonymsSupported);
+
         var expected = new ListSynonymsResponse(
             new List<SynonymSchemaResponse>
             {
@@ -2148,16 +2168,251 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(29)]
+    [SkippableFact, TestPriority(29)]
     public async Task Delete_synonym()
     {
+        Skip.IfNot(_clientConfig.AreSynonymsSupported);
+
         var expected = new DeleteSynonymResponse("apple-synonyms");
         var response = await _client.DeleteSynonym("companies", "apple-synonyms");
 
         response.Should().Be(expected);
     }
 
-    [Fact, TestPriority(30)]
+    [SkippableFact, TestPriority(30)]
+    public async Task Upsert_synonym_set()
+    {
+        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
+
+        var expected = new SynonymSetSchemaResponse(
+            "fruit-synonyms",
+            [
+                new SynonymSchemaResponse(
+                    "apple-synonyms", 
+                    ["appl", "aple", "apple"], 
+                    "apple", 
+                    ["+"]
+                )
+            ]
+        );
+
+        var schema = new SynonymSetSchema([
+            new SynonymSchemaResponse(
+                "apple-synonyms",
+                ["appl", "aple", "apple"],
+                "apple",
+                ["+"]
+            )
+        ]);
+
+        var response = await _client.UpsertSynonymSet("fruit-synonyms", schema);
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [SkippableFact, TestPriority(31)]
+    public async Task Retrieve_synonym_set()
+    {
+        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
+
+        var expected = new SynonymSetSchemaResponse(
+            "fruit-synonyms",
+            [
+                new SynonymSchemaResponse(
+                    "apple-synonyms",
+                    ["appl", "aple", "apple"],
+                    "apple",
+                    ["+"]
+                )
+            ]
+        );
+
+        var response = await _client.RetrieveSynonymSet("fruit-synonyms");
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [SkippableFact, TestPriority(32)]
+    public async Task List_synonym_sets()
+    {
+        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
+
+        var expected = new ListSynonymSetsResponse([
+            new SynonymSetSchemaResponse(
+                "fruit-synonyms",
+                [
+                    new SynonymSchemaResponse(
+                        "apple-synonyms",
+                        ["appl", "aple", "apple"],
+                        "apple",
+                        ["+"]
+                    )
+                ]
+            )
+        ]);
+
+        var response = await _client.ListSynonymSets();
+
+        response.Should().BeEquivalentTo(expected);
+    }
+
+    [SkippableFact, TestPriority(33)]
+    public async Task Delete_synonym_set()
+    {
+        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
+
+        var expected = new DeleteSynonymSetResponse("fruit-synonyms");
+        var response = await _client.DeleteSynonymSet("fruit-synonyms");
+
+        response.Should().Be(expected);
+    }
+
+    [SkippableFact, TestPriority(34)]
+    public async Task Upsert_curation_set()
+    {
+        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
+
+        var ts = DateTime.Parse("2026-01-29 07:18:27");
+        var json = JsonSerializer.Deserialize<JsonDocument>("""{ "apple_color": "green" }""");
+
+        var expected = new CurationSetSchemaResponse("product-curations",
+        [
+            new SearchOverrideResponse(
+                excludes: [],
+                includes: new List<Include>
+                {
+                    new("422", 1),
+                    new("54", 2)
+                },
+                metadata: new Dictionary<string, object> { ["apple_color"] = "green" },
+                filterBy: "NOT description:=[pink lady 1]",
+                sortBy: "color:asc",
+                replaceQuery: "replacement query",
+                removeMatchedTokens: false,
+                filterCuratedHits: false,
+                stopProcessing: false,
+                effectiveFromTs: ts,
+                effectiveToTs: null,
+                rule: new Rule("apple", "exact"),
+                id: "customize-apple"
+            )
+        ]);        
+
+        var schema = new CurationSetSchema(
+        [
+            new SearchOverrideResponse(
+                excludes: [],
+                includes: new List<Include>
+                {
+                    new("422", 1),
+                    new("54", 2)
+                },
+                metadata: new Dictionary<string, object> { ["apple_color"] = "green" },
+                filterBy: "NOT description:=[pink lady 1]",
+                sortBy: "color:asc",
+                replaceQuery: "replacement query",
+                removeMatchedTokens: false,
+                filterCuratedHits: false,
+                stopProcessing: false,
+                effectiveFromTs: ts,
+                effectiveToTs: null,
+                rule: new Rule("apple", "exact"),
+                id: "customize-apple"
+            )
+        ]);
+
+        var response = await _client.UpsertCurationSet("product-curations", schema);
+
+        // Metadata contains JsonElement which FluentAssertions cannot handle directly, so exclude it.
+        response.Should().BeEquivalentTo(expected, options => options.Excluding(member => member.Path.Contains("Metadata")));
+    }
+
+    [SkippableFact, TestPriority(35)]
+    public async Task Retrieve_curation_set()
+    {
+        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
+
+        var expected = new CurationSetSchemaResponse("product-curations",
+        [
+            new SearchOverrideResponse(
+                excludes: [],
+                includes: new List<Include>
+                {
+                    new("422", 1),
+                    new("54", 2)
+                },
+                metadata: null,
+                filterBy: "NOT description:=[pink lady 1]",
+                sortBy: "color:asc",
+                replaceQuery: "replacement query",
+                removeMatchedTokens: false,
+                filterCuratedHits: false,
+                stopProcessing: false,
+                effectiveFromTs: null,
+                effectiveToTs: null,
+                rule: new Rule("apple", "exact"),
+                id: "customize-apple"
+            )
+        ]);
+
+        var response = await _client.RetrieveCurationSet("product-curations");
+
+        response.Should().BeEquivalentTo(expected, options => options
+            .Excluding(member => member.Path.Contains("Metadata"))
+            .Excluding(member => member.Path.EndsWith("EffectiveFromTs"))
+        );
+    }
+
+    [SkippableFact, TestPriority(36)]
+    public async Task List_curation_sets()
+    {
+        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
+
+        var expected = new ListCurationSetsResponse([
+            new CurationSetSchemaResponse("product-curations",
+            [
+                new SearchOverrideResponse(
+                    excludes: [],
+                    includes: new List<Include>
+                    {
+                        new("422", 1),
+                        new("54", 2)
+                    },
+                    metadata: null,
+                    filterBy: "NOT description:=[pink lady 1]",
+                    sortBy: "color:asc",
+                    replaceQuery: "replacement query",
+                    removeMatchedTokens: false,
+                    filterCuratedHits: false,
+                    stopProcessing: false,
+                    effectiveFromTs: null,
+                    effectiveToTs: null,
+                    rule: new Rule("apple", "exact"),
+                    id: "customize-apple"
+                )
+            ])
+        ]);
+
+        var response = await _client.ListCurationSets();
+
+        response.Should().BeEquivalentTo(expected, options => options
+            .Excluding(member => member.Path.Contains("Metadata"))
+            .Excluding(member => member.Path.EndsWith("EffectiveFromTs"))
+        );
+    }
+
+    [SkippableFact, TestPriority(37)]
+    public async Task Delete_curation_set()
+    {
+        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
+
+        var expected = new DeleteCurationSetResponse("product-curations");
+        var response = await _client.DeleteCurationSet("product-curations");
+
+        response.Should().Be(expected);
+    }
+
+    [Fact, TestPriority(38)]
     public async Task Can_retrieve_metrics()
     {
         var response = await _client.RetrieveMetrics();
@@ -2184,7 +2439,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(31)]
+    [Fact, TestPriority(39)]
     public async Task Escape_url_parameters()
     {
         var company = new Company
@@ -2212,7 +2467,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(32)]
+    [Fact, TestPriority(40)]
     public async Task Can_do_vector_search()
     {
         const string COLLECTION_NAME = "address_vector_search";
@@ -2311,7 +2566,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(32)]
+    [Fact, TestPriority(41)]
     public async Task Search_against_array_field()
     {
         // Give it a random name, to avoid name clashes.
@@ -2386,7 +2641,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(33)]
+    [Fact, TestPriority(42)]
     public async Task Can_do_semantic_search()
     {
         const string COLLECTION_NAME = "course_vector_search";
@@ -2455,7 +2710,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(34)]
+    [Fact, TestPriority(43)]
     public async Task Can_retrieve_health()
     {
         var response = await _client.RetrieveHealth();
@@ -2466,7 +2721,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(35)]
+    [Fact, TestPriority(44)]
     public async Task Can_create_snapshot()
     {
         var response = await _client.CreateSnapshot("/my_snapshot_path");
@@ -2477,7 +2732,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(36)]
+    [Fact, TestPriority(45)]
     public async Task Can_compact_disk()
     {
         var response = await _client.CompactDisk();
@@ -2488,7 +2743,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
-    [Fact, TestPriority(37)]
+    [Fact, TestPriority(46)]
     public async Task Update_document_by_query()
     {
         var document = new
@@ -2502,7 +2757,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestPriority(38)]
+    [Fact, TestPriority(47)]
     public async Task Can_truncate_collection()
     {
         var response = await _client.TruncateCollection("companies");

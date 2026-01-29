@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Typesense.Setup;
 using Xunit;
@@ -9,6 +8,12 @@ namespace Typesense.Tests;
 public class TypesenseFixture : IAsyncLifetime
 {
     public ITypesenseClient Client => GetClient();
+    
+    public Config ClientConfig = new(
+        [new Node("localhost", "33769", "http")],
+        "typesense-api-key",
+        minimumCompatibilityVersion: null//new System.Version(30, 0) //null
+    );
 
     public async Task InitializeAsync()
     {
@@ -50,11 +55,9 @@ public class TypesenseFixture : IAsyncLifetime
         return new ServiceCollection()
             .AddTypesenseClient(config =>
             {
-                config.ApiKey = "key";
-                config.Nodes = new List<Node>
-                {
-                    new Node("localhost", "8108", "http")
-                };
+                config.ApiKey = ClientConfig.ApiKey;
+                config.Nodes = ClientConfig.Nodes;
+                config.MinimumCompatibilityVersion = ClientConfig.MinimumCompatibilityVersion;
             }, enableHttpCompression: true).BuildServiceProvider().GetService<ITypesenseClient>();
     }
 

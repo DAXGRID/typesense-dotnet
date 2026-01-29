@@ -24,6 +24,7 @@ namespace Typesense;
 public class TypesenseClient : ITypesenseClient
 {
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
+    private readonly IOptions<Config> _config;
     private readonly HttpClient _httpClient;
 
     private readonly JsonSerializerOptions _jsonSerializerDefault = new();
@@ -45,7 +46,10 @@ public class TypesenseClient : ITypesenseClient
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
         httpClient.BaseAddress = typeSenseUriBuilder.Uri;
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
+
+        _config = config;
         _httpClient = httpClient;
+
         if (config.Value.JsonSerializerOptions is not null)
         {
             _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(config.Value.JsonSerializerOptions)
@@ -64,6 +68,12 @@ public class TypesenseClient : ITypesenseClient
     public async Task<CollectionResponse> CreateCollection(Schema schema)
     {
         ArgumentNullException.ThrowIfNull(schema);
+
+        if (schema.SynonymSets != null)
+            _config.Value.ThrowIfSynonymSetsAreNotSupported();
+
+        if (schema.CurationSets != null)
+            _config.Value.ThrowIfCurationSetsAreNotSupported();
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
@@ -566,7 +576,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(exportParameters);
 
         var docs = ExportDocumentsAsStream<T>(collection, exportParameters, ctk).ConfigureAwait(false);
-        
+
         List<T> documents = new();
         await foreach (var doc in docs)
         {
@@ -642,6 +652,8 @@ public class TypesenseClient : ITypesenseClient
     public async Task<SearchOverrideResponse> UpsertSearchOverride(
         string collection, string overrideName, SearchOverride searchOverride)
     {
+        _config.Value.ThrowIfOverridesAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
         if (string.IsNullOrWhiteSpace(overrideName))
@@ -655,6 +667,8 @@ public class TypesenseClient : ITypesenseClient
 
     public Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default)
     {
+        _config.Value.ThrowIfOverridesAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
 
@@ -663,6 +677,8 @@ public class TypesenseClient : ITypesenseClient
 
     public Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default)
     {
+        _config.Value.ThrowIfOverridesAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
         if (string.IsNullOrWhiteSpace(overrideName))
@@ -674,12 +690,55 @@ public class TypesenseClient : ITypesenseClient
     public Task<DeleteSearchOverrideResponse> DeleteSearchOverride(
         string collection, string overrideName)
     {
+        _config.Value.ThrowIfOverridesAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
         if (string.IsNullOrWhiteSpace(overrideName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
 
         return Delete<DeleteSearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _jsonNameCaseInsensitiveTrue);
+    }
+
+    public async Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema curationSet)
+    {
+        _config.Value.ThrowIfCurationSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(curationSetName))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(curationSetName));
+
+        ArgumentNullException.ThrowIfNull(curationSet);
+
+        using var jsonContent = JsonContent.Create(curationSet, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Put<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+    }
+
+    public Task<CurationSetSchemaResponse> RetrieveCurationSet(string curationSetName, CancellationToken ctk = default)
+    {
+        _config.Value.ThrowIfCurationSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(curationSetName))
+            throw new ArgumentException($"{nameof(curationSetName)} cannot be null, empty or whitespace.");
+
+        return Get<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", _jsonNameCaseInsensitiveTrue, ctk);
+    }
+
+    public async Task<ListCurationSetsResponse> ListCurationSets(CancellationToken ctk = default)
+    {
+        _config.Value.ThrowIfCurationSetsAreNotSupported();
+
+        var curationSets = await Get<CurationSetSchemaResponse[]>("/curation_sets", _jsonNameCaseInsensitiveTrue, ctk);
+        return new ListCurationSetsResponse(curationSets);
+    }
+
+    public Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName)
+    {
+        _config.Value.ThrowIfCurationSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(curationSetName))
+            throw new ArgumentException($"{nameof(curationSetName)} cannot be null, empty or whitespace.");
+
+        return Delete<DeleteCurationSetResponse>($"/curation_sets/{curationSetName}", _jsonNameCaseInsensitiveTrue);
     }
 
     public async Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias)
@@ -717,6 +776,8 @@ public class TypesenseClient : ITypesenseClient
     public async Task<SynonymSchemaResponse> UpsertSynonym(
         string collection, string synonym, SynonymSchema schema)
     {
+        _config.Value.ThrowIfSynonymsAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
         if (string.IsNullOrWhiteSpace(synonym))
@@ -730,6 +791,8 @@ public class TypesenseClient : ITypesenseClient
 
     public Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default)
     {
+        _config.Value.ThrowIfSynonymsAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
         if (string.IsNullOrWhiteSpace(synonym))
@@ -740,6 +803,8 @@ public class TypesenseClient : ITypesenseClient
 
     public Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default)
     {
+        _config.Value.ThrowIfSynonymsAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
 
@@ -748,12 +813,55 @@ public class TypesenseClient : ITypesenseClient
 
     public Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym)
     {
+        _config.Value.ThrowIfSynonymsAreNotSupported();
+
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
         if (string.IsNullOrWhiteSpace(synonym))
             throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
 
         return Delete<DeleteSynonymResponse>($"/collections/{collection}/synonyms/{synonym}", _jsonNameCaseInsensitiveTrue);
+    }
+
+    public async Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema synonymSet)
+    {
+        _config.Value.ThrowIfSynonymSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(synonymSetName))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(synonymSetName));
+
+        ArgumentNullException.ThrowIfNull(synonymSet);
+
+        using var jsonContent = JsonContent.Create(synonymSet, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        return await Put<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+    }
+
+    public Task<SynonymSetSchemaResponse> RetrieveSynonymSet(string synonymSetName, CancellationToken ctk = default)
+    {
+        _config.Value.ThrowIfSynonymSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(synonymSetName))
+            throw new ArgumentException($"{nameof(synonymSetName)} cannot be null, empty or whitespace.");
+
+        return Get<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", _jsonNameCaseInsensitiveTrue, ctk);
+    }
+
+    public async Task<ListSynonymSetsResponse> ListSynonymSets(CancellationToken ctk = default)
+    {
+        _config.Value.ThrowIfSynonymSetsAreNotSupported();
+
+        var synonymSets = await Get<SynonymSetSchemaResponse[]>("/synonym_sets", _jsonNameCaseInsensitiveTrue, ctk);
+        return new ListSynonymSetsResponse(synonymSets);
+    }
+
+    public Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName)
+    {
+        _config.Value.ThrowIfSynonymSetsAreNotSupported();
+
+        if (string.IsNullOrWhiteSpace(synonymSetName))
+            throw new ArgumentException($"{nameof(synonymSetName)} cannot be null, empty or whitespace.");
+
+        return Delete<DeleteSynonymSetResponse>($"/synonym_sets/{synonymSetName}", _jsonNameCaseInsensitiveTrue);
     }
 
     public Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default)

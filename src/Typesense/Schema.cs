@@ -24,6 +24,12 @@ public record Schema
     [JsonPropertyName("enable_nested_fields")]
     public bool? EnableNestedFields { get; init; }
 
+    [JsonPropertyName("synonym_sets")]
+    public IEnumerable<string>? SynonymSets { get; init; }
+
+    [JsonPropertyName("curation_sets")]
+    public IEnumerable<string>? CurationSets { get; init; }
+
     [JsonPropertyName("metadata")]
     public IDictionary<string, object?>? Metadata { get; init; }
 
