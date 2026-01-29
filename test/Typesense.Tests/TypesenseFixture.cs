@@ -11,8 +11,8 @@ public class TypesenseFixture : IAsyncLifetime
     
     public Config ClientConfig = new(
         [new Node("localhost", "8108", "http")],
-        "typesense-api-key",
-        minimumCompatibilityVersion: null//new System.Version(30, 0) //null
+        "key",
+        minimumCompatibilityVersion: null // Use following for Typesense v30.0: new System.Version(30, 0)
     );
 
     public async Task InitializeAsync()
