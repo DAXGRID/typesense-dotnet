@@ -44,7 +44,7 @@ public record Config
     {
         if (!AreSynonymSetsSupported)
             throw new NotSupportedException("Synonym sets are not supported by the current configured Typesense server version. " +
-                "Use syonymns instead or change the configuration.");
+                "Use synonymns instead or change the configuration.");
     }
 
     public void ThrowIfSynonymsAreNotSupported()
