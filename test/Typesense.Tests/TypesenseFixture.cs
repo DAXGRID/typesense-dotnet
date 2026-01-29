@@ -10,7 +10,7 @@ public class TypesenseFixture : IAsyncLifetime
     public ITypesenseClient Client => GetClient();
     
     public Config ClientConfig = new(
-        [new Node("localhost", "33769", "http")],
+        [new Node("localhost", "8108", "http")],
         "typesense-api-key",
         minimumCompatibilityVersion: null//new System.Version(30, 0) //null
     );
