@@ -6,6 +6,8 @@ namespace Typesense.Setup;
 
 public record Config
 {
+    private static readonly Version V30 = new(30, 0);
+
     public IReadOnlyCollection<Node> Nodes { get; set; }
     public string ApiKey { get; set; }
     public JsonSerializerOptions? JsonSerializerOptions { get; set; }
@@ -20,10 +22,10 @@ public record Config
     /// </remarks>
     public Version? MinimumCompatibilityVersion { get; set; }
 
-    public bool AreSynonymSetsSupported => MinimumCompatibilityVersion >= new Version(30, 0);
+    public bool AreSynonymSetsSupported => MinimumCompatibilityVersion >= V30;
     public bool AreSynonymsSupported => !AreSynonymSetsSupported;
 
-    public bool AreCurationSetsSupported => MinimumCompatibilityVersion >= new Version(30, 0);
+    public bool AreCurationSetsSupported => MinimumCompatibilityVersion >= V30;
     public bool AreOverridesSupported => !AreCurationSetsSupported;
 
     [Obsolete("Use multi-arity constructor instead.")]
