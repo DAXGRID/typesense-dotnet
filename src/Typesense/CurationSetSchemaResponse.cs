@@ -9,9 +9,9 @@ public record CurationSetSchemaResponse
     public string Name { get; init; }
 
     [JsonPropertyName("items")]
-    public IEnumerable<SearchOverrideResponse>? Items { get; init; }
+    public IEnumerable<SearchOverride>? Items { get; init; }
 
-    public CurationSetSchemaResponse(string name, IEnumerable<SearchOverrideResponse> items)
+    public CurationSetSchemaResponse(string name, IEnumerable<SearchOverride> items)
     {
         Name = name;
         Items = items;

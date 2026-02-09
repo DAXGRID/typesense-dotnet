@@ -30,20 +30,13 @@ public record MultiSearchParameters : SearchParameters
     public VectorQuery? VectorQuery { get; init; }
 
     [JsonPropertyName("group_by")]
-    public string GroupBy { get; set; }
+    public string? GroupBy { get; set; }
 
     [JsonPropertyName("group_limit")]
     public int? GroupLimit { get; set; }
 
     [JsonPropertyName("group_missing_values")]
     public bool? GroupMissingValues { get; set; }
-
-    /// <summary>
-    /// Set this parameter to the value of a preset that has been created in typesense.
-    /// The query parameters of the preset will then be used in your search.
-    /// </summary>
-    [JsonPropertyName("preset")]
-    public string? Preset { get; set; }
 
     public MultiSearchParameters(string collection, string text) : base(text)
     {
@@ -243,10 +236,10 @@ public record SearchParameters
     public bool? EnableOverrides { get; set; }
 
     /// <summary>
-    /// You can trigger particular override rules that you've tagged using their tag name(s) in this search parameter.
+    /// You can trigger particular curations that you've tagged using their tag name(s) in this search parameter.
     /// </summary>
-    [JsonPropertyName("override_tags")]
-    public string? OverrideTags { get; set; }
+    [JsonPropertyName("curation_tags")]
+    public string? CurationTags { get; set; }
 
     /// <summary>
     /// If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false.
@@ -559,7 +552,7 @@ public record SearchParameters
     [JsonPropertyName("remote_embedding_num_tries")]
     public int? RemoteEmbeddingNumTries { get; set; }
 
-    /// <<summary>
+    /// <summary>
     /// When set to false, it will ignore any analityc roles
     /// </summary>
     [JsonPropertyName("enable_analytics")]

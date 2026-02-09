@@ -48,6 +48,9 @@ public record Rule
     [JsonPropertyName("filter_by")]
     public string? FilterBy { get; init; }
 
+    [JsonPropertyName("synonyms")]
+    public bool? Synonyms { get; init; }
+
     [JsonPropertyName("tags")]
     public IEnumerable<string>? Tags { get; init; }
 
@@ -56,17 +59,22 @@ public record Rule
         string? query = null,
         string? match = null,
         string? filterBy = null,
+        bool? synonyms = null,
         IEnumerable<string>? tags = null)
     {
         Match = match;
         Query = query;
         FilterBy = filterBy;
+        Synonyms = synonyms;
         Tags = tags;
     }
 }
 
 public record SearchOverride
 {
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+
     [JsonPropertyName("excludes")]
     public IEnumerable<Exclude>? Excludes { get; init; }
 
@@ -117,9 +125,37 @@ public record SearchOverride
     [JsonPropertyName("rule")]
     public Rule Rule { get; init; }
 
-    public SearchOverride(Rule rule)
+    [JsonConstructor]
+    public SearchOverride(
+        string id, 
+        Rule rule,
+        IEnumerable<Exclude>? excludes = null, 
+        IEnumerable<Include>? includes = null,
+        IDictionary<string, object>? metadata = null, 
+        string? filterBy = null, 
+        string? sortBy = null, 
+        string? replaceQuery = null, 
+        bool? removeMatchedTokens = null,
+        bool? filterCuratedHits = null, 
+        bool? stopProcessing = null, 
+        DateTime? effectiveFromTs = null, 
+        DateTime? effectiveToTs = null)
     {
+        ArgumentNullException.ThrowIfNull(id);
         ArgumentNullException.ThrowIfNull(rule);
+
+        Id = id;
         Rule = rule;
+        Excludes = excludes;
+        Includes = includes;
+        Metadata = metadata;
+        FilterBy = filterBy;
+        SortBy = sortBy;
+        ReplaceQuery = replaceQuery;
+        RemoveMatchedTokens = removeMatchedTokens;
+        FilterCuratedHits = filterCuratedHits;
+        StopProcessing = stopProcessing;
+        EffectiveFromTs = effectiveFromTs;
+        EffectiveToTs = effectiveToTs;
     }
 }

@@ -6,9 +6,9 @@ namespace Typesense;
 public record SynonymSetSchema
 {
     [JsonPropertyName("items")]
-    public IEnumerable<SynonymSchemaResponse>? Items { get; init; }
+    public IEnumerable<SynonymSchema>? Items { get; init; }
 
-    public SynonymSetSchema(IEnumerable<SynonymSchemaResponse> items)
+    public SynonymSetSchema(IEnumerable<SynonymSchema> items)
     {
         Items = items;
     }

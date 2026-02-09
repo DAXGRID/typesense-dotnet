@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Typesense.Setup;
 using Xunit;
 
 namespace Typesense.Tests;
@@ -58,12 +57,10 @@ public record Company()
 public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 {
     private readonly ITypesenseClient _client;
-    private readonly Config _clientConfig;
 
     public TypesenseClientTests(TypesenseFixture fixture)
     {
         _client = fixture.Client;
-        _clientConfig = fixture.ClientConfig;
     }
 
     [Fact, TestPriority(0)]
@@ -1962,109 +1959,6 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [SkippableFact, TestPriority(18)]
-    public async Task Upsert_search_override()
-    {
-        Skip.IfNot(_clientConfig.AreOverridesSupported);
-
-        var searchOverride = new SearchOverride(
-            new Rule("apple", "exact"))
-        {
-            Includes = new List<Include>
-                {
-                    new Include("422", 1),
-                    new Include("54", 2)
-                },
-            FilterBy = "NOT description:=[pink lady 1]",
-            Metadata = new Dictionary<string, object> { ["apple_color"] = "green" },
-            SortBy = "color:asc",
-            ReplaceQuery = "replacement query",
-            FilterCuratedHits = false,
-            StopProcessing = false,
-            EffectiveFromTs = DateTime.UtcNow,
-        };
-
-        var response = await _client.UpsertSearchOverride(
-            "companies", "customize-apple", searchOverride);
-    }
-
-    [SkippableFact, TestPriority(19)]
-    public async Task Retrieve_search_override()
-    {
-        Skip.IfNot(_clientConfig.AreOverridesSupported);
-
-        var searchOverrides = await _client.ListSearchOverrides("companies");
-
-        var expected = searchOverrides.SearchOverrides.First();
-
-        var response = await _client.RetrieveSearchOverride("companies", expected.Id);
-
-        // FluentAssertions doesn't support JsonElements
-        response.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Metadata));
-    }
-
-    [SkippableFact, TestPriority(20)]
-    public async Task List_search_overrides()
-    {
-        Skip.IfNot(_clientConfig.AreOverridesSupported);
-
-        var expected = new SearchOverride(
-            new Rule("apple", "exact"))
-        {
-            Includes = new List<Include>
-                {
-                    new Include("422", 1),
-                    new Include("54", 2)
-                },
-            FilterBy = "NOT description:=[pink lady 1]",
-            Metadata = new Dictionary<string, object> { ["apple_color"] = "green" },
-            SortBy = "color:asc",
-            ReplaceQuery = "replacement query",
-            RemoveMatchedTokens = true,
-            FilterCuratedHits = false,
-            StopProcessing = false,
-            EffectiveFromTs = DateTime.UtcNow,
-        };
-
-        var response = await _client.ListSearchOverrides("companies");
-
-        response.SearchOverrides.Should()
-            .HaveCount(1).And
-            .SatisfyRespectively(
-                first =>
-                {
-                    first.Id.Should().Be("customize-apple");
-                    first.Includes.Should().BeEquivalentTo(expected.Includes);
-                    first.FilterBy.Should().BeEquivalentTo(expected.FilterBy);
-                    first.SortBy.Should().BeEquivalentTo(expected.SortBy);
-                    first.ReplaceQuery.Should().BeEquivalentTo(expected.ReplaceQuery);
-                    first.RemoveMatchedTokens.Should().BeTrue();
-                    first.FilterCuratedHits.Should().BeFalse();
-                    first.StopProcessing.Should().BeFalse();
-                    first.EffectiveFromTs.Should().HaveYear(DateTime.UtcNow.Year);
-                    first.EffectiveFromTs.Should().HaveMonth(DateTime.UtcNow.Month);
-                    first.EffectiveFromTs.Should().HaveDay(DateTime.UtcNow.Day);
-                    first.EffectiveToTs.Should().BeNull();
-                    first.Rule.Should().BeEquivalentTo(expected.Rule);
-                });
-
-        // FluentAssertions doesn't support JsonElements, so we need to check it separately.
-        response.SearchOverrides.FirstOrDefault()?.Metadata?.Should().NotBeEmpty();
-        response.SearchOverrides.FirstOrDefault()?.Metadata["apple_color"].As<JsonElement>().GetString().Should().Be("green");
-    }
-
-    [SkippableFact, TestPriority(21)]
-    public async Task Delete_search_override()
-    {
-        Skip.IfNot(_clientConfig.AreOverridesSupported);
-
-        var expected = new DeleteSearchOverrideResponse("customize-apple");
-
-        var response = await _client.DeleteSearchOverride("companies", "customize-apple");
-
-        response.Should().BeEquivalentTo(expected);
-    }
-
     [Fact, TestPriority(22)]
     [Trait("Category", "Integration")]
     public async Task Upsert_collection_alias()
@@ -2110,97 +2004,28 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [SkippableFact, TestPriority(26)]
-    public async Task Upsert_synonym()
-    {
-        Skip.IfNot(_clientConfig.AreSynonymsSupported);
-
-        var expected = new SynonymSchemaResponse(
-            "apple-synonyms",
-            new List<string> { "appl", "aple", "apple" },
-            "apple",
-            new List<string> { "+" });
-
-        var schema = new SynonymSchema(new List<string> { "appl", "aple", "apple" })
-        {
-            Root = "apple",
-            SymbolsToIndex = new List<string> { "+" }
-        };
-
-        var response = await _client.UpsertSynonym("companies", "apple-synonyms", schema);
-
-        response.Should().BeEquivalentTo(expected);
-    }
-
-    [SkippableFact, TestPriority(27)]
-    public async Task Retrieve_synonym()
-    {
-        Skip.IfNot(_clientConfig.AreSynonymsSupported);
-
-        var expected = new SynonymSchemaResponse(
-            "apple-synonyms",
-            new List<string> { "appl", "aple", "apple" },
-            "apple",
-            new List<string> { "+" });
-
-        var response = await _client.RetrieveSynonym("companies", "apple-synonyms");
-
-        response.Should().BeEquivalentTo(expected);
-    }
-
-    [SkippableFact, TestPriority(28)]
-    public async Task List_synonyms()
-    {
-        Skip.IfNot(_clientConfig.AreSynonymsSupported);
-
-        var expected = new ListSynonymsResponse(
-            new List<SynonymSchemaResponse>
-            {
-                new SynonymSchemaResponse(
-                    "apple-synonyms",
-                    new List<string> { "appl", "aple", "apple" },
-                    "apple",
-                    new List<string> { "+" })
-            });
-
-        var response = await _client.ListSynonyms("companies");
-
-        response.Should().BeEquivalentTo(expected);
-    }
-
-    [SkippableFact, TestPriority(29)]
-    public async Task Delete_synonym()
-    {
-        Skip.IfNot(_clientConfig.AreSynonymsSupported);
-
-        var expected = new DeleteSynonymResponse("apple-synonyms");
-        var response = await _client.DeleteSynonym("companies", "apple-synonyms");
-
-        response.Should().Be(expected);
-    }
-
-    [SkippableFact, TestPriority(30)]
+    [Fact, TestPriority(30)]
     public async Task Upsert_synonym_set()
     {
-        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
-
         var expected = new SynonymSetSchemaResponse(
             "fruit-synonyms",
             [
-                new SynonymSchemaResponse(
+                new SynonymSchema(
                     "apple-synonyms", 
                     ["appl", "aple", "apple"], 
-                    "apple", 
+                    "apple",
+                    null,
                     ["+"]
                 )
             ]
         );
 
         var schema = new SynonymSetSchema([
-            new SynonymSchemaResponse(
+            new SynonymSchema(
                 "apple-synonyms",
                 ["appl", "aple", "apple"],
                 "apple",
+                null,
                 ["+"]
             )
         ]);
@@ -2210,18 +2035,17 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [SkippableFact, TestPriority(31)]
+    [Fact, TestPriority(31)]
     public async Task Retrieve_synonym_set()
     {
-        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
-
         var expected = new SynonymSetSchemaResponse(
             "fruit-synonyms",
             [
-                new SynonymSchemaResponse(
+                new SynonymSchema(
                     "apple-synonyms",
                     ["appl", "aple", "apple"],
                     "apple",
+                    null,
                     ["+"]
                 )
             ]
@@ -2232,19 +2056,18 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [SkippableFact, TestPriority(32)]
+    [Fact, TestPriority(32)]
     public async Task List_synonym_sets()
     {
-        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
-
         var expected = new ListSynonymSetsResponse([
             new SynonymSetSchemaResponse(
                 "fruit-synonyms",
                 [
-                    new SynonymSchemaResponse(
+                    new SynonymSchema(
                         "apple-synonyms",
                         ["appl", "aple", "apple"],
                         "apple",
+                        null,
                         ["+"]
                     )
                 ]
@@ -2256,28 +2079,24 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected);
     }
 
-    [SkippableFact, TestPriority(33)]
+    [Fact, TestPriority(33)]
     public async Task Delete_synonym_set()
     {
-        Skip.IfNot(_clientConfig.AreSynonymSetsSupported);
-
         var expected = new DeleteSynonymSetResponse("fruit-synonyms");
         var response = await _client.DeleteSynonymSet("fruit-synonyms");
 
         response.Should().Be(expected);
     }
 
-    [SkippableFact, TestPriority(34)]
+    [Fact, TestPriority(34)]
     public async Task Upsert_curation_set()
     {
-        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
-
         var ts = DateTime.Parse("2026-01-29 07:18:27");
         var json = JsonSerializer.Deserialize<JsonDocument>("""{ "apple_color": "green" }""");
 
         var expected = new CurationSetSchemaResponse("product-curations",
         [
-            new SearchOverrideResponse(
+            new SearchOverride(
                 excludes: [],
                 includes: new List<Include>
                 {
@@ -2300,7 +2119,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var schema = new CurationSetSchema(
         [
-            new SearchOverrideResponse(
+            new SearchOverride(
                 excludes: [],
                 includes: new List<Include>
                 {
@@ -2327,14 +2146,12 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         response.Should().BeEquivalentTo(expected, options => options.Excluding(member => member.Path.Contains("Metadata")));
     }
 
-    [SkippableFact, TestPriority(35)]
+    [Fact, TestPriority(35)]
     public async Task Retrieve_curation_set()
     {
-        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
-
         var expected = new CurationSetSchemaResponse("product-curations",
         [
-            new SearchOverrideResponse(
+            new SearchOverride(
                 excludes: [],
                 includes: new List<Include>
                 {
@@ -2363,15 +2180,13 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         );
     }
 
-    [SkippableFact, TestPriority(36)]
+    [Fact, TestPriority(36)]
     public async Task List_curation_sets()
     {
-        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
-
         var expected = new ListCurationSetsResponse([
             new CurationSetSchemaResponse("product-curations",
             [
-                new SearchOverrideResponse(
+                new SearchOverride(
                     excludes: [],
                     includes: new List<Include>
                     {
@@ -2401,11 +2216,9 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         );
     }
 
-    [SkippableFact, TestPriority(37)]
+    [Fact, TestPriority(37)]
     public async Task Delete_curation_set()
     {
-        Skip.IfNot(_clientConfig.AreCurationSetsSupported);
-
         var expected = new DeleteCurationSetResponse("product-curations");
         var response = await _client.DeleteCurationSet("product-curations");
 

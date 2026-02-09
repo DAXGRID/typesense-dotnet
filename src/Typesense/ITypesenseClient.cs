@@ -659,67 +659,6 @@ public interface ITypesenseClient
     string GenerateScopedSearchKey(string securityKey, string parameters);
 
     /// <summary>
-    /// Upsert search override.
-    /// </summary>
-    /// <param name="collection">The collection name.</param>
-    /// <param name="overrideName">The name of the search override.</param>
-    /// <param name="searchOverride">The specificiation for the search override.</param>
-    /// <returns>The upserted search override.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiConflictException"></exception>
-    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<SearchOverrideResponse> UpsertSearchOverride(string collection, string overrideName, SearchOverride searchOverride);
-
-    /// <summary>
-    /// Listing all search overrides associated with a given collection.
-    /// </summary>
-    /// <param name="collection">The collection name.</param>
-    /// <param name="ctk">The optional cancellation token.</param>
-    /// <returns>List of search overrides.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default);
-
-    /// <summary>
-    /// Fetch an individual override associated with a collection.
-    /// </summary>
-    /// <param name="collection">The collection name.</param>
-    /// <param name="overrideName">The override name that should be retrieved.</param>
-    /// <param name="ctk">The optional cancellation token.</param>
-    /// <returns>The search override.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default);
-
-    /// <summary>
-    /// Deleting an override associated with a collection.
-    /// </summary>
-    /// <param name="collection">The collection name.</param>
-    /// <param name="overrideName">The override name that should be deleted.</param>
-    /// <returns>The deleted search override.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<DeleteSearchOverrideResponse> DeleteSearchOverride(string collection, string overrideName);
-
-    /// <summary>
     /// Upsert curation set (global curation set feature).
     /// </summary>
     /// <param name="curationSetName">The name of the curation set.</param>
@@ -733,7 +672,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema);
 
     /// <summary>
@@ -747,7 +685,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<CurationSetSchemaResponse> RetrieveCurationSet(string curationSetName, CancellationToken ctk = default);
 
     /// <summary>
@@ -760,7 +697,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<ListCurationSetsResponse> ListCurationSets(CancellationToken ctk = default);
 
     /// <summary>
@@ -773,7 +709,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName);
 
     /// <summary>
@@ -829,67 +764,6 @@ public interface ITypesenseClient
     Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName);
 
     /// <summary>
-    /// Upsert synonym.
-    /// </summary>
-    /// <param name="collection">Collection to insert the synonym into.</param>
-    /// <param name="synonym">The name of the synonym.</param>
-    /// <param name="schema">The synonym schema.</param>
-    /// <returns>The created synonym.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiConflictException"></exception>
-    /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<SynonymSchemaResponse> UpsertSynonym(string collection, string synonym, SynonymSchema schema);
-
-    /// <summary>
-    /// Retrieve synonym in collection on synonym name.
-    /// </summary>
-    /// <param name="collection">The synonym collection name.</param>
-    /// <param name="synonym">The name of the synonym.</param>
-    /// <param name="ctk">The optional cancellation token.</param>
-    /// <returns>Synonym on name associated with the collection.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default);
-
-    /// <summary>
-    /// List all synonyms associated with a given collection.
-    /// </summary>
-    /// <param name="collection">Collection name.</param>
-    /// <param name="ctk">The optional cancellation token.</param>
-    /// <returns>All synonyms associated with the collection.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default);
-
-    /// <summary>
-    /// Delete a synonym associated with a collection.
-    /// </summary>
-    /// <param name="collection">Collection name.</param>
-    /// <param name="synonym">Synonym name.</param>
-    /// <returns>Id of the deleted synonym.</returns>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="TypesenseApiException"></exception>
-    /// <exception cref="TypesenseApiBadRequestException"></exception>
-    /// <exception cref="TypesenseApiNotFoundException"></exception>
-    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version >= 30.0</exception>
-    Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym);
-
-    /// <summary>
     /// Upsert synonym set (global synonym set feature).
     /// </summary>
     /// <param name="synonymSetName">The name of the synonym set.</param>
@@ -903,7 +777,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema);
 
     /// <summary>
@@ -917,7 +790,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<SynonymSetSchemaResponse> RetrieveSynonymSet(string synonymSetName, CancellationToken ctk = default);
 
     /// <summary>
@@ -930,7 +802,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<ListSynonymSetsResponse> ListSynonymSets(CancellationToken ctk = default);
 
     /// <summary>
@@ -943,7 +814,6 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    /// <exception cref="NotSupportedException">When Typesense version < 30.0</exception>
     Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName);
 
     /// <summary>

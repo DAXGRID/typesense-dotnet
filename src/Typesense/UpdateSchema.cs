@@ -82,11 +82,23 @@ public record UpdateSchemaField : Field
 public record UpdateSchema
 {
     [JsonPropertyName("fields")]
-    public IReadOnlyCollection<UpdateSchemaField> Fields { get; init; }
+    public IReadOnlyCollection<UpdateSchemaField>? Fields { get; init; }
+
+    [JsonPropertyName("synonym_sets")]
+    public IEnumerable<string>? SynonymSets { get; init; }
+
+    [JsonPropertyName("curation_sets")]
+    public IEnumerable<string>? CurationSets { get; init; }
+
 
     [JsonConstructor]
-    public UpdateSchema(IReadOnlyCollection<UpdateSchemaField> fields)
+    public UpdateSchema(
+        IReadOnlyCollection<UpdateSchemaField>? fields = null,
+        IEnumerable<string>? synonymSets = null,
+        IEnumerable<string>? curationSets = null)
     {
         Fields = fields;
+        SynonymSets = synonymSets;
+        CurationSets = curationSets;
     }
 }

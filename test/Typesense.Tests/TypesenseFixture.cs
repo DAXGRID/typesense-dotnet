@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Typesense.Setup;
 using Xunit;
@@ -9,12 +10,6 @@ public class TypesenseFixture : IAsyncLifetime
 {
     public ITypesenseClient Client => GetClient();
     
-    public Config ClientConfig = new(
-        [new Node("localhost", "8108", "http")],
-        "key",
-        minimumCompatibilityVersion: null // Use following for Typesense v30.0: new System.Version(30, 0)
-    );
-
     public async Task InitializeAsync()
     {
         await Task.WhenAll(

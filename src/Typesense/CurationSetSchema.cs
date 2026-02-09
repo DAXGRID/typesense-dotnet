@@ -6,9 +6,9 @@ namespace Typesense;
 public record CurationSetSchema
 {
     [JsonPropertyName("items")]
-    public IEnumerable<SearchOverrideResponse>? Items { get; init; }
+    public IEnumerable<SearchOverride>? Items { get; init; }
 
-    public CurationSetSchema(IEnumerable<SearchOverrideResponse> items)
+    public CurationSetSchema(IEnumerable<SearchOverride> items)
     {
         Items = items;
     }

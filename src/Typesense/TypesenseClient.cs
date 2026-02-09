@@ -69,12 +69,6 @@ public class TypesenseClient : ITypesenseClient
     {
         ArgumentNullException.ThrowIfNull(schema);
 
-        if (schema.SynonymSets != null)
-            _config.Value.ThrowIfSynonymSetsAreNotSupported();
-
-        if (schema.CurationSets != null)
-            _config.Value.ThrowIfCurationSetsAreNotSupported();
-
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
     }
@@ -649,74 +643,19 @@ public class TypesenseClient : ITypesenseClient
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
     }
 
-    public async Task<SearchOverrideResponse> UpsertSearchOverride(
-        string collection, string overrideName, SearchOverride searchOverride)
+    public async Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema)
     {
-        _config.Value.ThrowIfOverridesAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
-        if (string.IsNullOrWhiteSpace(overrideName))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
-
-        ArgumentNullException.ThrowIfNull(searchOverride);
-
-        using var jsonContent = JsonContent.Create(searchOverride, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
-    }
-
-    public Task<ListSearchOverridesResponse> ListSearchOverrides(string collection, CancellationToken ctk = default)
-    {
-        _config.Value.ThrowIfOverridesAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
-
-        return Get<ListSearchOverridesResponse>($"collections/{collection}/overrides", _jsonNameCaseInsensitiveTrue, ctk);
-    }
-
-    public Task<SearchOverrideResponse> RetrieveSearchOverride(string collection, string overrideName, CancellationToken ctk = default)
-    {
-        _config.Value.ThrowIfOverridesAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
-        if (string.IsNullOrWhiteSpace(overrideName))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
-
-        return Get<SearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _jsonNameCaseInsensitiveTrue, ctk);
-    }
-
-    public Task<DeleteSearchOverrideResponse> DeleteSearchOverride(
-        string collection, string overrideName)
-    {
-        _config.Value.ThrowIfOverridesAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(collection));
-        if (string.IsNullOrWhiteSpace(overrideName))
-            throw new ArgumentException("cannot be null, empty or whitespace.", nameof(overrideName));
-
-        return Delete<DeleteSearchOverrideResponse>($"/collections/{collection}/overrides/{overrideName}", _jsonNameCaseInsensitiveTrue);
-    }
-
-    public async Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema curationSet)
-    {
-        _config.Value.ThrowIfCurationSetsAreNotSupported();
-
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(curationSetName));
 
-        ArgumentNullException.ThrowIfNull(curationSet);
+        ArgumentNullException.ThrowIfNull(schema);
 
-        using var jsonContent = JsonContent.Create(curationSet, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+        using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Put<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<CurationSetSchemaResponse> RetrieveCurationSet(string curationSetName, CancellationToken ctk = default)
     {
-        _config.Value.ThrowIfCurationSetsAreNotSupported();
-
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException($"{nameof(curationSetName)} cannot be null, empty or whitespace.");
 
@@ -725,16 +664,12 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<ListCurationSetsResponse> ListCurationSets(CancellationToken ctk = default)
     {
-        _config.Value.ThrowIfCurationSetsAreNotSupported();
-
         var curationSets = await Get<CurationSetSchemaResponse[]>("/curation_sets", _jsonNameCaseInsensitiveTrue, ctk);
         return new ListCurationSetsResponse(curationSets);
     }
 
     public Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName)
     {
-        _config.Value.ThrowIfCurationSetsAreNotSupported();
-
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException($"{nameof(curationSetName)} cannot be null, empty or whitespace.");
 
@@ -773,73 +708,19 @@ public class TypesenseClient : ITypesenseClient
         return Delete<CollectionAliasResponse>($"/aliases/{aliasName}", _jsonNameCaseInsensitiveTrue);
     }
 
-    public async Task<SynonymSchemaResponse> UpsertSynonym(
-        string collection, string synonym, SynonymSchema schema)
+    public async Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema)
     {
-        _config.Value.ThrowIfSynonymsAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
-        if (string.IsNullOrWhiteSpace(synonym))
-            throw new ArgumentException("cannot be null or whitespace.", nameof(synonym));
+        if (string.IsNullOrWhiteSpace(synonymSetName))
+            throw new ArgumentException("cannot be null or whitespace.", nameof(synonymSetName));
 
         ArgumentNullException.ThrowIfNull(schema);
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
-    }
-
-    public Task<SynonymSchemaResponse> RetrieveSynonym(string collection, string synonym, CancellationToken ctk = default)
-    {
-        _config.Value.ThrowIfSynonymsAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
-        if (string.IsNullOrWhiteSpace(synonym))
-            throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
-
-        return Get<SynonymSchemaResponse>($"/collections/{collection}/synonyms/{synonym}", _jsonNameCaseInsensitiveTrue, ctk);
-    }
-
-    public Task<ListSynonymsResponse> ListSynonyms(string collection, CancellationToken ctk = default)
-    {
-        _config.Value.ThrowIfSynonymsAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
-
-        return Get<ListSynonymsResponse>($"/collections/{collection}/synonyms", _jsonNameCaseInsensitiveTrue, ctk);
-    }
-
-    public Task<DeleteSynonymResponse> DeleteSynonym(string collection, string synonym)
-    {
-        _config.Value.ThrowIfSynonymsAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(collection))
-            throw new ArgumentException($"{nameof(collection)} cannot be null, empty or whitespace.");
-        if (string.IsNullOrWhiteSpace(synonym))
-            throw new ArgumentException($"{nameof(synonym)} cannot be null, empty or whitespace.");
-
-        return Delete<DeleteSynonymResponse>($"/collections/{collection}/synonyms/{synonym}", _jsonNameCaseInsensitiveTrue);
-    }
-
-    public async Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema synonymSet)
-    {
-        _config.Value.ThrowIfSynonymSetsAreNotSupported();
-
-        if (string.IsNullOrWhiteSpace(synonymSetName))
-            throw new ArgumentException("cannot be null or whitespace.", nameof(synonymSetName));
-
-        ArgumentNullException.ThrowIfNull(synonymSet);
-
-        using var jsonContent = JsonContent.Create(synonymSet, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Put<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
     }
 
     public Task<SynonymSetSchemaResponse> RetrieveSynonymSet(string synonymSetName, CancellationToken ctk = default)
     {
-        _config.Value.ThrowIfSynonymSetsAreNotSupported();
-
         if (string.IsNullOrWhiteSpace(synonymSetName))
             throw new ArgumentException($"{nameof(synonymSetName)} cannot be null, empty or whitespace.");
 
@@ -848,16 +729,12 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<ListSynonymSetsResponse> ListSynonymSets(CancellationToken ctk = default)
     {
-        _config.Value.ThrowIfSynonymSetsAreNotSupported();
-
         var synonymSets = await Get<SynonymSetSchemaResponse[]>("/synonym_sets", _jsonNameCaseInsensitiveTrue, ctk);
         return new ListSynonymSetsResponse(synonymSets);
     }
 
     public Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName)
     {
-        _config.Value.ThrowIfSynonymSetsAreNotSupported();
-
         if (string.IsNullOrWhiteSpace(synonymSetName))
             throw new ArgumentException($"{nameof(synonymSetName)} cannot be null, empty or whitespace.");
 

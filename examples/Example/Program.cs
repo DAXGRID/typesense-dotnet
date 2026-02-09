@@ -70,14 +70,14 @@ sealed class Program
         // Example creating scoped api key.
         ExampleGenerateScopedApiKey(typesenseClient);
 
-        // Example upsert search override
-        await ExampleUpsertSearchOverride(typesenseClient);
+        // Example curation set.
+        await ExampleCurationSet(typesenseClient);
 
-        // Example list all search overrides for a given collection.
-        await ExampleListAllSearchOverridesForCollection(typesenseClient);
+        // Example list all curation sets for a given collection.
+        await ExampleListAllCurationSets(typesenseClient);
 
-        // Example retrieve specific search override in a specific collection.
-        await ExampleRetrieveSearchOverrideInCollection(typesenseClient);
+        // Example retrieve specific curation set in a specific collection.
+        await ExampleRetrieveCurationSet(typesenseClient);
 
         // Example upsert collectiona alias.
         await ExampleUpsertCollectionAlias(typesenseClient);
@@ -88,20 +88,20 @@ sealed class Program
         // Example list all collection aliases.
         await ExampleListAllCollectionAliases(typesenseClient);
 
-        // Example upsert synonym
-        await ExampleUpsertSynonym(typesenseClient);
+        // Example upsert synonym set.
+        await ExampleUpsertSynonymSet(typesenseClient);
 
-        // Example retrieve synonym in collection.
-        await ExampleRetrieveSynonymInCollection(typesenseClient);
+        // Example retrieve synonym set.
+        await ExampleRetrieveSynonymSet(typesenseClient);
 
-        // Example list all synonyms in a collection.
-        await ExampleListAllSynonymsInCollection(typesenseClient);
+        // Example list all synonym sets.
+        await ExampleListAllSynonymSets(typesenseClient);
 
         // Example delete collection alias
         await ExampleDeleteCollectionAlias(typesenseClient);
 
-        // Example delete synonym
-        await ExampleDeleteSynonym(typesenseClient);
+        // Example delete synonym set.
+        await ExampleDeleteSynonymSet(typesenseClient);
 
         // Example delete key(s)
         foreach (var key in (await typesenseClient.ListKeys()).Keys)
@@ -113,8 +113,8 @@ sealed class Program
         // Example delete documents in colleciton with filter
         await ExampleDeleteDocumentsWithFilter(typesenseClient);
 
-        // Example delete search override
-        await ExampleDeleteSearchOverride(typesenseClient);
+        // Example delete curation set
+        await ExampleDeleteCurationSet(typesenseClient);
 
         // Example update collection
         await ExampleUpdateCollection(typesenseClient);
@@ -341,33 +341,38 @@ sealed class Program
         Console.WriteLine($"Scoped Search Key: {scopedSearchKey}");
     }
 
-    private static async Task ExampleUpsertSearchOverride(ITypesenseClient typesenseClient)
+    private static async Task ExampleCurationSet(ITypesenseClient typesenseClient)
     {
-        var searchOverride = new SearchOverride(new Rule("Sul", "exact"))
-        {
-            Includes = new List<Include> { new Include("2", 1) },
-        };
+        var curationSet = new CurationSetSchema([
+            new SearchOverride("addresses-override", new Rule("Sul", "exact"))
+            {
+                Includes = [new Include("2", 1)],
+            }
+        ]);
 
-        var upsertSearchOverrideResponse = await typesenseClient.UpsertSearchOverride(
-            "Addresses",
-            "addresses-override",
-            searchOverride);
+        var upsertSearchOverrideResponse = await typesenseClient.UpsertCurationSet(
+            "addresses-curation",
+            curationSet);
 
-        Console.WriteLine($"Upsert search override: {JsonSerializer.Serialize(upsertSearchOverrideResponse)}");
+        Console.WriteLine($"Upsert curation set: {JsonSerializer.Serialize(upsertSearchOverrideResponse)}");
+
+        var schemaUpdate = new UpdateSchema(curationSets: ["addresses-curation"]);
+        var updateCollectionResponse = await typesenseClient.UpdateCollection("Addresses", schemaUpdate);
+
+        Console.WriteLine($"Updated collection: {JsonSerializer.Serialize(updateCollectionResponse)}");
     }
 
-    private static async Task ExampleListAllSearchOverridesForCollection(ITypesenseClient typesenseClient)
+    private static async Task ExampleListAllCurationSets(ITypesenseClient typesenseClient)
     {
-        var listSearchOverrides = await typesenseClient.ListSearchOverrides("Addresses");
-        Console.WriteLine($"List search overrides: {JsonSerializer.Serialize(listSearchOverrides)}");
+        var listCurationSets = await typesenseClient.ListCurationSets();
+        Console.WriteLine($"List curation sets: {JsonSerializer.Serialize(listCurationSets)}");
     }
 
 
-    private static async Task ExampleRetrieveSearchOverrideInCollection(ITypesenseClient typesenseClient)
+    private static async Task ExampleRetrieveCurationSet(ITypesenseClient typesenseClient)
     {
-        var retrieveSearchOverride = await typesenseClient.RetrieveSearchOverride(
-            "Addresses", "addresses-override");
-        Console.WriteLine($"retrieve search override: {JsonSerializer.Serialize(retrieveSearchOverride)}");
+        var retrieveCurationSet = await typesenseClient.RetrieveCurationSet("addresses-curation");
+        Console.WriteLine($"Retrieve curation set: {JsonSerializer.Serialize(retrieveCurationSet)}");
     }
 
     private static async Task ExampleUpsertCollectionAlias(ITypesenseClient typesenseClient)
@@ -390,24 +395,32 @@ sealed class Program
         Console.WriteLine($"List alias: {JsonSerializer.Serialize(listCollectionAliases)}");
     }
 
-    private static async Task ExampleUpsertSynonym(ITypesenseClient typesenseClient)
+    private static async Task ExampleUpsertSynonymSet(ITypesenseClient typesenseClient)
     {
-        var upsertSynonym = await typesenseClient.UpsertSynonym(
-            "Addresses", "Address_Synonym", new SynonymSchema(new List<string> { "Sultan", "Soltan", "Softan" }));
-
+        var upsertSynonym = await typesenseClient.UpsertSynonymSet(
+            "addresses-synonyms",
+            new SynonymSetSchema([
+                new SynonymSchema("address-synonym", ["Sultan", "Soltan", "Softan"])
+            ])
+        );
         Console.WriteLine($"Upsert synonym: {JsonSerializer.Serialize(upsertSynonym)}");
+
+        var schemaUpdate = new UpdateSchema(synonymSets: ["addresses-synonyms"]);
+        var updateCollectionResponse = await typesenseClient.UpdateCollection("Addresses", schemaUpdate);
+
+        Console.WriteLine($"Updated collection: {JsonSerializer.Serialize(updateCollectionResponse)}");
     }
 
-    private static async Task ExampleRetrieveSynonymInCollection(ITypesenseClient typesenseClient)
+    private static async Task ExampleRetrieveSynonymSet(ITypesenseClient typesenseClient)
     {
-        var retrieveSynonym = await typesenseClient.RetrieveSynonym("Addresses", "Address_Synonym");
-        Console.WriteLine($"Retrieve synonym: {JsonSerializer.Serialize(retrieveSynonym)}");
+        var retrieveSynonym = await typesenseClient.RetrieveSynonymSet("addresses-synonyms");
+        Console.WriteLine($"Retrieve synonym set: {JsonSerializer.Serialize(retrieveSynonym)}");
     }
 
-    private static async Task ExampleListAllSynonymsInCollection(ITypesenseClient typesenseClient)
+    private static async Task ExampleListAllSynonymSets(ITypesenseClient typesenseClient)
     {
-        var listSynonyms = await typesenseClient.ListSynonyms("Addresses");
-        Console.WriteLine($"List synonyms: {JsonSerializer.Serialize(listSynonyms)}");
+        var listSynonymSets = await typesenseClient.ListSynonymSets();
+        Console.WriteLine($"List synonym sets: {JsonSerializer.Serialize(listSynonymSets)}");
     }
 
     private static async Task ExampleDeleteCollectionAlias(ITypesenseClient typesenseClient)
@@ -416,10 +429,10 @@ sealed class Program
         Console.WriteLine($"Delete alias: {JsonSerializer.Serialize(deleteCollectionAlias)}");
     }
 
-    private static async Task ExampleDeleteSynonym(ITypesenseClient typesenseClient)
+    private static async Task ExampleDeleteSynonymSet(ITypesenseClient typesenseClient)
     {
-        var deleteSynonym = await typesenseClient.DeleteSynonym("Addresses", "Address_Synonym");
-        Console.WriteLine($"Delete synonym: {JsonSerializer.Serialize(deleteSynonym)}");
+        var deleteSynonymSet = await typesenseClient.DeleteSynonymSet("addresses-synonyms");
+        Console.WriteLine($"Delete synonym set: {JsonSerializer.Serialize(deleteSynonymSet)}");
     }
 
     private static async Task ExampleDeleteApiKey(ITypesenseClient typesenseClient, int id)
@@ -440,12 +453,11 @@ sealed class Program
         Console.WriteLine($"Deleted amount: {deleteFilterResult.NumberOfDeleted}");
     }
 
-    private static async Task ExampleDeleteSearchOverride(ITypesenseClient typesenseClient)
+    private static async Task ExampleDeleteCurationSet(ITypesenseClient typesenseClient)
     {
-        var deletedSearchOverrideResult = await typesenseClient.DeleteSearchOverride(
-            "Addresses", "addresses-override");
+        var deletedCurationSetResult = await typesenseClient.DeleteCurationSet("addresses-curation");
 
-        Console.WriteLine($"Deleted override: {JsonSerializer.Serialize(deletedSearchOverrideResult)}");
+        Console.WriteLine($"Deleted curation set: {JsonSerializer.Serialize(deletedCurationSetResult)}");
     }
 
     private static async Task ExampleDeleteCollection(ITypesenseClient typesenseClient)

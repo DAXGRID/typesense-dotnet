@@ -5,6 +5,9 @@ namespace Typesense;
 
 public record SynonymSchema
 {
+    [JsonPropertyName("id")]
+    public string Id { get; init; }
+
     [JsonPropertyName("synonyms")]
     public IEnumerable<string> Synonyms { get; init; }
 
@@ -17,8 +20,9 @@ public record SynonymSchema
     [JsonPropertyName("symbols_to_index")]
     public IEnumerable<string>? SymbolsToIndex { get; init; }
 
-    public SynonymSchema(IEnumerable<string> synonyms, string? root = null, string? locale = null, IEnumerable<string>? symbolsToIndex = null)
+    public SynonymSchema(string id, IEnumerable<string> synonyms, string? root = null, string? locale = null, IEnumerable<string>? symbolsToIndex = null)
     {
+        Id = id;
         Synonyms = synonyms;
         Root = root;
         Locale = locale;

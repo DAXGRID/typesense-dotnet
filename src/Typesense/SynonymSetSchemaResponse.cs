@@ -9,9 +9,9 @@ public record SynonymSetSchemaResponse
     public string Name { get; init; }
 
     [JsonPropertyName("items")]
-    public IEnumerable<SynonymSchemaResponse>? Items { get; init; }
+    public IEnumerable<SynonymSchema>? Items { get; init; }
 
-    public SynonymSetSchemaResponse(string name, IEnumerable<SynonymSchemaResponse> items)
+    public SynonymSetSchemaResponse(string name, IEnumerable<SynonymSchema> items)
     {
         Name = name;
         Items = items;
