@@ -24,7 +24,6 @@ namespace Typesense;
 public class TypesenseClient : ITypesenseClient
 {
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
-    private readonly IOptions<Config> _config;
     private readonly HttpClient _httpClient;
 
     private readonly JsonSerializerOptions _jsonSerializerDefault = new();
@@ -46,10 +45,7 @@ public class TypesenseClient : ITypesenseClient
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
         httpClient.BaseAddress = typeSenseUriBuilder.Uri;
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
-
-        _config = config;
         _httpClient = httpClient;
-
         if (config.Value.JsonSerializerOptions is not null)
         {
             _jsonNameCaseInsensitiveTrue = new JsonSerializerOptions(config.Value.JsonSerializerOptions)

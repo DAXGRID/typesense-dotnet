@@ -50,9 +50,11 @@ public class TypesenseFixture : IAsyncLifetime
         return new ServiceCollection()
             .AddTypesenseClient(config =>
             {
-                config.ApiKey = ClientConfig.ApiKey;
-                config.Nodes = ClientConfig.Nodes;
-                config.MinimumCompatibilityVersion = ClientConfig.MinimumCompatibilityVersion;
+                config.ApiKey = "key";
+                config.Nodes = new List<Node>
+                {
+                    new Node("localhost", "8108", "http")
+                };
             }, enableHttpCompression: true).BuildServiceProvider().GetService<ITypesenseClient>();
     }
 
