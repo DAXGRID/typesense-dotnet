@@ -148,6 +148,28 @@ public class TypesenseClient : ITypesenseClient
     {
         return SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
     }
+    public async Task<UnionSearchResult<T>> UnionSearch<T>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, int? page = null, int? perPage = null, CancellationToken ctk = default)
+    {
+        var body = new { union = true, Searches = s1 };
+        using var json = JsonContent.Create(body, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
+
+        var queryParams = new UnionSearchParameters
+        {
+            LimitMultiSearches = limitMultiSearches,
+            Page = page,
+            PerPage = perPage
+        };
+        var queryString = CreateUrlParameters(queryParams);
+
+        var path = queryString.Length == 0 
+            ? "/multi_search" 
+            : $"/multi_search?{queryString}";
+
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+
+        return response.Deserialize<UnionSearchResult<T>>(_jsonNameCaseInsensitiveTrue)
+            ?? throw new InvalidOperationException($"Could not deserialize {typeof(T)}, Received following from Typesense: '{response}'.");
+    }
 
     public async Task<List<MultiSearchResult<T>>> MultiSearch<T>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, CancellationToken ctk = default)
     {

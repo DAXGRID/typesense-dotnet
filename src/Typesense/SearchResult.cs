@@ -352,3 +352,67 @@ public record MultiSearchResult<T>
         ErrorMessage = errorMessage;
     }
 }
+
+public record UnionSearchResult<T> : MultiSearchResult<T>
+{
+    [JsonPropertyName("union_request_params")]
+    public IReadOnlyList<UnionRequestParam>? UnionRequestParams { get; init; }
+
+    [JsonConstructor]
+    public UnionSearchResult(
+        IReadOnlyList<FacetCount>? facetCounts,
+        int? found,
+        IReadOnlyList<Hit<T>>? hits,
+        int? outOf,
+        int? page,
+        bool? searchCutoff,
+        int? searchTimeMs,
+        int? errorCode,
+        string? errorMessage,
+        IReadOnlyList<UnionRequestParam>? unionRequestParams) : base(
+        facetCounts,
+        found,
+        hits,
+        outOf,
+        page,
+        searchCutoff,
+        searchTimeMs,
+        errorCode,
+        errorMessage)
+    {
+        UnionRequestParams = unionRequestParams;
+    }
+}
+
+public record UnionRequestParam
+{
+    [JsonPropertyName("collection")]
+    public string? Collection { get; init; }
+
+    [JsonPropertyName("first_q")]
+    public string? FirstQ { get; init; }
+
+    [JsonPropertyName("found")]
+    public int? Found { get; init; }
+
+    [JsonPropertyName("per_page")]
+    public int? PerPage { get; init; }
+
+    [JsonPropertyName("q")]
+    public string? Q { get; init; }
+
+    [JsonConstructor]
+    public UnionRequestParam(
+        string? collection,
+        string? firstQ,
+        int? found,
+        string? q,
+        int? perPage)
+    {
+        Collection = collection;
+        FirstQ = firstQ;
+        Found = found;
+        Q = q;
+        PerPage = perPage;
+    }
+}

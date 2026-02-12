@@ -615,3 +615,44 @@ public record GroupedSearchParameters : SearchParameters
         GroupBy = groupBy;
     }
 }
+
+/// <summary>
+/// Parameters used for performing a Union search,
+/// where results from multiple searches are combined into a single
+/// unified result set and then paginated.
+/// See: https://typesense.org/docs/30.1/api/federated-multi-search.html#union-search
+/// </summary>
+public record UnionSearchParameters
+{
+    /// <summary>
+    /// Limits the number of individual searches from a multi-search request
+    /// that are considered when generating the unified result set.
+    /// This can be used to control performance when many searches are included.
+    /// </summary>
+    [JsonPropertyName("limit_multi_searches")]
+    public int? LimitMultiSearches { get; init; }
+
+    /// <summary>
+    /// Page number of the merged (unioned) result set to return.
+    /// Pagination is applied after results from all searches are combined.
+    /// </summary>
+    [JsonPropertyName("page")]
+    public int? Page { get; init; }
+
+    /// <summary>
+    /// Number of results to return per page from the unified result set.
+    /// Pagination is applied after merging results from all searches.
+    /// </summary>
+    [JsonPropertyName("per_page")]
+    public int? PerPage { get; init; }
+
+    public UnionSearchParameters(
+        int? limitMultiSearches = null,
+        int? page = null,
+        int? perPage = null)
+    {
+        LimitMultiSearches = limitMultiSearches;
+        Page = page;
+        PerPage = perPage;
+    }
+}

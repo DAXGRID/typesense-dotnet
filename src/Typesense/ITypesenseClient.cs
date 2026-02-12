@@ -131,6 +131,23 @@ public interface ITypesenseClient
     Task<SearchGroupedResult<T>> SearchGrouped<T>(string collection, GroupedSearchParameters groupedSearchParameters, CancellationToken ctk = default);
 
     /// <summary>
+    /// The search results returned by each of the search queries in a multi_search
+    /// request can be merged into a single ordered set of hits via the union option.
+    /// </summary>
+    /// <param name="s1">First collection of multi-search parameters.</param>
+    /// <param name="limitMultiSearches">Max number of search requests that can be sent in a multi-search request. Eg: 20. Default is 50.</param>
+    /// <param name="page">The page to retrieve. Default is 1.</param>
+    /// <param name="perPage">Number of results to return per page. Default is 10.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>The search results.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    Task<UnionSearchResult<T1>> UnionSearch<T1>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, int? page = null, int? perPage = null, CancellationToken ctk = default);
+
+    /// <summary>
     /// Multiple Searches for documents in the specified collections using the supplied search parameters.
     /// </summary>
     /// <param name="s1">First collection of multi-search parameters.</param>
