@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Typesense.Converter;
 
@@ -47,6 +49,42 @@ public record MultiSearchParameters : SearchParameters
     {
         Collection = collection;
     }
+}
+
+public record MultiSearchQueryParameters
+{
+    /// <summary>
+    /// Limits the number of individual searches from a multi-search request
+    /// that are considered when generating the unified result set.
+    /// This can be used to control performance when many searches are included.
+    /// </summary>
+    [JsonPropertyName("limit_multi_searches")]
+    public int? LimitMultiSearches { get; init; }
+
+    /// <summary>
+    /// Enable server side caching of search query results. By default, caching is disabled.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("use_cache")]
+    public bool? UseCache { get; init; }
+
+    /// <summary>
+    /// Results from this specific page number would be fetched.
+    /// </summary>
+    [JsonPropertyName("page")]
+    public int? Page { get; init; }
+
+    /// <summary>
+    /// Number of results to fetch per page. Default: 10
+    /// </summary>
+    [JsonPropertyName("per_page")]
+    public int? PerPage { get; init; }
+
+    public MultiSearchQueryParameters(ICollection<MultiSearchParameters> searches) =>
+        UseCache = searches.Select(s => s.UseCache).FirstOrDefault(v => v.HasValue);
+
+    public MultiSearchQueryParameters(params MultiSearchParameters[] searches)
+        : this((ICollection<MultiSearchParameters>)searches) { }
 }
 
 public record SearchParameters
@@ -537,7 +575,7 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("remote_embedding_timeout_ms")]
     public int? RemoteEmbeddingTimeoutMs { get; set; }
-    
+
     /// <summary>
     /// When set to true, enables both text match and vector distance scores to be computed for all hybrid search results,
     /// improving the ranking by combining both score types for documents found only by keyword or vector search
