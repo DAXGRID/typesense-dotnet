@@ -23,8 +23,10 @@ namespace Typesense;
 
 public class TypesenseClient : ITypesenseClient
 {
+    private const string ApiKeyHeaderName = "X-TYPESENSE-API-KEY";
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
     private readonly HttpClient _httpClient;
+    private readonly string? _searchApiKey;
 
     private readonly JsonSerializerOptions _jsonSerializerDefault = new();
 
@@ -44,7 +46,8 @@ public class TypesenseClient : ITypesenseClient
         var node = config.Value.Nodes.First();
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
         httpClient.BaseAddress = typeSenseUriBuilder.Uri;
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
+        httpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, config.Value.ApiKey);
+        _searchApiKey = config.Value.SearchApiKey;
 
         _httpClient = httpClient;
 
@@ -61,6 +64,33 @@ public class TypesenseClient : ITypesenseClient
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
         }
+    }
+
+    private TypesenseClient(TypesenseClient source, string apiKey)
+    {
+        var newHttpClient = new HttpClient
+        {
+            BaseAddress = source._httpClient.BaseAddress,
+            DefaultRequestVersion = source._httpClient.DefaultRequestVersion,
+        };
+        newHttpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, apiKey);
+
+        _httpClient = newHttpClient;
+        _jsonSerializerDefault = source._jsonSerializerDefault;
+        _jsonNameCaseInsensitiveTrue = source._jsonNameCaseInsensitiveTrue;
+        _jsonOptionsCamelCaseIgnoreWritingNull = source._jsonOptionsCamelCaseIgnoreWritingNull;
+    }
+
+    public ITypesenseClient WithSearchScope(ScopedSearchParameters scopedSearchParameters)
+    {
+        ArgumentNullException.ThrowIfNull(scopedSearchParameters, nameof(scopedSearchParameters));
+        var searchApiKey = _searchApiKey ?? throw new InvalidOperationException(
+            "SearchApiKey must be set in Config to use WithSearchScope.");
+
+        var serializedScope = JsonSerializer.Serialize(scopedSearchParameters, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var scopedApiKey = GenerateScopedSearchKey(searchApiKey, serializedScope);
+
+        return new TypesenseClient(this, scopedApiKey);
     }
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)

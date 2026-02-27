@@ -9,6 +9,20 @@ namespace Typesense;
 public interface ITypesenseClient
 {
     /// <summary>
+    /// Creates a new <see cref="ITypesenseClient"/> instance that uses a scoped
+    /// search key derived from the scoped search parameters and the search API key.
+    /// The original client instance is not modified.
+    /// Precondition: <c>SearchApiKey</c> must be set in <c>Config</c> and must 
+    /// have no other permissions besides <c>documents:search</c>.
+    /// Note: Parameters embedded in the scoped search parameters will be automatically applied by Typesense and users will not be able to override them.
+    /// </summary>
+    /// <param name="scopedSearchParameters">The scoped search parameters object.</param>
+    /// <returns>A new <see cref="ITypesenseClient"/> configured with the scoped search key.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when <c>SearchApiKey</c> is not set in <c>Config</c> or does not meet permission requirements.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="scopedSearchParameters"/> is null.</exception>
+    ITypesenseClient WithSearchScope(ScopedSearchParameters scopedSearchParameters);
+
+    /// <summary>
     /// Creates the collection with the supplied schema
     /// </summary>
     /// <param name="schema">The schema for the collection be created.</param>
@@ -23,7 +37,7 @@ public interface ITypesenseClient
     Task<CollectionResponse> CreateCollection(Schema schema);
 
     /// <summary>
-    /// Rmove all documents from a collection but keeps the collection and schema intact.
+    /// Remove all documents from a collection but keeps the collection and schema intact.
     /// </summary>
     /// <param name="collection">The name of the collection to truncate.</param>
     /// <returns>The response object includes the number of documents that were deleted. For an empty collection, this value will be 0.</returns>
@@ -37,7 +51,7 @@ public interface ITypesenseClient
     Task<TruncateCollectionResponse> TruncateCollection(string collection);
 
     /// <summary>
-    /// Creates the document in the speicfied collection.
+    /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
@@ -53,7 +67,7 @@ public interface ITypesenseClient
     Task<T> CreateDocument<T>(string collection, string document) where T : class;
 
     /// <summary>
-    /// Creates the document in the speicfied collection.
+    /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted.</param>
@@ -461,7 +475,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false);
-    
+
     /// <summary>
     /// Batch import documents.
     /// </summary>
