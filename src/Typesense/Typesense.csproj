@@ -6,6 +6,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisMode>All</AnalysisMode>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
 
     <PackageId>Typesense</PackageId>
     <Description>.NET HTTP client for Typesense.</Description>

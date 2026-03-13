@@ -516,6 +516,7 @@ public record SearchParameters
     // ---------------------------------------------------------------------------------------
     // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
     // ---------------------------------------------------------------------------------------
+    // cache_ttl can only be set as part of a scoped API key, and not as a search parameter.
 
     /// <summary>
     /// Enable server side caching of search query results. By default, caching is disabled.
@@ -523,14 +524,6 @@ public record SearchParameters
     /// </summary>
     [JsonPropertyName("use_cache")]
     public bool? UseCache { get; set; }
-
-    /// <summary>
-    /// The duration (in seconds) that determines how long the search query is cached.
-    /// This value can only be set as part of a scoped API key.
-    /// Default: 60
-    /// </summary>
-    [JsonPropertyName("cache_ttl")]
-    public int? CacheTtl { get; set; }
 
     /// <summary>
     /// How long to wait until an API call to a remote embedding service is considered a timeout.
@@ -646,13 +639,64 @@ public record UnionSearchParameters
     [JsonPropertyName("per_page")]
     public int? PerPage { get; init; }
 
+    // ---------------------------------------------------------------------------------------
+    // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
+    // ---------------------------------------------------------------------------------------
+    // cache_ttl can only be set as part of a scoped API key, and not as a search parameter.
+
+    /// <summary>
+    /// Enable server side caching of search query results. By default, caching is disabled.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("use_cache")]
+    public bool? UseCache { get; set; }
+
     public UnionSearchParameters(
         int? limitMultiSearches = null,
         int? page = null,
-        int? perPage = null)
+        int? perPage = null,
+        bool? useCache = null)
     {
         LimitMultiSearches = limitMultiSearches;
         Page = page;
         PerPage = perPage;
+        UseCache = useCache;
     }
 }
+
+/// <summary>
+/// Common parameters used for performing a single call with multiple <see cref="MultiSearchParameters"/>
+/// where multiple searches are executed in a single call.
+/// See: https://typesense.org/docs/30.1/api/federated-multi-search.html#multi-search-parameters
+/// </summary>
+public record CommonMultiSearchParameters
+{
+    /// <summary>
+    /// Limits the number of individual searches from a multi-search request
+    /// that are considered when generating the unified result set.
+    /// This can be used to control performance when many searches are included.
+    /// </summary>
+    [JsonPropertyName("limit_multi_searches")]
+    public int? LimitMultiSearches { get; init; }
+
+    // ---------------------------------------------------------------------------------------
+    // Caching parameters - https://typesense.org/docs/latest/api/search.html#caching-parameters
+    // ---------------------------------------------------------------------------------------
+    // cache_ttl can only be set as part of a scoped API key, and not as a search parameter.
+
+    /// <summary>
+    /// Enable server side caching of search query results. By default, caching is disabled.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("use_cache")]
+    public bool? UseCache { get; set; }
+
+    public CommonMultiSearchParameters(
+        int? limitMultiSearches = null,
+        bool? useCache = null)
+    {
+        LimitMultiSearches = limitMultiSearches;
+        UseCache = useCache;
+    }
+}
+
