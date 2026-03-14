@@ -1591,6 +1591,29 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(11)]
+    public async Task Search_use_cache()
+    {
+        var query = new SearchParameters("Stark", "company_name")
+        {
+            UseCache = true,
+
+            // Sort randomly so we can validate whether results were cached.
+            SortBy = "_rand(42):asc"
+        };
+
+        var response1 = await _client.Search<Company>("companies", query);
+        var firstCompany = response1.Hits.First().Document;
+
+        // Search again with the same query, if caching works, we should get the same random sort order and thus the same first company.
+        var response2 = await _client.Search<Company>("companies", query);
+
+        using (var scope = new AssertionScope())
+        {
+            response2.Hits.First().Document.Should().BeEquivalentTo(firstCompany);
+        }
+    }
+
+    [Fact, TestPriority(11)]
     public async Task Multi_search_query_single_type_multiple_multi_search_parameters()
     {
         var expected = new Company
@@ -1695,6 +1718,26 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         {
             response.Found.Should().Be(1);
             response.Hits.First().Document.Should().BeEquivalentTo(expected);
+        }
+    }
+
+    [Fact, TestPriority(11)]
+    public async Task Multi_search_query_use_cache()
+    {
+        var query = new MultiSearchParameters("companies", "*", "company_name")
+        {
+            // Sort randomly so we can validate whether results were cached.
+            SortBy = "_rand(42):asc"
+        };
+        var response1 = await _client.MultiSearch<Company>(query, new CommonMultiSearchParameters(useCache: true));
+        var firstCompany = response1.Hits.First().Document;
+
+        // Search again with the same query, if caching works, we should get the same random sort order and thus the same first company.
+        var response2 = await _client.MultiSearch<Company>(query, new CommonMultiSearchParameters(useCache: true));
+
+        using (var scope = new AssertionScope())
+        {
+            response2.Hits.First().Document.Should().BeEquivalentTo(firstCompany);
         }
     }
 
