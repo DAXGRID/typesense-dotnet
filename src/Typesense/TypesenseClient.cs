@@ -148,22 +148,17 @@ public class TypesenseClient : ITypesenseClient
     {
         return SearchInternal<SearchGroupedResult<T>>(collection, groupedSearchParameters, ctk);
     }
-    public async Task<UnionSearchResult<T>> UnionSearch<T>(ICollection<MultiSearchParameters> s1, int? limitMultiSearches = null, int? page = null, int? perPage = null, CancellationToken ctk = default)
+
+    public async Task<UnionSearchResult<T>> UnionSearch<T>(ICollection<MultiSearchParameters> s1, UnionSearchParameters? parms = null, CancellationToken ctk = default)
     {
         var body = new { union = true, Searches = s1 };
         using var json = JsonContent.Create(body, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        var queryParams = new UnionSearchParameters
-        {
-            LimitMultiSearches = limitMultiSearches,
-            Page = page,
-            PerPage = perPage
-        };
-        var queryString = CreateUrlParameters(queryParams);
+        var queryString = parms != null ? CreateUrlParameters(parms) : null;
 
-        var path = queryString.Length == 0 
-            ? "/multi_search" 
-            : $"/multi_search?{queryString}";
+        var path = queryString?.Length > 0
+            ? $"/multi_search?{queryString}"
+            : "/multi_search";
 
         var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
