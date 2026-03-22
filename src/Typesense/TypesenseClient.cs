@@ -23,8 +23,10 @@ namespace Typesense;
 
 public class TypesenseClient : ITypesenseClient
 {
+    private const string ApiKeyHeaderName = "X-TYPESENSE-API-KEY";
     private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
     private readonly HttpClient _httpClient;
+    private readonly string? _searchApiKey;
 
     private readonly JsonSerializerOptions _jsonSerializerDefault = new();
 
@@ -44,7 +46,8 @@ public class TypesenseClient : ITypesenseClient
         var node = config.Value.Nodes.First();
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
         httpClient.BaseAddress = typeSenseUriBuilder.Uri;
-        httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
+        httpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, config.Value.ApiKey);
+        _searchApiKey = config.Value.SearchApiKey;
 
         _httpClient = httpClient;
 
@@ -61,6 +64,33 @@ public class TypesenseClient : ITypesenseClient
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
         }
+    }
+
+    private TypesenseClient(TypesenseClient source, string apiKey)
+    {
+        var newHttpClient = new HttpClient
+        {
+            BaseAddress = source._httpClient.BaseAddress,
+            DefaultRequestVersion = source._httpClient.DefaultRequestVersion,
+        };
+        newHttpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, apiKey);
+
+        _httpClient = newHttpClient;
+        _jsonSerializerDefault = source._jsonSerializerDefault;
+        _jsonNameCaseInsensitiveTrue = source._jsonNameCaseInsensitiveTrue;
+        _jsonOptionsCamelCaseIgnoreWritingNull = source._jsonOptionsCamelCaseIgnoreWritingNull;
+    }
+
+    public ITypesenseClient WithSearchScope(ScopedSearchParameters scopedSearchParameters)
+    {
+        ArgumentNullException.ThrowIfNull(scopedSearchParameters, nameof(scopedSearchParameters));
+        var searchApiKey = _searchApiKey ?? throw new InvalidOperationException(
+            "SearchApiKey must be set in Config to use WithSearchScope.");
+
+        var serializedScope = JsonSerializer.Serialize(scopedSearchParameters, _jsonOptionsCamelCaseIgnoreWritingNull);
+        var scopedApiKey = GenerateScopedSearchKey(searchApiKey, serializedScope);
+
+        return new TypesenseClient(this, scopedApiKey);
     }
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)
@@ -153,17 +183,13 @@ public class TypesenseClient : ITypesenseClient
         var body = new { union = true, Searches = s1 };
         using var json = JsonContent.Create(body, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        var queryParams = new UnionSearchParameters
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1)
         {
             LimitMultiSearches = limitMultiSearches,
             Page = page,
             PerPage = perPage
-        };
-        var queryString = CreateUrlParameters(queryParams);
-
-        var path = queryString.Length == 0
-            ? "/multi_search"
-            : $"/multi_search?{queryString}";
+        });
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
 
         var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
@@ -176,9 +202,11 @@ public class TypesenseClient : ITypesenseClient
         var searches = new { Searches = s1 };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        var path = limitMultiSearches is null
-            ? "/multi_search"
-            : $"/multi_search?limit_multi_searches={limitMultiSearches}";
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1)
+        {
+            LimitMultiSearches = limitMultiSearches
+        });
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
 
         var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
@@ -191,7 +219,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? HandleDeserializeMultiSearch<T>(results[0])
@@ -202,7 +232,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -218,7 +250,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -236,7 +270,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return (response.TryGetProperty("results", out var results))
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -256,7 +292,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4, s5));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -278,7 +316,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4, s5, s6));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -302,7 +342,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4, s5, s6, s7));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -328,7 +370,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7, s8 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4, s5, s6, s7, s8));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),
@@ -356,7 +400,9 @@ public class TypesenseClient : ITypesenseClient
     {
         var searches = new { Searches = new MultiSearchParameters[] { s1, s2, s3, s4, s5, s6, s7, s8, s9 } };
         using var json = JsonContent.Create(searches, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        var response = await Post<JsonElement>("/multi_search", json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
+        var queryString = CreateUrlParameters(new MultiSearchQueryParameters(s1, s2, s3, s4, s5, s6, s7, s8, s9));
+        var path = queryString.Length == 0 ? "/multi_search" : $"/multi_search?{queryString}";
+        var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
 
         return response.TryGetProperty("results", out var results)
             ? (HandleDeserializeMultiSearch<T1>(results[0]),

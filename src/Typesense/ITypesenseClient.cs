@@ -9,6 +9,20 @@ namespace Typesense;
 public interface ITypesenseClient
 {
     /// <summary>
+    /// Creates a new <see cref="ITypesenseClient"/> instance that uses a scoped
+    /// search key derived from the scoped search parameters and the search API key.
+    /// The original client instance is not modified.
+    /// Precondition: <c>SearchApiKey</c> must be set in <c>Config</c> and must 
+    /// have no other permissions besides <c>documents:search</c>.
+    /// Note: Parameters embedded in the scoped search parameters will be automatically applied by Typesense and users will not be able to override them.
+    /// </summary>
+    /// <param name="scopedSearchParameters">The scoped search parameters object.</param>
+    /// <returns>A new <see cref="ITypesenseClient"/> configured with the scoped search key.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when <c>SearchApiKey</c> is not set in <c>Config</c> or does not meet permission requirements.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="scopedSearchParameters"/> is null.</exception>
+    ITypesenseClient WithSearchScope(ScopedSearchParameters scopedSearchParameters);
+
+    /// <summary>
     /// Creates the collection with the supplied schema
     /// </summary>
     /// <param name="schema">The schema for the collection be created.</param>

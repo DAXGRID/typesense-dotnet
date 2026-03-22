@@ -1,5 +1,6 @@
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Typesense.Setup;
 using Xunit;
 
 namespace Typesense.Tests;
@@ -2575,6 +2577,107 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     {
         var response = await _client.TruncateCollection("companies");
         response.NumDeleted.Should().BeGreaterThan(0);
+    }
+
+    [Fact, TestPriority(48)]
+    public async Task MultiSearch_with_cache_returns_stale_results_until_ttl_expires()
+    {
+        const string collectionName = "cache-test-companies";
+        const int cacheTtlSeconds = 2;
+
+        // Setup: create a dedicated collection.
+        var schema = new Schema(
+            collectionName,
+            new List<Field>
+            {
+                new Field("company_name", FieldType.String, false),
+                new Field("num_employees", FieldType.Int32, true),
+            },
+            "num_employees");
+
+        await _client.CreateCollection(schema);
+
+        // Insert initial document.
+        await _client.CreateDocument(collectionName, new Company
+        {
+            Id = "1",
+            CompanyName = "Original Corp",
+            NumEmployees = 100,
+        });
+
+        // Create a search-only API key (required for WithSearchScope).
+        var searchKey = await _client.CreateKey(
+            new Key("Cache test search key", ["documents:search"], ["*"]));
+
+        try
+        {
+            // Build a client that has the SearchApiKey configured.
+            var clientWithSearchKey = new ServiceCollection()
+                .AddTypesenseClient(config =>
+                {
+                    config.ApiKey = "key";
+                    config.SearchApiKey = searchKey.Value;
+                    config.Nodes = new List<Node>
+                    {
+                        new Node("localhost", "8108", "http")
+                    };
+                }).BuildServiceProvider().GetService<ITypesenseClient>();
+
+            // Create a scoped client with cache_ttl embedded in the API key.
+            var cachedClient = clientWithSearchKey
+                .WithSearchScope(new ScopedSearchParameters { CacheTtl = cacheTtlSeconds });
+
+            var query = new MultiSearchParameters(collectionName, "*", "company_name")
+            {
+                UseCache = true
+            };
+
+            // 1st search: populates the cache.
+            var result1 = await cachedClient.MultiSearch<Company>(query);
+
+            using (new AssertionScope())
+            {
+                result1.Found.Should().Be(1);
+                result1.Hits.First().Document.CompanyName.Should().Be("Original Corp");
+            }
+
+            // Mutate the data (via admin client, which has write permissions).
+            await _client.UpsertDocument(collectionName, new Company
+            {
+                Id = "1",
+                CompanyName = "Updated Corp",
+                NumEmployees = 100,
+            });
+
+            // 2nd search: should return cached (stale) result.
+            var result2 = await cachedClient.MultiSearch<Company>(query);
+
+            using (new AssertionScope())
+            {
+                result2.Found.Should().Be(1);
+                result2.Hits[0].Document.CompanyName
+                    .Should().Be("Original Corp", "result should be served from cache");
+            }
+
+            // Wait for the cache to expire.
+            await Task.Delay(TimeSpan.FromSeconds(cacheTtlSeconds + 1));
+
+            // 3rd search: cache expired, should return fresh data.
+            var result3 = await cachedClient.MultiSearch<Company>(query);
+
+            using (new AssertionScope())
+            {
+                result3.Found.Should().Be(1);
+                result3.Hits[0].Document.CompanyName
+                    .Should().Be("Updated Corp", "cache should have expired");
+            }
+        }
+        finally
+        {
+            // Cleanup.
+            await _client.DeleteCollection(collectionName);
+            await _client.DeleteKey(searchKey.Id);
+        }
     }
 
     private async Task CreateCompanyCollection()
