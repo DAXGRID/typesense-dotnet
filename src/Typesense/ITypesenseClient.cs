@@ -37,7 +37,7 @@ public interface ITypesenseClient
     Task<CollectionResponse> CreateCollection(Schema schema);
 
     /// <summary>
-    /// Remove all documents from a collection but keeps the collection and schema intact.
+    /// Rmove all documents from a collection but keeps the collection and schema intact.
     /// </summary>
     /// <param name="collection">The name of the collection to truncate.</param>
     /// <returns>The response object includes the number of documents that were deleted. For an empty collection, this value will be 0.</returns>
@@ -51,7 +51,7 @@ public interface ITypesenseClient
     Task<TruncateCollectionResponse> TruncateCollection(string collection);
 
     /// <summary>
-    /// Creates the document in the specified collection.
+    /// Creates the document in the speicfied collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
@@ -67,7 +67,7 @@ public interface ITypesenseClient
     Task<T> CreateDocument<T>(string collection, string document) where T : class;
 
     /// <summary>
-    /// Creates the document in the specified collection.
+    /// Creates the document in the speicfied collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted.</param>
@@ -475,7 +475,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false);
-
+    
     /// <summary>
     /// Batch import documents.
     /// </summary>
