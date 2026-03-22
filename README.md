@@ -133,7 +133,7 @@ var response = await _client.MultiSearch<Company>(queryOne);
 ```
 
 
-Example of using a two queries in multi-search.
+Example of using two queries in multi-search.
 
 ```c#
 var queryOne = new MultiSearchParameters("companies", "Stark", "company_name");

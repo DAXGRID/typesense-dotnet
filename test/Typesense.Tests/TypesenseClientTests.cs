@@ -142,7 +142,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(0)]
-    public async Task Create_schema_symbols_to_index_and_token_seperator()
+    public async Task Create_schema_symbols_to_index_and_token_separator()
     {
         var expected = new CollectionResponse(
             "companies_with_symbols_and_token",

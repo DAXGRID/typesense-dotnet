@@ -409,9 +409,9 @@ public record SearchParameters
     public string? HighlightFullFields { get; set; }
 
     /// <summary>
-    /// Comma separated list of fields that should be highlighted with snippetting.
+    /// Comma separated list of fields that should be highlighted with snippeting.
     /// Default: all queried fields will be highlighted.
-    /// Set to none to disable snippetting fully.
+    /// Set to none to disable snippeting fully.
     /// </summary>
     [JsonPropertyName("highlight_fields")]
     public string? HighlightFields { get; set; }
@@ -591,7 +591,7 @@ public record SearchParameters
     public int? RemoteEmbeddingNumTries { get; set; }
 
     /// <summary>
-    /// When set to false, it will ignore any analityc roles
+    /// When set to false, it will ignore any analytics rules
     /// </summary>
     [JsonPropertyName("enable_analytics")]
     public bool? EnableAnalytics { get; set; }
