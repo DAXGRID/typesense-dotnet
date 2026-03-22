@@ -625,6 +625,21 @@ public interface ITypesenseClient
     Task<List<T>> ExportDocuments<T>(string collection, ExportParameters exportParameters, CancellationToken ctk = default);
 
     /// <summary>
+    /// Export all documents in a given collection as a stream.
+    /// </summary>
+    /// <param name="collection">The collection name.</param>
+    /// <param name="exportParameters">Extra query parameters for exporting documents.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
+    /// <returns>A stream of documents.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="TypesenseApiException"></exception>
+    /// <exception cref="TypesenseApiBadRequestException"></exception>
+    /// <exception cref="TypesenseApiNotFoundException"></exception>
+    /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
+    IAsyncEnumerable<T> ExportDocumentsAsStream<T>(string collection, ExportParameters exportParameters, CancellationToken ctk = default);
+
+    /// <summary>
     /// Creates an api key.
     /// </summary>
     /// <param name="key">Key to be inserted.</param>

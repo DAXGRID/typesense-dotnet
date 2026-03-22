@@ -565,7 +565,7 @@ public class TypesenseClient : ITypesenseClient
 
         if (returnId is not null)
         {
-            path += $"&return_id={returnId}";
+            path += $"&return_id={returnId.Value.ToString().ToLowerInvariant()}";
         }
 
         using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
@@ -592,7 +592,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(documents);
 
         using var streamLinesContent = new StreamStringLinesHttpContent(documents);
-        return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
@@ -606,7 +606,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(documents);
 
         using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments(
@@ -620,7 +620,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(stream);
 
         using var streamContent = new StreamContent(stream);
-        return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
     }
 
     public Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
