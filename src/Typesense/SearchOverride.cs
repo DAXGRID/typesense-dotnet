@@ -127,18 +127,18 @@ public record SearchOverride
 
     [JsonConstructor]
     public SearchOverride(
-        string id, 
+        string id,
         Rule rule,
-        IEnumerable<Exclude>? excludes = null, 
+        IEnumerable<Exclude>? excludes = null,
         IEnumerable<Include>? includes = null,
-        IDictionary<string, object>? metadata = null, 
-        string? filterBy = null, 
-        string? sortBy = null, 
-        string? replaceQuery = null, 
+        IDictionary<string, object>? metadata = null,
+        string? filterBy = null,
+        string? sortBy = null,
+        string? replaceQuery = null,
         bool? removeMatchedTokens = null,
-        bool? filterCuratedHits = null, 
-        bool? stopProcessing = null, 
-        DateTime? effectiveFromTs = null, 
+        bool? filterCuratedHits = null,
+        bool? stopProcessing = null,
+        DateTime? effectiveFromTs = null,
         DateTime? effectiveToTs = null)
     {
         ArgumentNullException.ThrowIfNull(id);

@@ -13,20 +13,20 @@ public class UnixEpochDateTimeLongConverter : JsonConverter<DateTime?>
     {
         if (reader.TokenType == JsonTokenType.Null)
             return null;
-        
+
         return DateTime.UnixEpoch.AddSeconds(reader.GetInt64());
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
     {
         ArgumentNullException.ThrowIfNull(writer);
-        
+
         if (value == null)
         {
             writer.WriteNullValue();
             return;
         }
-        
+
         writer.WriteNumberValue(Convert.ToInt64((value.Value - DateTime.UnixEpoch).TotalSeconds));
     }
 }

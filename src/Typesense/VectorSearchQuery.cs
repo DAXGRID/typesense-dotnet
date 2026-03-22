@@ -39,7 +39,7 @@ public record VectorQuery
     /// Number of documents to return.
     /// </summary>
     public int? K { get; private set; }
-    
+
     /// <summary>
     /// Maximum vector distance threshold for results of semantic search and hybrid search
     /// </summary>
@@ -117,7 +117,7 @@ public record VectorQuery
 
         var vectorFieldNameMatch = match.Groups[1].Value;
         if (string.IsNullOrWhiteSpace(vectorFieldNameMatch))
-            throw new ArgumentException("Malformed vectory query string: it is missing the vector field name.");
+            throw new ArgumentException("Malformed vector query string: it is missing the vector field name.");
 
         VectorFieldName = vectorFieldNameMatch;
 

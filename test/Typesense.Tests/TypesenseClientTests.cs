@@ -140,7 +140,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
     }
 
     [Fact, TestPriority(0)]
-    public async Task Create_schema_symbols_to_index_and_token_seperator()
+    public async Task Create_schema_symbols_to_index_and_token_separator()
     {
         var expected = new CollectionResponse(
             "companies_with_symbols_and_token",
@@ -2011,8 +2011,8 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
             "fruit-synonyms",
             [
                 new SynonymSchema(
-                    "apple-synonyms", 
-                    ["appl", "aple", "apple"], 
+                    "apple-synonyms",
+                    ["appl", "aple", "apple"],
                     "apple",
                     null,
                     ["+"]
@@ -2115,7 +2115,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 rule: new Rule("apple", "exact"),
                 id: "customize-apple"
             )
-        ]);        
+        ]);
 
         var schema = new CurationSetSchema(
         [

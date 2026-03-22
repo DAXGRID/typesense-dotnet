@@ -45,7 +45,7 @@ public class TypesenseClient : ITypesenseClient
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
         httpClient.BaseAddress = typeSenseUriBuilder.Uri;
         httpClient.DefaultRequestHeaders.Add("X-TYPESENSE-API-KEY", config.Value.ApiKey);
-        
+
         _httpClient = httpClient;
 
         if (config.Value.JsonSerializerOptions is not null)
@@ -161,8 +161,8 @@ public class TypesenseClient : ITypesenseClient
         };
         var queryString = CreateUrlParameters(queryParams);
 
-        var path = queryString.Length == 0 
-            ? "/multi_search" 
+        var path = queryString.Length == 0
+            ? "/multi_search"
             : $"/multi_search?{queryString}";
 
         var response = await Post<JsonElement>(path, json, jsonSerializerOptions: null, ctk).ConfigureAwait(false);

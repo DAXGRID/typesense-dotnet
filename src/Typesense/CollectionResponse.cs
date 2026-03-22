@@ -61,7 +61,7 @@ public record CollectionResponse
         SymbolsToIndex = symbolsToIndex;
         EnableNestedFields = enableNestedFields;
         // Always initialize so it's the same behavior for versions before 30.0.
-        SynonymSets = synonymSets ?? Array.Empty<string>(); 
+        SynonymSets = synonymSets ?? Array.Empty<string>();
         CurationSets = curationSets ?? Array.Empty<string>();
         Metadata = metadata;
     }

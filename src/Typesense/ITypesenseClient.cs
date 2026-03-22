@@ -23,7 +23,7 @@ public interface ITypesenseClient
     Task<CollectionResponse> CreateCollection(Schema schema);
 
     /// <summary>
-    /// Rmove all documents from a collection but keeps the collection and schema intact.
+    /// Remove all documents from a collection but keeps the collection and schema intact.
     /// </summary>
     /// <param name="collection">The name of the collection to truncate.</param>
     /// <returns>The response object includes the number of documents that were deleted. For an empty collection, this value will be 0.</returns>
@@ -37,7 +37,7 @@ public interface ITypesenseClient
     Task<TruncateCollectionResponse> TruncateCollection(string collection);
 
     /// <summary>
-    /// Creates the document in the speicfied collection.
+    /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
@@ -53,7 +53,7 @@ public interface ITypesenseClient
     Task<T> CreateDocument<T>(string collection, string document) where T : class;
 
     /// <summary>
-    /// Creates the document in the speicfied collection.
+    /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted.</param>
@@ -69,7 +69,7 @@ public interface ITypesenseClient
     Task<T> CreateDocument<T>(string collection, T document) where T : class;
 
     /// <summary>
-    /// Inserts the document if it does not exist or update if the document exist.
+    /// Inserts the document if it does not exist or update if the document exists.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
@@ -85,7 +85,7 @@ public interface ITypesenseClient
     Task<T> UpsertDocument<T>(string collection, string document) where T : class;
 
     /// <summary>
-    /// Inserts the document if it does not exist or update if the document exist.
+    /// Inserts the document if it does not exist or update if the document exists.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be upserted.</param>
@@ -410,7 +410,7 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be deleted.</param>
-    /// <param name="batchSize">The number of documents that should deleted at a time.</param>
+    /// <param name="batchSize">The number of documents that should be deleted at a time.</param>
     /// <returns>A response containing a count of the deleted documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -461,7 +461,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
     Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false);
-    
+
     /// <summary>
     /// Batch import documents.
     /// </summary>
@@ -474,7 +474,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
-    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
+    /// <param name="returnId">Enable to return the id of the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -504,7 +504,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
-    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
+    /// <param name="returnId">Enable to return the id of the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -534,7 +534,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
-    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
+    /// <param name="returnId">Enable to return the id of the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -564,7 +564,7 @@ public interface ITypesenseClient
     /// Using lower amount will lower timeout risk, but increase number of requests made.
     /// If not specified, typesense server will default to 200.
     /// </param>
-    /// <param name="returnId">Eanble to return the id fo the document in the response.</param>
+    /// <param name="returnId">Enable to return the id of the document in the response.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -642,7 +642,7 @@ public interface ITypesenseClient
     /// <summary>
     /// Retrieve a key
     /// </summary>
-    /// <param name="id">Id of key to be retrived</param>
+    /// <param name="id">Id of key to be retrieved</param>
     /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A single key.</returns>
     /// <exception cref="TypesenseApiException"></exception>

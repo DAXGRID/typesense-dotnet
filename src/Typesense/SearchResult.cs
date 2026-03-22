@@ -68,9 +68,9 @@ public record Hit<T>
 
     [JsonPropertyName("geo_distance_meters")]
     public IReadOnlyDictionary<string, double>? GeoDistanceMeters { get; init; }
-    
+
     [JsonPropertyName("hybrid_search_info")]
-    public HybridSearchInfo? HybridSearchInfo { get; init; } 
+    public HybridSearchInfo? HybridSearchInfo { get; init; }
 
     [JsonConstructor]
     public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance, IReadOnlyDictionary<string, double>? geoDistanceMeters)
@@ -307,7 +307,7 @@ public record MultiSearchResult<T>
 
     [JsonPropertyName("hits")]
     public IReadOnlyList<Hit<T>>? Hits { get; init; }
-    
+
     [JsonPropertyName("grouped_hits")]
     public IReadOnlyList<GroupedHit<T>> GroupedHits { get; init; }
 
