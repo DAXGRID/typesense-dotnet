@@ -24,7 +24,7 @@ public class GroupKeyConverter : JsonConverter<IReadOnlyList<string>>
             JsonValueKind.String => element.GetString(),
             JsonValueKind.False => "false",
             JsonValueKind.True => "true",
-            JsonValueKind.Number => element.GetDecimal().ToString(CultureInfo.CreateSpecificCulture("en-US")),
+            JsonValueKind.Number => element.GetDecimal().ToString(CultureInfo.InvariantCulture),
             JsonValueKind.Array => string.Join(", ", element.EnumerateArray().Select(StringifyJsonElement)),
             _ => null
         };
