@@ -72,6 +72,12 @@ public record Hit<T>
     [JsonPropertyName("hybrid_search_info")]
     public HybridSearchInfo? HybridSearchInfo { get; init; }
 
+    [JsonPropertyName("collection")]
+    public string? Collection { get; init; }
+
+    [JsonPropertyName("search_index")]
+    public int? SearchIndex { get; init; }
+
     [JsonConstructor]
     public Hit(IReadOnlyList<Highlight> highlights, T document, long? textMatch, double? vectorDistance, IReadOnlyDictionary<string, double>? geoDistanceMeters)
     {
