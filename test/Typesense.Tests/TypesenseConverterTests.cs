@@ -80,4 +80,45 @@ public class TypesenseConverterTests
             key[4].Should().Be("42, 4.5");
         }
     }
+
+    [Fact]
+    public void VectorQueryConstructor_AllowsEmptyVectorWithoutId()
+    {
+        var query = new VectorQuery(Array.Empty<float>(), "embedding");
+
+        using (new AssertionScope())
+        {
+            query.VectorFieldName.Should().Be("embedding");
+            query.Vector.Should().BeEmpty();
+            query.Id.Should().BeNull();
+            query.ToQuery().Should().Be("embedding:([])");
+        }
+    }
+
+    [Fact]
+    public void VectorQueryParseQuery_ParsesAlphaAndDistanceThresholdOnEmptyVector()
+    {
+        var query = new VectorQuery("embedding:([], alpha: 0.7, distance_threshold:0.30)");
+
+        using (new AssertionScope())
+        {
+            query.VectorFieldName.Should().Be("embedding");
+            query.Vector.Should().BeEmpty();
+            query.Alpha.Should().Be(0.7m);
+            query.DistanceThreshold.Should().Be(0.30m);
+            query.Id.Should().BeNull();
+        }
+    }
+
+    [Fact]
+    public void VectorQueryToQuery_IncludesAlphaAndDistanceThreshold()
+    {
+        var query = new VectorQuery(
+            vector: Array.Empty<float>(),
+            vectorFieldName: "embedding",
+            alpha: 0.7m,
+            distanceThreshold: 0.30m);
+
+        query.ToQuery().Should().Be("embedding:([],alpha:0.7,distance_threshold:0.30)");
+    }
 }

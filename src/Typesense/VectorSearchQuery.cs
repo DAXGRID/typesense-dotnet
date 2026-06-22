@@ -14,6 +14,8 @@ namespace Typesense;
 /// vec:([0.34, 0.66, 0.12, 0.68], k: 10)
 /// vec:([0.34, 0.66, 0.12, 0.68], k: 10, flat_search_cutoff: 20)
 /// vec:([], id: abcd)
+/// vec:([], alpha: 0.7)
+/// vec:([], distance_threshold: 0.30)
 /// </summary>
 public record VectorQuery
 {
@@ -39,6 +41,11 @@ public record VectorQuery
     /// Number of documents to return.
     /// </summary>
     public int? K { get; private set; }
+
+    /// <summary>
+    /// Weight to balance keyword and vector search.
+    /// </summary>
+    public decimal? Alpha { get; private set; }
 
     /// <summary>
     /// Maximum vector distance threshold for results of semantic search and hybrid search
@@ -73,20 +80,18 @@ public record VectorQuery
     /// <param name="vectorFieldName">Vector field name to be searched against</param>
     /// <param name="id">String document id</param>
     /// <param name="k">Number of documents that are returned</param>
+    /// <param name="alpha">Weight to balance keyword and vector search</param>
     /// <param name="flatSearchCutoff">If you wish to do brute-force vector search when a given query matches fewer than 20 documents, sending flat_search_cutoff=20 will bypass the HNSW index when the number of results found is less than 20</param>
     /// <param name="extraParams">Any extra parameters you wish to include as a key/value dictionary</param>
     /// <param name="distanceThreshold">Maximum vector distance threshold for results of semantic search and hybrid search</param>
     /// <exception cref="ArgumentException"></exception>
-    public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null, decimal? distanceThreshold = null)
+    public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, decimal? alpha = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null, decimal? distanceThreshold = null)
     {
         ArgumentNullException.ThrowIfNull(vector);
 
         if (vector.Length > 0 && id != null)
             throw new ArgumentException(
                 "Malformed vector query string: cannot pass both vector query and `id` parameter.");
-
-        if (vector.Length == 0 && id is null)
-            throw new ArgumentException("When a vector query value is empty, an `id` parameter must be present.");
 
         if (string.IsNullOrWhiteSpace(vectorFieldName))
             throw new ArgumentException(
@@ -97,6 +102,7 @@ public record VectorQuery
         VectorFieldName = vectorFieldName;
         Id = id;
         K = k;
+        Alpha = alpha;
         DistanceThreshold = distanceThreshold;
         FlatSearchCutoff = flatSearchCutoff;
         ExtraParams = extraParams ?? new();
@@ -168,6 +174,20 @@ public record VectorQuery
                     K = k;
                     break;
 
+                case "alpha":
+                    if (!decimal.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture, out decimal alpha))
+                        throw new ArgumentException("Malformed vector query string: alpha value is not a decimal");
+
+                    Alpha = alpha;
+                    break;
+
+                case "distance_threshold":
+                    if (!decimal.TryParse(kvp[1], NumberStyles.Float, CultureInfo.InvariantCulture, out decimal distanceThreshold))
+                        throw new ArgumentException("Malformed vector query string: distance_threshold value is not a decimal");
+
+                    DistanceThreshold = distanceThreshold;
+                    break;
+
                 case "flat_search_cutoff":
                     if (!Int32.TryParse(kvp[1], out int flatSearchCutoff))
                         throw new ArgumentException("Malformed vector query string: flat_search_cutoff value is not an integer");
@@ -180,9 +200,6 @@ public record VectorQuery
                     break;
             }
         }
-
-        if (_vector.Length == 0 && Id is null)
-            throw new ArgumentException("When a vector query value is empty, an `id` parameter must be present.");
     }
 
     /// <summary>
@@ -209,6 +226,12 @@ public record VectorQuery
 
         if (K != null)
             queryStringBuilder.Append(",k:").Append(K);
+
+        if (Alpha != null)
+            queryStringBuilder.Append(",alpha:").Append(Alpha.Value.ToString(CultureInfo.InvariantCulture));
+
+        if (DistanceThreshold != null)
+            queryStringBuilder.Append(",distance_threshold:").Append(DistanceThreshold.Value.ToString(CultureInfo.InvariantCulture));
 
         if (FlatSearchCutoff != null)
             queryStringBuilder.Append(",flat_search_cutoff:").Append(FlatSearchCutoff);
