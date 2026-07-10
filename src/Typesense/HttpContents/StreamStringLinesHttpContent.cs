@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,26 +29,24 @@ public sealed class StreamStringLinesHttpContent : System.Net.Http.HttpContent
     // which in turn are used to copy the content to the NetworkStream.
     protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
     {
-        return SerializeToStreamAsync(stream, context, cancellationToken: CancellationToken.None);
+        return SerializeToStreamAsyncCore(stream, CancellationToken.None);
     }
 
+#if !NETSTANDARD2_0
     // Override SerializeToStreamAsync overload with CancellationToken
     // if the content serialization supports cancellation, otherwise the token will be dropped.
     protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
-        await using StreamWriter streamWriter = new(stream, leaveOpen: true);
-        foreach (var line in _lines)
-            await streamWriter.WriteLineAsync(line).ConfigureAwait(false);
+        await SerializeToStreamAsyncCore(stream, cancellationToken).ConfigureAwait(false);
     }
 
     // In rare cases when synchronous support is needed, e.g. synchronous CopyTo used by HttpClient.Send,
     // implement synchronous version of SerializeToStream.
     protected override void SerializeToStream(Stream stream, TransportContext? context, CancellationToken cancellationToken)
     {
-        using StreamWriter streamWriter = new(stream, leaveOpen: true);
-        foreach (var line in _lines)
-            streamWriter.WriteLine(line);
+        SerializeToStreamCore(stream, cancellationToken);
     }
+#endif
 
     // CreateContentReadStream* methods, if implemented, will be used by ReadAsStream* methods
     // to get the underlying stream and avoid buffering.
@@ -55,22 +54,49 @@ public sealed class StreamStringLinesHttpContent : System.Net.Http.HttpContent
     // They are for content receiving and HttpClient uses its own internal implementation for an HTTP response content.
     protected override Task<Stream> CreateContentReadStreamAsync()
     {
-        return CreateContentReadStreamAsync(cancellationToken: CancellationToken.None);
+        return Task.FromResult<Stream>(CreateContentReadStreamCore(CancellationToken.None));
     }
 
+#if !NETSTANDARD2_0
     // Override CreateContentReadStreamAsync overload with CancellationToken
     // if the content serialization supports cancellation, otherwise the token will be dropped.
     protected override Task<Stream> CreateContentReadStreamAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(CreateContentReadStream(cancellationToken));
+        return Task.FromResult<Stream>(CreateContentReadStreamCore(cancellationToken));
     }
 
     // In rare cases when synchronous support is needed, e.g. synchronous ReadAsStream,
     // implement synchronous version of CreateContentRead.
     protected override Stream CreateContentReadStream(CancellationToken cancellationToken)
     {
+        return CreateContentReadStreamCore(cancellationToken);
+    }
+#endif
+
+    private async Task SerializeToStreamAsyncCore(Stream stream, CancellationToken cancellationToken)
+    {
+        using StreamWriter streamWriter = new(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
+        foreach (var line in _lines)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await streamWriter.WriteLineAsync(line).ConfigureAwait(false);
+        }
+    }
+
+    private void SerializeToStreamCore(Stream stream, CancellationToken cancellationToken)
+    {
+        using StreamWriter streamWriter = new(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
+        foreach (var line in _lines)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            streamWriter.WriteLine(line);
+        }
+    }
+
+    private MemoryStream CreateContentReadStreamCore(CancellationToken cancellationToken)
+    {
         MemoryStream stream = new();
-        SerializeToStream(stream, context: null, cancellationToken);
+        SerializeToStreamCore(stream, cancellationToken);
         return stream;
     }
 }

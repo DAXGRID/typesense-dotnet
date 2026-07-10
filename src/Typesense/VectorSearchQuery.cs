@@ -87,7 +87,7 @@ public record VectorQuery
     /// <exception cref="ArgumentException"></exception>
     public VectorQuery(float[] vector, string vectorFieldName, string? id = null, int? k = null, decimal? alpha = null, int? flatSearchCutoff = null, Dictionary<string, string>? extraParams = null, decimal? distanceThreshold = null)
     {
-        ArgumentNullException.ThrowIfNull(vector);
+        Guard.ThrowIfNull(vector, nameof(vector));
 
         if (vector.Length > 0 && id != null)
             throw new ArgumentException(
@@ -134,8 +134,7 @@ public record VectorQuery
         if (!String.IsNullOrEmpty(vectorMatch))
         {
             // Get the float array query portion
-            _vector = vectorMatch
-                .Split(',', StringSplitOptions.TrimEntries)
+            _vector = SplitAndTrim(vectorMatch, ',')
                 .Select(x =>
                 {
                     if (!float.TryParse(x, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
@@ -147,12 +146,11 @@ public record VectorQuery
         }
 
         // Commas are always used as a delimiter inside the list of parameters
-        var qParams = match.Groups[3].Value
-            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var qParams = SplitAndTrim(match.Groups[3].Value, ',', removeEmptyEntries: true);
 
         foreach (var param in qParams)
         {
-            var kvp = param.Split(':', StringSplitOptions.TrimEntries);
+            var kvp = SplitAndTrim(param, ':').ToArray();
 
             if (kvp.Length != 2)
                 throw new ArgumentException($"Malformed vector query string at parameter '{param}'");
@@ -202,6 +200,12 @@ public record VectorQuery
         }
     }
 
+    private static IEnumerable<string> SplitAndTrim(string value, char separator, bool removeEmptyEntries = false)
+    {
+        var options = removeEmptyEntries ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None;
+        return value.Split(new[] { separator }, options).Select(part => part.Trim());
+    }
+
     /// <summary>
     /// Convert this vector query into a query useable by Typesense.
     /// </summary>
@@ -237,8 +241,8 @@ public record VectorQuery
             queryStringBuilder.Append(",flat_search_cutoff:").Append(FlatSearchCutoff);
 
         // Allow for additional parameters if provided
-        foreach (var (key, value) in ExtraParams)
-            queryStringBuilder.Append(',').Append(key).Append(':').Append(value);
+        foreach (var param in ExtraParams)
+            queryStringBuilder.Append(',').Append(param.Key).Append(':').Append(param.Value);
 
         queryStringBuilder.Append(')');
 

@@ -9,17 +9,19 @@ namespace Typesense.Converter;
 /// </summary>
 public class UnixEpochDateTimeLongConverter : JsonConverter<DateTime?>
 {
+    private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
     public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Null)
             return null;
 
-        return DateTime.UnixEpoch.AddSeconds(reader.GetInt64());
+        return UnixEpoch.AddSeconds(reader.GetInt64());
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        Guard.ThrowIfNull(writer, nameof(writer));
 
         if (value == null)
         {
@@ -27,6 +29,6 @@ public class UnixEpochDateTimeLongConverter : JsonConverter<DateTime?>
             return;
         }
 
-        writer.WriteNumberValue(Convert.ToInt64((value.Value - DateTime.UnixEpoch).TotalSeconds));
+        writer.WriteNumberValue(Convert.ToInt64((value.Value - UnixEpoch).TotalSeconds));
     }
 }

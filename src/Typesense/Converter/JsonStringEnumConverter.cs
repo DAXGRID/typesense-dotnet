@@ -19,7 +19,7 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
     static JsonStringEnumConverter()
     {
         var type = typeof(TEnum);
-        var values = Enum.GetValues<TEnum>();
+        var values = Enum.GetValues(type).Cast<TEnum>().ToArray();
         EnumToString = new Dictionary<TEnum, string>(capacity: values.Length);
 
         foreach (var value in values)
@@ -51,12 +51,12 @@ public class JsonStringEnumConverter<TEnum> : JsonConverter<TEnum> where TEnum :
         if (stringValue is null)
             throw new InvalidOperationException($"Received null value from {nameof(reader)}.");
 
-        return StringToEnum.GetValueOrDefault(stringValue);
+        return StringToEnum.TryGetValue(stringValue, out var enumValue) ? enumValue : default;
     }
 
     public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        Guard.ThrowIfNull(writer, nameof(writer));
 
         writer.WriteStringValue(EnumToString[value]);
     }

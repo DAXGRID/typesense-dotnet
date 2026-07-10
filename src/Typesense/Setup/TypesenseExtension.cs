@@ -27,13 +27,19 @@ public static class TypesenseExtension
             .AddScoped<ITypesenseClient, TypesenseClient>()
             .AddHttpClient<ITypesenseClient, TypesenseClient>(client =>
             {
+#if !NETSTANDARD2_0
                 client.DefaultRequestVersion = HttpVersion.Version30;
+#endif
             });
         if (enableHttpCompression)
             httpClientBuilder = httpClientBuilder
                 .ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
                 {
+#if NETSTANDARD2_0
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+#else
                     AutomaticDecompression = DecompressionMethods.All
+#endif
                 });
         return httpClientBuilder.Services
             .Configure(config);

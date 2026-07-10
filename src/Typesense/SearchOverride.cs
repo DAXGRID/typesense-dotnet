@@ -141,8 +141,8 @@ public record SearchOverride
         DateTime? effectiveFromTs = null,
         DateTime? effectiveToTs = null)
     {
-        ArgumentNullException.ThrowIfNull(id);
-        ArgumentNullException.ThrowIfNull(rule);
+        Guard.ThrowIfNull(id, nameof(id));
+        Guard.ThrowIfNull(rule, nameof(rule));
 
         Id = id;
         Rule = rule;

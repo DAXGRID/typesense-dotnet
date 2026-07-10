@@ -24,7 +24,8 @@ namespace Typesense;
 public class TypesenseClient : ITypesenseClient
 {
     private const string ApiKeyHeaderName = "X-TYPESENSE-API-KEY";
-    private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{MediaTypeNames.Application.Json};charset={Encoding.UTF8.WebName}");
+    private const string ApplicationJsonMediaType = "application/json";
+    private static readonly MediaTypeHeaderValue JsonMediaTypeHeaderValue = MediaTypeHeaderValue.Parse($"{ApplicationJsonMediaType};charset={Encoding.UTF8.WebName}");
     private readonly HttpClient _httpClient;
     private readonly string? _searchApiKey;
 
@@ -40,8 +41,8 @@ public class TypesenseClient : ITypesenseClient
 
     public TypesenseClient(IOptions<Config> config, HttpClient httpClient)
     {
-        ArgumentNullException.ThrowIfNull(config);
-        ArgumentNullException.ThrowIfNull(httpClient);
+        Guard.ThrowIfNull(config, nameof(config));
+        Guard.ThrowIfNull(httpClient, nameof(httpClient));
 
         var node = config.Value.Nodes.First();
         UriBuilder typeSenseUriBuilder = new UriBuilder(node.Protocol, node.Host, int.Parse(node.Port), node.AdditionalPath);
@@ -71,8 +72,10 @@ public class TypesenseClient : ITypesenseClient
         var newHttpClient = new HttpClient
         {
             BaseAddress = source._httpClient.BaseAddress,
-            DefaultRequestVersion = source._httpClient.DefaultRequestVersion,
         };
+#if !NETSTANDARD2_0
+        newHttpClient.DefaultRequestVersion = source._httpClient.DefaultRequestVersion;
+#endif
         newHttpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, apiKey);
 
         _httpClient = newHttpClient;
@@ -83,7 +86,7 @@ public class TypesenseClient : ITypesenseClient
 
     public ITypesenseClient WithSearchScope(ScopedSearchParameters scopedSearchParameters)
     {
-        ArgumentNullException.ThrowIfNull(scopedSearchParameters, nameof(scopedSearchParameters));
+        Guard.ThrowIfNull(scopedSearchParameters, nameof(scopedSearchParameters));
         var searchApiKey = _searchApiKey ?? throw new InvalidOperationException(
             "SearchApiKey must be set in Config to use WithSearchScope.");
 
@@ -95,7 +98,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<CollectionResponse> CreateCollection(Schema schema)
     {
-        ArgumentNullException.ThrowIfNull(schema);
+        Guard.ThrowIfNull(schema, nameof(schema));
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
@@ -103,7 +106,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<TruncateCollectionResponse> TruncateCollection(string collection)
     {
-        ArgumentNullException.ThrowIfNull(collection);
+        Guard.ThrowIfNull(collection, nameof(collection));
         // The filter_by is a hack because there is a bug in version v28.0 https://github.com/typesense/typesense/pull/2218
         return await Delete<TruncateCollectionResponse>($"/collections/{collection}/documents?truncate=true&filter_by=", _jsonNameCaseInsensitiveTrue);
     }
@@ -141,7 +144,7 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> PostDocument<T>(string collection, T document, bool upsert) where T : class
     {
-        ArgumentNullException.ThrowIfNull(document);
+        Guard.ThrowIfNull(document, nameof(document));
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
 
@@ -163,7 +166,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
 
-        ArgumentNullException.ThrowIfNull(searchParameters);
+        Guard.ThrowIfNull(searchParameters, nameof(searchParameters));
 
         var parameters = CreateUrlParameters(searchParameters);
         return Get<TResult>($"/collections/{collection}/documents/search?{parameters}", _jsonNameCaseInsensitiveTrue, ctk);
@@ -440,7 +443,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
     {
-        ArgumentNullException.ThrowIfNull(document);
+        Guard.ThrowIfNull(document, nameof(document));
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
 
@@ -545,7 +548,7 @@ public class TypesenseClient : ITypesenseClient
         int? remoteEmbeddingBatchSize = null,
         bool? returnId = null)
     {
-        ArgumentNullException.ThrowIfNull(documents);
+        Guard.ThrowIfNull(documents, nameof(documents));
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace", nameof(collection));
 
@@ -560,7 +563,7 @@ public class TypesenseClient : ITypesenseClient
             ImportType.Update => "&action=update",
             ImportType.Upsert => "&action=upsert",
             ImportType.Emplace => "&action=emplace",
-            _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(importType)}'", nameof(importType)),
+            _ => throw new ArgumentException($"Could not handle {nameof(ImportType)} with name '{Enum.GetName(typeof(ImportType), importType)}'", nameof(importType)),
         };
 
         if (returnId is not null)
@@ -589,7 +592,7 @@ public class TypesenseClient : ITypesenseClient
         int? remoteEmbeddingBatchSize = null,
         bool? returnId = null)
     {
-        ArgumentNullException.ThrowIfNull(documents);
+        Guard.ThrowIfNull(documents, nameof(documents));
 
         using var streamLinesContent = new StreamStringLinesHttpContent(documents);
         return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
@@ -603,7 +606,7 @@ public class TypesenseClient : ITypesenseClient
         int? remoteEmbeddingBatchSize = null,
         bool? returnId = null)
     {
-        ArgumentNullException.ThrowIfNull(documents);
+        Guard.ThrowIfNull(documents, nameof(documents));
 
         using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
@@ -617,7 +620,7 @@ public class TypesenseClient : ITypesenseClient
         int? remoteEmbeddingBatchSize = null,
         bool? returnId = null)
     {
-        ArgumentNullException.ThrowIfNull(stream);
+        Guard.ThrowIfNull(stream, nameof(stream));
 
         using var streamContent = new StreamContent(stream);
         return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
@@ -633,7 +636,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
 
-        ArgumentNullException.ThrowIfNull(exportParameters);
+        Guard.ThrowIfNull(exportParameters, nameof(exportParameters));
 
         var docs = ExportDocumentsAsStream<T>(collection, exportParameters, ctk).ConfigureAwait(false);
 
@@ -650,7 +653,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null or whitespace.", nameof(collection));
 
-        ArgumentNullException.ThrowIfNull(exportParameters);
+        Guard.ThrowIfNull(exportParameters, nameof(exportParameters));
 
         var parameters = CreateUrlParameters(exportParameters);
         var lines = GetLines($"/collections/{collection}/documents/export?{parameters}", ctk).ConfigureAwait(false);
@@ -669,7 +672,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<KeyResponse> CreateKey(Key key)
     {
-        ArgumentNullException.ThrowIfNull(key);
+        Guard.ThrowIfNull(key, nameof(key));
 
         using var jsonContent = JsonContent.Create(key, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Post<KeyResponse>("/keys", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
@@ -703,7 +706,7 @@ public class TypesenseClient : ITypesenseClient
         using var hmac = new HMACSHA256(securityKeyAsBuffer);
         var hash = hmac.ComputeHash(parametersAsBuffer);
         var digest = Convert.ToBase64String(hash);
-        var keyPrefix = securityKey[..4];
+        var keyPrefix = securityKey.Substring(0, 4);
         var rawScopedKey = $"{digest}{keyPrefix}{parameters}";
 
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
@@ -714,7 +717,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(curationSetName));
 
-        ArgumentNullException.ThrowIfNull(schema);
+        Guard.ThrowIfNull(schema, nameof(schema));
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Put<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
@@ -747,7 +750,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(aliasName));
 
-        ArgumentNullException.ThrowIfNull(collectionAlias);
+        Guard.ThrowIfNull(collectionAlias, nameof(collectionAlias));
 
         using var jsonContent = JsonContent.Create(collectionAlias, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Put<CollectionAliasResponse>($"/aliases/{aliasName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
@@ -779,7 +782,7 @@ public class TypesenseClient : ITypesenseClient
         if (string.IsNullOrWhiteSpace(synonymSetName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(synonymSetName));
 
-        ArgumentNullException.ThrowIfNull(schema);
+        Guard.ThrowIfNull(schema, nameof(schema));
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
         return await Put<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
@@ -888,7 +891,7 @@ public class TypesenseClient : ITypesenseClient
 
     private static async IAsyncEnumerable<string> GetLines(HttpResponseMessage response, [EnumeratorCancellation] CancellationToken ctk = default)
     {
-        await using var stream = await response.Content.ReadAsStreamAsync(ctk).ConfigureAwait(false);
+        using var stream = await ReadAsStreamAsync(response.Content, ctk).ConfigureAwait(false);
         using StreamReader streamReader = new(stream);
 
         while (true)
@@ -920,7 +923,15 @@ public class TypesenseClient : ITypesenseClient
 
     private async Task<T> Patch<T>(string path, HttpContent? httpContent, JsonSerializerOptions? jsonSerializerOptions, CancellationToken ctk = default)
     {
+#if NETSTANDARD2_0
+        using var request = new HttpRequestMessage(new HttpMethod("PATCH"), path)
+        {
+            Content = httpContent
+        };
+        using var response = await _httpClient.SendAsync(request, ctk).ConfigureAwait(false);
+#else
         using var response = await _httpClient.PatchAsync(path, httpContent, ctk).ConfigureAwait(false);
+#endif
         if (!response.IsSuccessStatusCode)
             await GetException(response, ctk).ConfigureAwait(false);
 
@@ -943,8 +954,28 @@ public class TypesenseClient : ITypesenseClient
 
     private static async Task GetException(HttpResponseMessage response, CancellationToken ctk)
     {
-        var message = await response.Content.ReadAsStringAsync(ctk).ConfigureAwait(false);
+        var message = await ReadAsStringAsync(response.Content, ctk).ConfigureAwait(false);
         throw GetException(response.StatusCode, message);
+    }
+
+    private static Task<Stream> ReadAsStreamAsync(HttpContent content, CancellationToken ctk)
+    {
+#if NETSTANDARD2_0
+        ctk.ThrowIfCancellationRequested();
+        return content.ReadAsStreamAsync();
+#else
+        return content.ReadAsStreamAsync(ctk);
+#endif
+    }
+
+    private static Task<string> ReadAsStringAsync(HttpContent content, CancellationToken ctk)
+    {
+#if NETSTANDARD2_0
+        ctk.ThrowIfCancellationRequested();
+        return content.ReadAsStringAsync();
+#else
+        return content.ReadAsStringAsync(ctk);
+#endif
     }
 
     private static TypesenseApiException GetException(HttpStatusCode statusCode, string message)
@@ -954,14 +985,14 @@ public class TypesenseClient : ITypesenseClient
             HttpStatusCode.Unauthorized => new TypesenseApiUnauthorizedException(message),
             HttpStatusCode.NotFound => new TypesenseApiNotFoundException(message),
             HttpStatusCode.Conflict => new TypesenseApiConflictException(message),
-            HttpStatusCode.UnprocessableEntity => new TypesenseApiUnprocessableEntityException(message),
+            (HttpStatusCode)422 => new TypesenseApiUnprocessableEntityException(message),
             HttpStatusCode.ServiceUnavailable => new TypesenseApiUnprocessableEntityException(message),
             // If we receive a status code that has not been documented, we throw TypesenseApiException.
-            _ => throw new TypesenseApiException($"Received an unspecified status-code: '{Enum.GetName(statusCode)}' from Typesense, with message: '{message}'.")
+            _ => throw new TypesenseApiException($"Received an unspecified status-code: '{Enum.GetName(typeof(HttpStatusCode), statusCode)}' from Typesense, with message: '{message}'.")
         };
 
     private static StringContent GetApplicationJsonStringContent(string jsonString)
-        => new(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
+        => new(jsonString, Encoding.UTF8, ApplicationJsonMediaType);
 
     private static StringContent GetTextPlainStringContent(string jsonString)
         => new(jsonString, Encoding.UTF8, "text/plain");
