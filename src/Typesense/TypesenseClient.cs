@@ -893,7 +893,7 @@ public class TypesenseClient : ITypesenseClient
 
         while (true)
         {
-            var line = await streamReader.ReadLineAsync().ConfigureAwait(false);
+            var line = await streamReader.ReadLineAsync(ctk).ConfigureAwait(false);
             if (line is null)
                 break;
             yield return line;
