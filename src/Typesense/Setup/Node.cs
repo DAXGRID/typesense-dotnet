@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Typesense.Setup;
 /// <summary>
@@ -60,7 +61,7 @@ public record Node
     /// <param name="host">Hostname for the Typesense service.</param>
     /// <param name="port">Port for the typesense service.</param>
     /// <param name="protocol">Protocol for the Typesense service - defaults to http.</param>
-    /// <param name="additionalPath">additionalPath for the Typesense service - defaults to empty string.</param>
+    /// <param name="additionalPath">additionalPath (without trailing or leading '/') for the Typesense service - defaults to empty string.</param>
     /// <exception cref="ArgumentException"></exception>
     public Node(string host, string port, string protocol = "http", string additionalPath = "")
     {
@@ -82,6 +83,6 @@ public record Node
         Host = host;
         Port = port;
         Protocol = protocol;
-        AdditionalPath = additionalPath;
+        AdditionalPath = additionalPath + "/";
     }
 }
