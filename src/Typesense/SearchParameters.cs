@@ -40,6 +40,9 @@ public record MultiSearchParameters : SearchParameters
     [JsonPropertyName("group_missing_values")]
     public bool? GroupMissingValues { get; set; }
 
+    [JsonPropertyName("group_max_candidates")]
+    public int? GroupMaxCandidates { get; set; }
+
     public MultiSearchParameters(string collection, string text) : base(text)
     {
         Collection = collection;
@@ -644,6 +647,13 @@ public record GroupedSearchParameters : SearchParameters
     /// </summary>
     [JsonPropertyName("group_missing_values")]
     public bool? GroupMissingValues { get; set; }
+
+    /// <summary>
+    /// Overrides the behavior of `group_by` queries introduced in Typesense v29, where the `found` value is an
+    /// approximation. When `group_max_candidates` is passed, `found` will be accurate up until its value.
+    /// </summary>
+    [JsonPropertyName("group_max_candidates")]
+    public int? GroupMaxCandidates { get; set; }
 
     public GroupedSearchParameters(
         string text,
