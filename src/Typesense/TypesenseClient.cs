@@ -93,42 +93,42 @@ public class TypesenseClient : ITypesenseClient
         return new TypesenseClient(this, scopedApiKey);
     }
 
-    public async Task<CollectionResponse> CreateCollection(Schema schema)
+    public async Task<CollectionResponse> CreateCollection(Schema schema, CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(schema);
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null).ConfigureAwait(false);
+        return await Post<CollectionResponse>("/collections", jsonContent, jsonSerializerOptions: null, ctk).ConfigureAwait(false);
     }
 
-    public async Task<TruncateCollectionResponse> TruncateCollection(string collection)
+    public async Task<TruncateCollectionResponse> TruncateCollection(string collection, CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(collection);
         // The filter_by is a hack because there is a bug in version v28.0 https://github.com/typesense/typesense/pull/2218
-        return await Delete<TruncateCollectionResponse>($"/collections/{collection}/documents?truncate=true&filter_by=", _jsonNameCaseInsensitiveTrue);
+        return await Delete<TruncateCollectionResponse>($"/collections/{collection}/documents?truncate=true&filter_by=", _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
-    public Task<T> CreateDocument<T>(string collection, string document) where T : class
+    public Task<T> CreateDocument<T>(string collection, string document, CancellationToken ctk = default) where T : class
     {
-        return PostDocument<T>(collection, document, upsert: false);
+        return PostDocument<T>(collection, document, upsert: false, ctk);
     }
 
-    public Task<T> CreateDocument<T>(string collection, T document) where T : class
+    public Task<T> CreateDocument<T>(string collection, T document, CancellationToken ctk = default) where T : class
     {
-        return PostDocument(collection, document, upsert: false);
+        return PostDocument(collection, document, upsert: false, ctk);
     }
 
-    public Task<T> UpsertDocument<T>(string collection, string document) where T : class
+    public Task<T> UpsertDocument<T>(string collection, string document, CancellationToken ctk = default) where T : class
     {
-        return PostDocument<T>(collection, document, upsert: true);
+        return PostDocument<T>(collection, document, upsert: true, ctk);
     }
 
-    public Task<T> UpsertDocument<T>(string collection, T document) where T : class
+    public Task<T> UpsertDocument<T>(string collection, T document, CancellationToken ctk = default) where T : class
     {
-        return PostDocument(collection, document, upsert: true);
+        return PostDocument(collection, document, upsert: true, ctk);
     }
 
-    private async Task<T> PostDocument<T>(string collection, string document, bool upsert) where T : class
+    private async Task<T> PostDocument<T>(string collection, string document, bool upsert, CancellationToken ctk) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -136,25 +136,25 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("cannot be null empty or whitespace", nameof(document));
 
         using var stringContent = GetApplicationJsonStringContent(document);
-        return await PostDocuments<T>(collection, stringContent, upsert).ConfigureAwait(false);
+        return await PostDocuments<T>(collection, stringContent, upsert, ctk).ConfigureAwait(false);
     }
 
-    private async Task<T> PostDocument<T>(string collection, T document, bool upsert) where T : class
+    private async Task<T> PostDocument<T>(string collection, T document, bool upsert, CancellationToken ctk) where T : class
     {
         ArgumentNullException.ThrowIfNull(document);
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
 
         using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await PostDocuments<T>(collection, jsonContent, upsert).ConfigureAwait(false);
+        return await PostDocuments<T>(collection, jsonContent, upsert, ctk).ConfigureAwait(false);
     }
 
-    private Task<T> PostDocuments<T>(string collection, HttpContent httpContent, bool upsert)
+    private Task<T> PostDocuments<T>(string collection, HttpContent httpContent, bool upsert, CancellationToken ctk)
     {
         var path = upsert
             ? $"/collections/{collection}/documents?action=upsert"
             : $"/collections/{collection}/documents";
-        return Post<T>(path, httpContent, _jsonNameCaseInsensitiveTrue);
+        return Post<T>(path, httpContent, _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     private Task<TResult> SearchInternal<TResult>(string collection,
@@ -427,7 +427,7 @@ public class TypesenseClient : ITypesenseClient
         return Get<T>($"/collections/{collection}/documents/{id}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public async Task<T> UpdateDocument<T>(string collection, string id, string document) where T : class
+    public async Task<T> UpdateDocument<T>(string collection, string id, string document, CancellationToken ctk = default) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
@@ -435,17 +435,17 @@ public class TypesenseClient : ITypesenseClient
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(document));
 
         using var stringContent = GetApplicationJsonStringContent(document);
-        return await Patch<T>($"collections/{collection}/documents/{id}", stringContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<T>($"collections/{collection}/documents/{id}", stringContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
-    public async Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class
+    public async Task<T> UpdateDocument<T>(string collection, string id, T document, CancellationToken ctk = default) where T : class
     {
         ArgumentNullException.ThrowIfNull(document);
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("Cannot be null empty or whitespace", nameof(collection));
 
         using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Patch<T>($"collections/{collection}/documents/{id}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<T>($"collections/{collection}/documents/{id}", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public Task<CollectionResponse> RetrieveCollection(string name, CancellationToken ctk = default)
@@ -461,17 +461,17 @@ public class TypesenseClient : ITypesenseClient
         return Get<List<CollectionResponse>>("/collections", jsonSerializerOptions: null, ctk);
     }
 
-    public Task<T> DeleteDocument<T>(string collection, string documentId) where T : class
+    public Task<T> DeleteDocument<T>(string collection, string documentId, CancellationToken ctk = default) where T : class
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
         if (string.IsNullOrWhiteSpace(documentId))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documentId));
 
-        return Delete<T>($"/collections/{collection}/documents/{documentId}", _jsonNameCaseInsensitiveTrue);
+        return Delete<T>($"/collections/{collection}/documents/{documentId}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40)
+    public Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -480,10 +480,10 @@ public class TypesenseClient : ITypesenseClient
         if (batchSize < 0)
             throw new ArgumentException("has to be greater than 0", nameof(batchSize));
 
-        return Delete<FilterDeleteResponse>($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}", _jsonNameCaseInsensitiveTrue);
+        return Delete<FilterDeleteResponse>($"/collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&batch_size={batchSize}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true)
+    public Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
@@ -491,12 +491,13 @@ public class TypesenseClient : ITypesenseClient
         // add compact_store query parameter only on false since it is true by default
         var compactStoreQuery = compactStore ? string.Empty : "?compact_store=false";
 
-        return Delete<CollectionResponse>($"/collections/{name}{compactStoreQuery}", _jsonNameCaseInsensitiveTrue);
+        return Delete<CollectionResponse>($"/collections/{name}{compactStoreQuery}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public async Task<UpdateCollectionResponse> UpdateCollection(
         string name,
-        UpdateSchema updateSchema)
+        UpdateSchema updateSchema,
+        CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(name));
@@ -506,10 +507,10 @@ public class TypesenseClient : ITypesenseClient
             JsonMediaTypeHeaderValue,
              _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        return await Patch<UpdateCollectionResponse>($"/collections/{name}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<UpdateCollectionResponse>($"/collections/{name}", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
-    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false)
+    public async Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(collection))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(collection));
@@ -520,7 +521,7 @@ public class TypesenseClient : ITypesenseClient
 
         using var jsonContent = JsonContent.Create(document, JsonMediaTypeHeaderValue, fullUpdate ? _jsonSerializerDefault : _jsonOptionsCamelCaseIgnoreWritingNull);
 
-        return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Patch<FilterUpdateResponse>($"collections/{collection}/documents?filter_by={Uri.EscapeDataString(filter)}&action=update", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments(
@@ -529,12 +530,13 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null)
+        bool? returnId = null,
+        CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(documents))
             throw new ArgumentException("cannot be null empty or whitespace", nameof(documents));
         using var stringContent = GetTextPlainStringContent(documents);
-        return await ImportDocuments(collection, stringContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
+        return await ImportDocuments(collection, stringContent, batchSize, importType, remoteEmbeddingBatchSize, returnId, ctk).ConfigureAwait(false);
     }
 
     private async Task<List<ImportResponse>> ImportDocuments(
@@ -543,7 +545,8 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null)
+        bool? returnId = null,
+        CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(documents);
         if (string.IsNullOrWhiteSpace(collection))
@@ -568,12 +571,12 @@ public class TypesenseClient : ITypesenseClient
             path += $"&return_id={returnId.Value.ToString().ToLowerInvariant()}";
         }
 
-        using var response = await _httpClient.PostAsync(path, documents).ConfigureAwait(false);
+        using var response = await _httpClient.PostAsync(path, documents, ctk).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
-            await GetException(response, CancellationToken.None).ConfigureAwait(false);
+            await GetException(response, ctk).ConfigureAwait(false);
 
         List<ImportResponse> result = new();
-        await foreach (var line in GetLines(response).ConfigureAwait(false))
+        await foreach (var line in GetLines(response, ctk).ConfigureAwait(false))
         {
             var importResponse = JsonSerializer.Deserialize<ImportResponse>(line) ?? throw new ArgumentException("Null is not valid for documents.");
             result.Add(importResponse);
@@ -587,12 +590,13 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null)
+        bool? returnId = null,
+        CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(documents);
 
         using var streamLinesContent = new StreamStringLinesHttpContent(documents);
-        return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId, ctk).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments<T>(
@@ -601,12 +605,13 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null)
+        bool? returnId = null,
+        CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(documents);
 
         using var streamJsonLinesContent = new StreamJsonLinesHttpContent<T>(documents, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamJsonLinesContent, batchSize, importType, remoteEmbeddingBatchSize, returnId, ctk).ConfigureAwait(false);
     }
 
     public async Task<List<ImportResponse>> ImportDocuments(
@@ -615,12 +620,13 @@ public class TypesenseClient : ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null)
+        bool? returnId = null,
+        CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
 
         using var streamContent = new StreamContent(stream);
-        return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize, returnId).ConfigureAwait(false);
+        return await ImportDocuments(collection, streamContent, batchSize, importType, remoteEmbeddingBatchSize, returnId, ctk).ConfigureAwait(false);
     }
 
     public Task<List<T>> ExportDocuments<T>(string collection, CancellationToken ctk = default)
@@ -667,12 +673,12 @@ public class TypesenseClient : ITypesenseClient
         }
     }
 
-    public async Task<KeyResponse> CreateKey(Key key)
+    public async Task<KeyResponse> CreateKey(Key key, CancellationToken ctk = default)
     {
         ArgumentNullException.ThrowIfNull(key);
 
         using var jsonContent = JsonContent.Create(key, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Post<KeyResponse>("/keys", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Post<KeyResponse>("/keys", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public Task<KeyResponse> RetrieveKey(int id, CancellationToken ctk = default)
@@ -680,9 +686,9 @@ public class TypesenseClient : ITypesenseClient
         return Get<KeyResponse>($"/keys/{id}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public Task<DeleteKeyResponse> DeleteKey(int id)
+    public Task<DeleteKeyResponse> DeleteKey(int id, CancellationToken ctk = default)
     {
-        return Delete<DeleteKeyResponse>($"/keys/{id}", _jsonNameCaseInsensitiveTrue);
+        return Delete<DeleteKeyResponse>($"/keys/{id}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<ListKeysResponse> ListKeys(CancellationToken ctk = default)
@@ -709,7 +715,7 @@ public class TypesenseClient : ITypesenseClient
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rawScopedKey));
     }
 
-    public async Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema)
+    public async Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(curationSetName));
@@ -717,7 +723,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(schema);
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Put<CurationSetSchemaResponse>($"/curation_sets/{curationSetName}", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public Task<CurationSetSchemaResponse> RetrieveCurationSet(string curationSetName, CancellationToken ctk = default)
@@ -734,15 +740,15 @@ public class TypesenseClient : ITypesenseClient
         return new ListCurationSetsResponse(curationSets);
     }
 
-    public Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName)
+    public Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(curationSetName))
             throw new ArgumentException($"{nameof(curationSetName)} cannot be null, empty or whitespace.");
 
-        return Delete<DeleteCurationSetResponse>($"/curation_sets/{curationSetName}", _jsonNameCaseInsensitiveTrue);
+        return Delete<DeleteCurationSetResponse>($"/curation_sets/{curationSetName}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public async Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias)
+    public async Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null, empty or whitespace.", nameof(aliasName));
@@ -750,7 +756,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(collectionAlias);
 
         using var jsonContent = JsonContent.Create(collectionAlias, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<CollectionAliasResponse>($"/aliases/{aliasName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Put<CollectionAliasResponse>($"/aliases/{aliasName}", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public Task<CollectionAliasResponse> RetrieveCollectionAlias(string collection, CancellationToken ctk = default)
@@ -766,15 +772,15 @@ public class TypesenseClient : ITypesenseClient
         return Get<ListCollectionAliasesResponse>("/aliases", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName)
+    public Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(aliasName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(aliasName));
 
-        return Delete<CollectionAliasResponse>($"/aliases/{aliasName}", _jsonNameCaseInsensitiveTrue);
+        return Delete<CollectionAliasResponse>($"/aliases/{aliasName}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
-    public async Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema)
+    public async Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(synonymSetName))
             throw new ArgumentException("cannot be null or whitespace.", nameof(synonymSetName));
@@ -782,7 +788,7 @@ public class TypesenseClient : ITypesenseClient
         ArgumentNullException.ThrowIfNull(schema);
 
         using var jsonContent = JsonContent.Create(schema, JsonMediaTypeHeaderValue, _jsonOptionsCamelCaseIgnoreWritingNull);
-        return await Put<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", jsonContent, _jsonNameCaseInsensitiveTrue).ConfigureAwait(false);
+        return await Put<SynonymSetSchemaResponse>($"/synonym_sets/{synonymSetName}", jsonContent, _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
     }
 
     public Task<SynonymSetSchemaResponse> RetrieveSynonymSet(string synonymSetName, CancellationToken ctk = default)
@@ -799,12 +805,12 @@ public class TypesenseClient : ITypesenseClient
         return new ListSynonymSetsResponse(synonymSets);
     }
 
-    public Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName)
+    public Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName, CancellationToken ctk = default)
     {
         if (string.IsNullOrWhiteSpace(synonymSetName))
             throw new ArgumentException($"{nameof(synonymSetName)} cannot be null, empty or whitespace.");
 
-        return Delete<DeleteSynonymSetResponse>($"/synonym_sets/{synonymSetName}", _jsonNameCaseInsensitiveTrue);
+        return Delete<DeleteSynonymSetResponse>($"/synonym_sets/{synonymSetName}", _jsonNameCaseInsensitiveTrue, ctk);
     }
 
     public Task<MetricsResponse> RetrieveMetrics(CancellationToken ctk = default)

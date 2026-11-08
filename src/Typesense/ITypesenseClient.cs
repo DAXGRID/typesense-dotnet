@@ -26,6 +26,7 @@ public interface ITypesenseClient
     /// Creates the collection with the supplied schema
     /// </summary>
     /// <param name="schema">The schema for the collection be created.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created collection.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -34,12 +35,13 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionResponse> CreateCollection(Schema schema);
+    Task<CollectionResponse> CreateCollection(Schema schema, CancellationToken ctk = default);
 
     /// <summary>
     /// Remove all documents from a collection but keeps the collection and schema intact.
     /// </summary>
     /// <param name="collection">The name of the collection to truncate.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The response object includes the number of documents that were deleted. For an empty collection, this value will be 0.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -48,13 +50,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<TruncateCollectionResponse> TruncateCollection(string collection);
+    Task<TruncateCollectionResponse> TruncateCollection(string collection, CancellationToken ctk = default);
 
     /// <summary>
     /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -64,13 +67,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> CreateDocument<T>(string collection, string document) where T : class;
+    Task<T> CreateDocument<T>(string collection, string document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Creates the document in the specified collection.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -80,13 +84,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> CreateDocument<T>(string collection, T document) where T : class;
+    Task<T> CreateDocument<T>(string collection, T document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Inserts the document if it does not exist or update if the document exists.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be inserted. The document should be in JSON format.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created or updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -96,13 +101,14 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> UpsertDocument<T>(string collection, string document) where T : class;
+    Task<T> UpsertDocument<T>(string collection, string document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Inserts the document if it does not exist or update if the document exists.
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="document">The document to be upserted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created or updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -112,7 +118,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> UpsertDocument<T>(string collection, T document) where T : class;
+    Task<T> UpsertDocument<T>(string collection, T document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Search for a document in the specified collection using the supplied search parameters.
@@ -355,6 +361,7 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="id">The document id.</param>
     /// <param name="document">The document to be updated. The document should be in JSON format.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -364,7 +371,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> UpdateDocument<T>(string collection, string id, string document) where T : class;
+    Task<T> UpdateDocument<T>(string collection, string id, string document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Updates the document in the specified collection on id.
@@ -372,6 +379,7 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="id">The document id.</param>
     /// <param name="document">The document to be updated.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The updated document.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -381,7 +389,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> UpdateDocument<T>(string collection, string id, T document) where T : class;
+    Task<T> UpdateDocument<T>(string collection, string id, T document, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Retrieve the collection on collection name.
@@ -411,13 +419,14 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="collection">The collection name.</param>
     /// <param name="documentId">The id of the document to be deleted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The deleted document or default(T) if it could not be found.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<T> DeleteDocument<T>(string collection, string documentId) where T : class;
+    Task<T> DeleteDocument<T>(string collection, string documentId, CancellationToken ctk = default) where T : class;
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.
@@ -425,26 +434,28 @@ public interface ITypesenseClient
     /// <param name="collection">The collection name.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be deleted.</param>
     /// <param name="batchSize">The number of documents that should be deleted at a time.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A response containing a count of the deleted documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40);
+    Task<FilterDeleteResponse> DeleteDocuments(string collection, string filter, int batchSize = 40, CancellationToken ctk = default);
 
     /// <summary>
     /// Deletes documents in a collection using the supplied filter.
     /// </summary>
     /// <param name="name">The collection name.</param>
     /// <param name="compactStore">Disable compaction to improve the performance of the drop operation. See also <see cref="CompactDisk"/></param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A response with the collection deleted.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true);
+    Task<CollectionResponse> DeleteCollection(string name, bool compactStore = true, CancellationToken ctk = default);
 
 
     /// <summary>
@@ -452,13 +463,14 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="name">The collection name.</param>
     /// <param name="updateSchema">The update schema definition.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The fields on the collection.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<UpdateCollectionResponse> UpdateCollection(string name, UpdateSchema updateSchema);
+    Task<UpdateCollectionResponse> UpdateCollection(string name, UpdateSchema updateSchema, CancellationToken ctk = default);
 
     /// <summary>
     /// Updates documents in a collection using the supplied filter.
@@ -468,13 +480,14 @@ public interface ITypesenseClient
     /// <param name="document">A documents of type T to update the filtered collection list with.</param>
     /// <param name="filter">The filter that is used to selected which documents that should be updated.</param>
     /// <param name="fullUpdate">Includes everything in the document, including NULL values.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A response containing a count of the updated documents.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false);
+    Task<FilterUpdateResponse> UpdateDocuments<T>(string collection, T document, string filter, bool fullUpdate = false, CancellationToken ctk = default);
 
     /// <summary>
     /// Batch import documents.
@@ -489,6 +502,7 @@ public interface ITypesenseClient
     /// If not specified, typesense server will default to 200.
     /// </param>
     /// <param name="returnId">Enable to return the id of the document in the response.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -504,7 +518,8 @@ public interface ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null);
+        bool? returnId = null,
+        CancellationToken ctk = default);
 
     /// <summary>
     /// Batch import documents.
@@ -519,6 +534,7 @@ public interface ITypesenseClient
     /// If not specified, typesense server will default to 200.
     /// </param>
     /// <param name="returnId">Enable to return the id of the document in the response.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -534,7 +550,8 @@ public interface ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null);
+        bool? returnId = null,
+        CancellationToken ctk = default);
 
     /// <summary>
     /// Batch import documents.
@@ -549,6 +566,7 @@ public interface ITypesenseClient
     /// If not specified, typesense server will default to 200.
     /// </param>
     /// <param name="returnId">Enable to return the id of the document in the response.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -564,7 +582,8 @@ public interface ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null);
+        bool? returnId = null,
+        CancellationToken ctk = default);
 
     /// <summary>
     /// Batch import documents.
@@ -579,6 +598,7 @@ public interface ITypesenseClient
     /// If not specified, typesense server will default to 200.
     /// </param>
     /// <param name="returnId">Enable to return the id of the document in the response.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A collection of import responses.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -594,7 +614,8 @@ public interface ITypesenseClient
         int batchSize = 40,
         ImportType importType = ImportType.Create,
         int? remoteEmbeddingBatchSize = null,
-        bool? returnId = null);
+        bool? returnId = null,
+        CancellationToken ctk = default);
 
     /// <summary>
     /// Export all documents in a given collection.
@@ -643,6 +664,7 @@ public interface ITypesenseClient
     /// Creates an api key.
     /// </summary>
     /// <param name="key">Key to be inserted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created key.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
@@ -651,7 +673,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<KeyResponse> CreateKey(Key key);
+    Task<KeyResponse> CreateKey(Key key, CancellationToken ctk = default);
 
     /// <summary>
     /// Retrieve a key
@@ -669,12 +691,13 @@ public interface ITypesenseClient
     /// Delete an api key.
     /// </summary>
     /// <param name="id">Id of key to be deleted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>A DeletedKeyResponse with an id of the deleted Key or default(DeleteKeyResponse) if it could not be found.</returns>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<DeleteKeyResponse> DeleteKey(int id);
+    Task<DeleteKeyResponse> DeleteKey(int id, CancellationToken ctk = default);
 
     /// <summary>
     /// List all api keys.
@@ -709,6 +732,7 @@ public interface ITypesenseClient
     /// </summary>
     /// <param name="curationSetName">The name of the curation set.</param>
     /// <param name="schema">The curation set schema.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created curation set.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
@@ -718,7 +742,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema);
+    Task<CurationSetSchemaResponse> UpsertCurationSet(string curationSetName, CurationSetSchema schema, CancellationToken ctk = default);
 
     /// <summary>
     /// Retrieve global curation set by name.
@@ -749,19 +773,21 @@ public interface ITypesenseClient
     /// Delete a global curation set.
     /// </summary>
     /// <param name="curationSetName">Curation set name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>Name of the deleted curation set.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName);
+    Task<DeleteCurationSetResponse> DeleteCurationSet(string curationSetName, CancellationToken ctk = default);
 
     /// <summary>
     /// Upsert collection alias.
     /// </summary>
     /// <param name="aliasName">The alias name.</param>
     /// <param name="collectionAlias">The collection alias to be upserted.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The upserted collection alias.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException"></exception>
@@ -771,7 +797,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias);
+    Task<CollectionAliasResponse> UpsertCollectionAlias(string aliasName, CollectionAlias collectionAlias, CancellationToken ctk = default);
 
     /// <summary>
     /// Retrieve alias on collection name.
@@ -801,19 +827,21 @@ public interface ITypesenseClient
     /// Delete alias on alias name.
     /// </summary>
     /// <param name="aliasName">The alias name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The deleted collection alias.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName);
+    Task<CollectionAliasResponse> DeleteCollectionAlias(string aliasName, CancellationToken ctk = default);
 
     /// <summary>
     /// Upsert synonym set (global synonym set feature).
     /// </summary>
     /// <param name="synonymSetName">The name of the synonym set.</param>
     /// <param name="schema">The synonym set schema.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>The created synonym set.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
@@ -823,7 +851,7 @@ public interface ITypesenseClient
     /// <exception cref="TypesenseApiConflictException"></exception>
     /// <exception cref="TypesenseApiUnprocessableEntityException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema);
+    Task<SynonymSetSchemaResponse> UpsertSynonymSet(string synonymSetName, SynonymSetSchema schema, CancellationToken ctk = default);
 
     /// <summary>
     /// Retrieve global synonym set by name.
@@ -854,13 +882,14 @@ public interface ITypesenseClient
     /// Delete a global synonym set.
     /// </summary>
     /// <param name="synonymSetName">Synonym set name.</param>
+    /// <param name="ctk">The optional cancellation token.</param>
     /// <returns>Id of the deleted synonym set.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="TypesenseApiException"></exception>
     /// <exception cref="TypesenseApiBadRequestException"></exception>
     /// <exception cref="TypesenseApiNotFoundException"></exception>
     /// <exception cref="TypesenseApiServiceUnavailableException"></exception>
-    Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName);
+    Task<DeleteSynonymSetResponse> DeleteSynonymSet(string synonymSetName, CancellationToken ctk = default);
 
     /// <summary>
     /// Get current RAM, CPU, Disk and Network usage metrics.
