@@ -1,5 +1,5 @@
-using FluentAssertions;
-using FluentAssertions.Execution;
+using AwesomeAssertions;
+using AwesomeAssertions.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -407,7 +407,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         response.Should().BeEquivalentTo(expected, options => options.Excluding(response => response.Metadata));
 
-        // FluentAssertions doesn't support JsonElements, so we need to check it separately.
+        // AwesomeAssertions doesn't support JsonElements, so we need to check it separately.
         response.Metadata.Should().NotBeEmpty();
         response.Metadata["version"].As<JsonElement>().GetSingle().Should().Be(1.2f);
 
@@ -2144,7 +2144,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
 
         var response = await _client.UpsertCurationSet("product-curations", schema);
 
-        // Metadata contains JsonElement which FluentAssertions cannot handle directly, so exclude it.
+        // Metadata contains JsonElement which AwesomeAssertions cannot handle directly, so exclude it.
         response.Should().BeEquivalentTo(expected, options => options.Excluding(member => member.Path.Contains("Metadata")));
     }
 
