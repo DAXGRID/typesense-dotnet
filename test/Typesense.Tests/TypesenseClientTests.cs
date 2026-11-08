@@ -2114,7 +2114,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 stopProcessing: false,
                 effectiveFromTs: ts,
                 effectiveToTs: null,
-                rule: new Rule("apple", "exact"),
+                rule: new Rule("apple", "exact", synonyms: false),
                 id: "customize-apple"
             )
         ]);
@@ -2169,7 +2169,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                 stopProcessing: false,
                 effectiveFromTs: null,
                 effectiveToTs: null,
-                rule: new Rule("apple", "exact"),
+                rule: new Rule("apple", "exact", synonyms: false),
                 id: "customize-apple"
             )
         ]);
@@ -2204,7 +2204,7 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
                     stopProcessing: false,
                     effectiveFromTs: null,
                     effectiveToTs: null,
-                    rule: new Rule("apple", "exact"),
+                    rule: new Rule("apple", "exact", synonyms: false),
                     id: "customize-apple"
                 )
             ])
