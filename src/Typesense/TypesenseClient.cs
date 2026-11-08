@@ -730,7 +730,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<ListCurationSetsResponse> ListCurationSets(CancellationToken ctk = default)
     {
-        var curationSets = await Get<CurationSetSchemaResponse[]>("/curation_sets", _jsonNameCaseInsensitiveTrue, ctk);
+        var curationSets = await Get<CurationSetSchemaResponse[]>("/curation_sets", _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
         return new ListCurationSetsResponse(curationSets);
     }
 
@@ -795,7 +795,7 @@ public class TypesenseClient : ITypesenseClient
 
     public async Task<ListSynonymSetsResponse> ListSynonymSets(CancellationToken ctk = default)
     {
-        var synonymSets = await Get<SynonymSetSchemaResponse[]>("/synonym_sets", _jsonNameCaseInsensitiveTrue, ctk);
+        var synonymSets = await Get<SynonymSetSchemaResponse[]>("/synonym_sets", _jsonNameCaseInsensitiveTrue, ctk).ConfigureAwait(false);
         return new ListSynonymSetsResponse(synonymSets);
     }
 
