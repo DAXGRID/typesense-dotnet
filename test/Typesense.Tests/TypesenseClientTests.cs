@@ -2680,6 +2680,106 @@ public class TypesenseClientTests : IClassFixture<TypesenseFixture>
         }
     }
 
+    [Theory, TestPriority(49)]
+    [InlineData("featured", true)]
+    [InlineData("ordinary", false)]
+    public async Task Search_returns_curation_metadata_and_curated_hits(string query, bool matchesCuration)
+    {
+        const string collectionName = "curation-response-companies";
+        const string curationSetName = "curation-response-rules";
+
+        await _client.UpsertCurationSet(curationSetName, new CurationSetSchema(
+        [
+            new SearchOverride(
+                id: "featured-company",
+                rule: new Rule("featured", "exact"),
+                includes: [new Include("1", 1)],
+                metadata: new Dictionary<string, object>
+                {
+                    ["curation_id"] = "featured-company",
+                    ["banner"] = new Dictionary<string, object> { ["title"] = "Featured companies" },
+                    ["tags"] = new[] { "promotion", "featured" },
+                    ["priority"] = 2,
+                    ["enabled"] = true
+                })
+        ]));
+
+        try
+        {
+            await _client.CreateCollection(new Schema(collectionName,
+            [
+                new Field("company_name", FieldType.String, true),
+                new Field("num_employees", FieldType.Int32, false)
+            ], "num_employees")
+            {
+                CurationSets = [curationSetName]
+            });
+
+            try
+            {
+                await _client.CreateDocument(collectionName, new Company
+                {
+                    Id = "1",
+                    CompanyName = "Ordinary Company",
+                    NumEmployees = 100
+                });
+
+                var response = await _client.Search<Company>(collectionName,
+                    new SearchParameters(query, "company_name"));
+                var groupedResponse = await _client.SearchGrouped<Company>(collectionName,
+                    new GroupedSearchParameters(query, "company_name", "company_name"));
+                var multiResponse = await _client.MultiSearch<Company>(
+                    new MultiSearchParameters(collectionName, query, "company_name"));
+
+                using (new AssertionScope())
+                {
+                    response.Hits.Should().ContainSingle();
+                    groupedResponse.GroupedHits.Should().ContainSingle();
+                    multiResponse.Hits.Should().ContainSingle();
+
+                    var hits = new[]
+                    {
+                        response.Hits.Single(),
+                        groupedResponse.GroupedHits.Single().Hits.Single(),
+                        multiResponse.Hits.Single()
+                    };
+
+                    foreach (var hit in hits)
+                    {
+                        hit.Document.Id.Should().Be("1");
+                        hit.Curated.Should().Be(matchesCuration ? true : null);
+                    }
+
+                    foreach (var metadata in new[] { response.Metadata, groupedResponse.Metadata, multiResponse.Metadata })
+                    {
+                        if (matchesCuration)
+                        {
+                            metadata.Should().NotBeNull();
+                            metadata["curation_id"].GetString().Should().Be("featured-company");
+                            metadata["banner"].GetProperty("title").GetString().Should().Be("Featured companies");
+                            metadata["tags"].GetArrayLength().Should().Be(2);
+                            metadata["tags"][0].GetString().Should().Be("promotion");
+                            metadata["priority"].GetInt32().Should().Be(2);
+                            metadata["enabled"].GetBoolean().Should().BeTrue();
+                        }
+                        else
+                        {
+                            metadata.Should().BeNull();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                await _client.DeleteCollection(collectionName);
+            }
+        }
+        finally
+        {
+            await _client.DeleteCurationSet(curationSetName);
+        }
+    }
+
     private async Task CreateCompanyCollection()
     {
         var schema = new Schema(

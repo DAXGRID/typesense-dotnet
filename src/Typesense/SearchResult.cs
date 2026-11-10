@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Typesense.Converter;
 
@@ -51,6 +52,12 @@ public record Highlight
 
 public record Hit<T>
 {
+    /// <summary>
+    /// Indicates that this hit was curated. Omitted by the server for ordinary hits.
+    /// </summary>
+    [JsonPropertyName("curated")]
+    public bool? Curated { get; init; }
+
     [JsonPropertyName("highlights")]
     public IReadOnlyList<Highlight> Highlights { get; init; }
 
@@ -220,6 +227,12 @@ public record GroupedHit<T>
 
 public abstract record SearchResultBase
 {
+    /// <summary>
+    /// Custom metadata returned by a matching curation rule, when configured.
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public IReadOnlyDictionary<string, JsonElement>? Metadata { get; init; }
+
     [JsonPropertyName("facet_counts")]
     public IReadOnlyCollection<FacetCount> FacetCounts { get; init; }
 
@@ -302,6 +315,12 @@ public record SearchGroupedResult<T> : SearchResultBase
 
 public record MultiSearchResult<T>
 {
+    /// <summary>
+    /// Custom metadata returned by a matching curation rule, when configured.
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public IReadOnlyDictionary<string, JsonElement>? Metadata { get; init; }
+
     [JsonPropertyName("facet_counts")]
     public IReadOnlyList<FacetCount>? FacetCounts { get; init; }
 
