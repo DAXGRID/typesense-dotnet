@@ -116,29 +116,50 @@ public record SearchParameters
     /// autocomplete and instant search interfaces. Defaults to true.
     /// </summary>
     /// <remarks>
-    /// This property is not serialized itself. Its value is sent through <see cref="PerFieldPrefix"/>
-    /// unless <see cref="PerFieldPrefix"/> is explicitly set.
+    /// This property is not serialized itself. It is a view on <see cref="PerFieldPrefix"/>, which is the source of truth:
+    /// setting it stores "true" / "false" (or null) in <see cref="PerFieldPrefix"/>, and reading it returns
+    /// the boolean in <see cref="PerFieldPrefix"/> when that holds a single boolean value.
+    /// It returns null when <see cref="PerFieldPrefix"/> is not set, is a per-field list (e.g. "true,false")
+    /// or is not a boolean. Because both properties share one value, the last one assigned wins.
     /// </remarks>
     [JsonIgnore]
-    public bool? Prefix { get; set; }
+    public bool? Prefix
+    {
+        get => TryGetSinglePerFieldPrefix(out var single) ? single : null;
+        set => _perFieldPrefix = value switch
+        {
+            true => "true",
+            false => "false",
+            null => null,
+        };
+    }
 
     private string? _perFieldPrefix;
 
     /// <summary>
     /// Prefix setting as sent to Typesense. Supports a single value ("true" / "false") or
     /// a comma separated list to control prefix searching per field in <c>query_by</c> (e.g. "true,false,true").
-    /// If not explicitly set, the value of <see cref="Prefix"/> is used (lower-case "true" / "false"), or null when neither is set.
+    /// Setting <see cref="Prefix"/> updates this value with its lower-case string representation.
+    /// See https://typesense.org/docs/30.2/api/search.html#query-parameters
     /// </summary>
     [JsonPropertyName("prefix")]
     public string? PerFieldPrefix
     {
-        get => _perFieldPrefix ?? Prefix switch
-        {
-            true => "true",
-            false => "false",
-            null => null,
-        };
+        get => _perFieldPrefix;
         set => _perFieldPrefix = value;
+    }
+
+    private bool TryGetSinglePerFieldPrefix(out bool? value)
+    {
+        value = null;
+        if (_perFieldPrefix is null || _perFieldPrefix.Contains(',', StringComparison.Ordinal))
+            return false;
+
+        if (!bool.TryParse(_perFieldPrefix, out var parsed))
+            return false;
+
+        value = parsed;
+        return true;
     }
 
     /// <summary>
