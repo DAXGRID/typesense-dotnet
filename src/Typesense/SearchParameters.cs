@@ -115,8 +115,31 @@ public record SearchParameters
     /// be treated as a prefix, and not as a whole word. This is used for building
     /// autocomplete and instant search interfaces. Defaults to true.
     /// </summary>
-    [JsonPropertyName("prefix")]
+    /// <remarks>
+    /// This property is not serialized itself. Its value is sent through <see cref="PerFieldPrefix"/>
+    /// unless <see cref="PerFieldPrefix"/> is explicitly set.
+    /// </remarks>
+    [JsonIgnore]
     public bool? Prefix { get; set; }
+
+    private string? _perFieldPrefix;
+
+    /// <summary>
+    /// Prefix setting as sent to Typesense. Supports a single value ("true" / "false") or
+    /// a comma separated list to control prefix searching per field in <c>query_by</c> (e.g. "true,false,true").
+    /// If not explicitly set, the value of <see cref="Prefix"/> is used (lower-case "true" / "false"), or null when neither is set.
+    /// </summary>
+    [JsonPropertyName("prefix")]
+    public string? PerFieldPrefix
+    {
+        get => _perFieldPrefix ?? Prefix switch
+        {
+            true => "true",
+            false => "false",
+            null => null,
+        };
+        set => _perFieldPrefix = value;
+    }
 
     /// <summary>
     /// If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query.
